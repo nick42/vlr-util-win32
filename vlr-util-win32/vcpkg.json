@@ -1,0 +1,11 @@
+{
+  "name": "vlr-util-win32",
+  "version-string": "0.1",
+  "dependencies": [
+    "vlr-util",
+    "gsl-lite",
+    "boost",
+    "fmt",
+    "spdlog"
+  ]
+}
