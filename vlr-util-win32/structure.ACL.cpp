@@ -20,7 +20,7 @@ bool CAccessorFor_ACL::HasMetaValue_EntirelyInherited() const
 	{
 		LPVOID pvAce = nullptr;
 		auto bResult = ::GetAce( const_cast<ACL*>(static_cast<const ACL*>(this)), nAceIndex, &pvAce );
-		VLR_ASSERT_NONZERO__OR_RETURN_FAILURE_VALUE( bResult );
+		VLR_ASSERT_NONZERO_OR_RETURN_FAILURE_VALUE( bResult );
 
 		auto&& oACE_HEADER = vlr::win32::structure::MakeStructureAccessor( reinterpret_cast<const ACE_HEADER*>(pvAce) );
 
@@ -103,10 +103,10 @@ HRESULT CAccessControlList::Initialize( const ACL* pACL )
 	{
 		LPVOID pvAce = nullptr;
 		auto bResult = ::GetAce( const_cast<ACL*>(pACL), nAceIndex, &pvAce );
-		VLR_ASSERT_NONZERO__OR_RETURN_FAILURE_VALUE( bResult );
+		VLR_ASSERT_NONZERO_OR_RETURN_FAILURE_VALUE( bResult );
 
 		auto spStructure = MakeStructureSP_AccessControlEntry( pvAce );
-		VLR_ASSERT_NONZERO__OR_RETURN_FAILURE_VALUE( spStructure );
+		VLR_ASSERT_NONZERO_OR_RETURN_FAILURE_VALUE( spStructure );
 
 		m_oAccessControlEntryList.push_back( spStructure );
 	}

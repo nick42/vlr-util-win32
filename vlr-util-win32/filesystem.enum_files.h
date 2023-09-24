@@ -97,7 +97,7 @@ public:
 //	}
 //
 //	m_spRefCountedDataBlock = std::shared_ptr<RefCountedDataBlock>{ new RefCountedDataBlock, &iterator_files::OnDestroy_FindClose };
-//	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock );
+//	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock );
 //
 //	m_spRefCountedDataBlock->m_ohFindHandle = hFindVolume;
 //	m_osCurrentResult = sValue;
@@ -107,8 +107,8 @@ public:
 
 HRESULT iterator_FindNextFile::OnAdaptorMethod_increment()
 {
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock );
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock->m_ohFindHandle.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock->m_ohFindHandle.has_value() );
 
 	// Copy buffer and clear internal to do operation; will copy back on success
 	auto spResultDataBuffer = m_spResultDataBuffer;
@@ -152,7 +152,7 @@ HRESULT iterator_FindNextFile::OnDestroy_FindClose( RefCountedDataBlock* pRefCou
 
 	bSuccess = ::FindClose(
 		pRefCountedDataBlock->m_ohFindHandle.value() );
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( bSuccess );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( bSuccess );
 
 	return S_OK;
 }
@@ -183,7 +183,7 @@ protected:
 		}
 
 		auto spRefCountedDataBlock = std::shared_ptr<iterator_FindNextFile::RefCountedDataBlock>{ new iterator_FindNextFile::RefCountedDataBlock( hFindHandle ), &iterator_FindNextFile::OnDestroy_FindClose };
-		VLR_ASSERT_ALLOCATED__OR_RETURN_STANDARD_ERROR( spRefCountedDataBlock );
+		VLR_ASSERT_ALLOCATED_OR_RETURN_STANDARD_ERROR( spRefCountedDataBlock );
 		iter.m_spRefCountedDataBlock = spRefCountedDataBlock;
 		iter.m_spResultDataBuffer = spResultDataBuffer;
 

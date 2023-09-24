@@ -12,7 +12,6 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 
-#include <vlr-util/UtilMacros.Namespace.h>
-#include <vlr-util/UtilMacros.Assertions.h>
+#include <vlr-util/util.includes.h>
 
 #endif //PCH_H

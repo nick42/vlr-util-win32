@@ -65,7 +65,7 @@ HRESULT SetPrivilegeOnProcess(
         hProcess,
         TOKEN_ADJUST_PRIVILEGES,
         &hToken );
-    VLR_ASSERT_NONZERO__OR_RETURN_HRESULT_LAST_ERROR( bResult );
+    VLR_ASSERT_NONZERO_OR_RETURN_HRESULT_LAST_ERROR( bResult );
     auto oOnDestroy_FreeToken = vlr::MakeAutoCleanup_viaCloseHandle( hToken );
 
     return SetPrivilegeOnToken( hToken, svzPrivilegeName, bEnable );

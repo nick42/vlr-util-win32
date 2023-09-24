@@ -21,7 +21,7 @@ std::optional<SC_HANDLE> CServiceControl::GetOpenHandle_SCM() const
 	return m_spAutoCleanupSCM->m_hSCM;
 }
 
-util::CResult CServiceControl::Connect(
+SResult CServiceControl::Connect(
 	const ops::CNetworkTargetInfo& oNetworkTargetInfo,
 	DWORD dwDesiredAccess /*= SC_MANAGER_ALL_ACCESS*/ )
 {
@@ -33,7 +33,7 @@ util::CResult CServiceControl::Connect(
 		dwDesiredAccess );
 	if (hSCM == NULL)
 	{
-		return util::CResult::For_win32_LastError();
+		return SResult::For_win32_LastError();
 	}
 
 	m_spAutoCleanupSCM = cpp::make_shared<util::CAutoCleanup_SC_HANDLE>( hSCM );
@@ -41,7 +41,7 @@ util::CResult CServiceControl::Connect(
 	return S_OK;
 }
 
-util::CResult CServiceControl::SCM_CreateService(
+SResult CServiceControl::SCM_CreateService(
 	const CServiceConfig& oServiceConfig,
 	SC_HANDLE& hService_Result )
 {
@@ -52,14 +52,14 @@ util::CResult CServiceControl::SCM_CreateService(
 	}
 
 	// Service name must be valid
-	VLR_ASSERT_NOTBLANK__OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName );
-	VLR_ASSERT_NOTBLANK__OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName_Display );
+	VLR_ASSERT_NOTBLANK_OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName );
+	VLR_ASSERT_NOTBLANK_OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName_Display );
 
 	// Some additional checks for validity, per docs
-	VLR_ASSERT_COMPARE__OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName.size(), <= , 256 );
-	VLR_ASSERT_COMPARE__OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName.find( _T( '/' ) ), == , oServiceConfig.m_svzServiceName.npos );
-	VLR_ASSERT_COMPARE__OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName.find( _T( '\\' ) ), == , oServiceConfig.m_svzServiceName.npos );
-	VLR_ASSERT_COMPARE__OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName_Display.size(), <= , 256 );
+	VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName.size(), <= , 256 );
+	VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName.find( _T( '/' ) ), == , oServiceConfig.m_svzServiceName.npos );
+	VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName.find( _T( '\\' ) ), == , oServiceConfig.m_svzServiceName.npos );
+	VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName_Display.size(), <= , 256 );
 
 	auto hService = ::CreateService(
 		ohSCM.value(),
@@ -77,7 +77,7 @@ util::CResult CServiceControl::SCM_CreateService(
 		oServiceConfig.m_svzRunAsAccount_Password );
 	if (hService == NULL)
 	{
-		return util::CResult::For_win32_LastError();
+		return SResult::For_win32_LastError();
 	}
 
 	hService_Result = hService;
@@ -85,26 +85,26 @@ util::CResult CServiceControl::SCM_CreateService(
 	return S_OK;
 }
 
-util::CResult CServiceControl::SCM_DeleteService(
+SResult CServiceControl::SCM_DeleteService(
 	SC_HANDLE hService )
 {
 	auto bResult = ::DeleteService(
 		hService );
 	if (!bResult)
 	{
-		return util::CResult::For_win32_LastError();
+		return SResult::For_win32_LastError();
 	}
 
 	return S_OK;
 }
 
-util::CResult CServiceControl::SCM_DeleteService(
+SResult CServiceControl::SCM_DeleteService(
 	const CServiceConfig& oServiceConfig )
 {
 	HRESULT hr;
 
 	// Service name must be valid
-	VLR_ASSERT_NOTBLANK__OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName );
+	VLR_ASSERT_NOTBLANK_OR_RETURN_EUNEXPECTED( oServiceConfig.m_svzServiceName );
 
 	SC_HANDLE hService{};
 	hr = SCM_OpenService(
@@ -117,7 +117,7 @@ util::CResult CServiceControl::SCM_DeleteService(
 	return SCM_DeleteService( hService );
 }
 
-util::CResult CServiceControl::SCM_OpenService(
+SResult CServiceControl::SCM_OpenService(
 	vlr::tzstring_view svzServiceName,
 	DWORD dwDesiredAccess,
 	SC_HANDLE& hService_Result )
@@ -134,7 +134,7 @@ util::CResult CServiceControl::SCM_OpenService(
 		dwDesiredAccess );
 	if (hService == NULL)
 	{
-		return util::CResult::For_win32_LastError();
+		return SResult::For_win32_LastError();
 	}
 
 	hService_Result = hService;

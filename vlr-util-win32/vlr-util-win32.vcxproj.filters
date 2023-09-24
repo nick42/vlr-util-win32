@@ -75,6 +75,9 @@
     <ClInclude Include="ServiceControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="security.AceType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vlr-util-win32.cpp">

@@ -224,8 +224,8 @@ public:
 				oOptions.m_ulOptions,
 				oOptions.m_ulDesiredAccess,
 				&hkResult );
-			VLR_ASSERT_COMPARE__OR_RETURN_EXPRESSION( lResult, == , 0, HRESULT_FROM_WIN32( lResult ) );
-			VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( hkResult );
+			VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION( lResult, == , 0, HRESULT_FROM_WIN32( lResult ) );
+			VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( hkResult );
 
 			return S_OK;
 		};
@@ -246,8 +246,8 @@ public:
 				oOptions.m_ulOptions,
 				oOptions.m_ulDesiredAccess,
 				&hkResult );
-			VLR_ASSERT_COMPARE__OR_RETURN_EXPRESSION( lResult, == , 0, HRESULT_FROM_WIN32( lResult ) );
-			VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( hkResult );
+			VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION( lResult, == , 0, HRESULT_FROM_WIN32( lResult ) );
+			VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( hkResult );
 
 			return S_OK;
 		};
@@ -385,12 +385,12 @@ HRESULT CRegKey::OpenKeyAW(
 	const Options_OpenKey& oOptions,
 	CRegKey& oRegKey_Result )
 {
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( fOpenKey );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( fOpenKey );
 
 	HRESULT hr;
 
 	auto ohKey = GetHKEY();
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( ohKey.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( ohKey.has_value() );
 
 	HKEY hkResult = {};
 	hr = fOpenKey(
@@ -409,12 +409,12 @@ HRESULT CRegKey::GetValueAW(
 	const Options_GetValue& oOptions,
 	Result_GetValue& oResult )
 {
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( fGetValue );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( fGetValue );
 
 	HRESULT hr;
 
 	auto ohKey = GetHKEY();
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( ohKey.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( ohKey.has_value() );
 
 	auto& oRegValue = oResult.m_oValue;
 
@@ -438,7 +438,7 @@ HRESULT CRegKey::GetValueAW(
 			&dwBufferLength );
 		if (hr == S_OK)
 		{
-			VLR_ASSERT_COMPARE__OR_RETURN_EUNEXPECTED( dwBufferLength, <= , oRegValue.m_oData.size() );
+			VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( dwBufferLength, <= , oRegValue.m_oData.size() );
 			oRegValue.m_oData.resize( dwBufferLength );
 			return S_OK;
 		}

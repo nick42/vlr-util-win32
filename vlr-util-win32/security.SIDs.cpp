@@ -134,7 +134,7 @@ HRESULT CSidNameLookupCache::SetLookupResult(
 	const vlr::tstring& sStringSid,
 	const SPCSidNameLookupResult& spSidNameLookupResult )
 {
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( spSidNameLookupResult );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( spSidNameLookupResult );
 
 	const auto oLock = std::lock_guard{ m_oAccessSync_StringSidToLookupResultMap };
 
@@ -177,7 +177,7 @@ HRESULT CSidNameLookupCache::PopulateCache_WellKnownSids()
 			}
 			if (dwLastError == ERROR_INSUFFICIENT_BUFFER)
 			{
-				VLR_ASSERT_COMPARE__OR_RETURN_EUNEXPECTED( dwBufferLength, > , oSidDataArray.size() );
+				VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( dwBufferLength, > , oSidDataArray.size() );
 				oSidDataArray.resize( dwBufferLength );
 				continue;
 			}
@@ -192,10 +192,10 @@ HRESULT CSidNameLookupCache::PopulateCache_WellKnownSids()
 
 		vlr::tstring sStringSid;
 		hr = DoConvertSidToStringSid( oSidDataArray.data(), sStringSid );
-		VLR_ASSERT_HR_SUCCEEDED__OR_RETURN_HRESULT( hr );
+		VLR_ASSERT_HR_SUCCEEDED_OR_RETURN_HRESULT( hr );
 
 		auto spSidNameLookupResult = std::make_shared<CSidNameLookupResult>();
-		VLR_ASSERT_ALLOCATED__OR_RETURN_STANDARD_ERROR( spSidNameLookupResult );
+		VLR_ASSERT_ALLOCATED_OR_RETURN_STANDARD_ERROR( spSidNameLookupResult );
 		spSidNameLookupResult->m_sStringSid = sStringSid;
 		spSidNameLookupResult->m_oeWellKnownSid = eWellKnownSid;
 
@@ -230,8 +230,8 @@ HRESULT DoConvertSidToStringSid(
 	auto bSuccess = ::ConvertSidToStringSid(
 		pSid,
 		&pszStringSid );
-	VLR_ASSERT_NONZERO__OR_RETURN_FAILURE_VALUE( bSuccess );
-	VLR_ASSERT_NONZERO__OR_RETURN_FAILURE_VALUE( pszStringSid );
+	VLR_ASSERT_NONZERO_OR_RETURN_FAILURE_VALUE( bSuccess );
+	VLR_ASSERT_NONZERO_OR_RETURN_FAILURE_VALUE( pszStringSid );
 	auto oOnDestroy_FreeStringSid = MakeAutoCleanup_viaLocalFree( pszStringSid );
 
 	sStringSid = vlr::tstring{ pszStringSid };
@@ -254,14 +254,14 @@ HRESULT DoLookupAccountSid(
 	VLR_ON_HR_S_OK__RETURN_HRESULT( hr );
 
 	auto spSidNameLookupResult = std::make_shared<CSidNameLookupResult>();
-	VLR_ASSERT_ALLOCATED__OR_RETURN_STANDARD_ERROR( spSidNameLookupResult );
+	VLR_ASSERT_ALLOCATED_OR_RETURN_STANDARD_ERROR( spSidNameLookupResult );
 	auto oOnDestroy_AssignResult = MakeActionOnDestruction( [&] { spSidNameLookupResult_Result = spSidNameLookupResult; } );
 	auto oOnDestroy_CacheResult = MakeActionOnDestruction( [&]
 		{
 			hr = oSidNameLookupCache.SetLookupResult(
 				oSidInfo.GetStringSid(),
 				spSidNameLookupResult );
-			VLR_ASSERT_HR_SUCCEEDED__OR_CONTINUE( hr );
+			VLR_ASSERT_HR_SUCCEEDED_OR_CONTINUE( hr );
 		} );
 
 	spSidNameLookupResult->m_sStringSid = oSidInfo.GetStringSid();
@@ -279,7 +279,7 @@ HRESULT DoLookupAccountSid(
 		nullptr,
 		&dwBufferLen_ReferencedDomainName,
 		&spSidNameLookupResult->m_eUse );
-	VLR_ASSERT_COMPARE__OR_RETURN_EUNEXPECTED( bSuccess, == , FALSE );
+	VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( bSuccess, == , FALSE );
 	auto dwLastError = ::GetLastError();
 	if (dwLastError != ERROR_INSUFFICIENT_BUFFER)
 	{

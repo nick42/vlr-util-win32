@@ -96,7 +96,7 @@ HRESULT iterator_volumes::OnIterationBegin()
 	}
 
 	m_spRefCountedDataBlock = std::shared_ptr<RefCountedDataBlock>{ new RefCountedDataBlock, &iterator_volumes::OnDestroy_CloseFindVolume };
-	VLR_ASSERT_ALLOCATED__OR_RETURN_STANDARD_ERROR( m_spRefCountedDataBlock );
+	VLR_ASSERT_ALLOCATED_OR_RETURN_STANDARD_ERROR( m_spRefCountedDataBlock );
 
 	m_spRefCountedDataBlock->m_ohFindVolume = hFindVolume;
 	// Note: string length will be longer than actual value; need to explicitly truncate at NULL terminator
@@ -107,8 +107,8 @@ HRESULT iterator_volumes::OnIterationBegin()
 
 HRESULT iterator_volumes::OnAdaptorMethod_increment()
 {
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock );
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock->m_ohFindVolume.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock->m_ohFindVolume.has_value() );
 
 	m_osCurrentResult = {};
 
@@ -156,7 +156,7 @@ HRESULT iterator_volumes::OnDestroy_CloseFindVolume( RefCountedDataBlock* pRefCo
 
 	bSuccess = ::FindVolumeClose(
 		pRefCountedDataBlock->m_ohFindVolume.value() );
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( bSuccess );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( bSuccess );
 
 	return S_OK;
 }

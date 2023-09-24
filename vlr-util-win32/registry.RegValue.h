@@ -79,8 +79,8 @@ public:
 
 		auto pcwszValue = reinterpret_cast<LPCWSTR>(m_oData.data());
 		auto nValueLengthChars = m_oData.size() / sizeof( wchar_t );
-		VLR_ASSERT_COMPARE__OR_RETURN_FAILURE_VALUE( nValueLengthChars, >= , 1 );
-		VLR_ASSERT_COMPARE__OR_RETURN_FAILURE_VALUE( pcwszValue[nValueLengthChars - 1], == , L'\0' );
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( nValueLengthChars, >= , 1 );
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( pcwszValue[nValueLengthChars - 1], == , L'\0' );
 
 		return vlr::wzstring_view{ pcwszValue, nValueLengthChars, vlr::wzstring_view::StringIsNullTerminated{} };
 	}
@@ -105,14 +105,14 @@ public:
 
 		auto pcwszValue = reinterpret_cast<LPCWSTR>(m_oData.data());
 		auto nValueLengthChars = m_oData.size() / sizeof( wchar_t );
-		VLR_ASSERT_COMPARE__OR_RETURN_FAILURE_VALUE( nValueLengthChars, >= , 1 );
-		VLR_ASSERT_COMPARE__OR_RETURN_FAILURE_VALUE( pcwszValue[nValueLengthChars - 1], == , L'\0' );
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( nValueLengthChars, >= , 1 );
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( pcwszValue[nValueLengthChars - 1], == , L'\0' );
 
 		HRESULT hr;
 
 		std::vector<vlr::wzstring_view> oValueCollection;
 		hr = util::data_adaptor::HelperFor_MultiSZ<wchar_t>{}.ToStructuredData( pcwszValue, oValueCollection );
-		VLR_ASSERT_HR_SUCCEEDED__OR_RETURN_FAILURE_VALUE( hr );
+		VLR_ASSERT_HR_SUCCEEDED_OR_RETURN_FAILURE_VALUE( hr );
 
 		return std::move( oValueCollection );
 	}

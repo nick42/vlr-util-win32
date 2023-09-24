@@ -114,13 +114,13 @@ public:
 
 HRESULT iterator_RegEnumKey::OnAdaptorMethod_increment()
 {
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( m_hParentKey );
-	VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( m_odwNextIndex.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_hParentKey );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_odwNextIndex.has_value() );
 
 	do
 	{
 		auto spCurrentResult = cpp::make_shared<RegEnumKeyResult>();
-		VLR_ASSERT_NONZERO__OR_RETURN_EUNEXPECTED( spCurrentResult );
+		VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( spCurrentResult );
 
 		spCurrentResult->m_dwIndex = m_odwNextIndex.has_value();
 

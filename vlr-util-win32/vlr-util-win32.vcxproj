@@ -168,6 +168,7 @@
     <ClInclude Include="registry.iterator_RegEnumValue.h" />
     <ClInclude Include="registry.RegKey.h" />
     <ClInclude Include="registry.RegValue.h" />
+    <ClInclude Include="security.AceType.h" />
     <ClInclude Include="security.SIDs.h" />
     <ClInclude Include="security.tokens.h" />
     <ClInclude Include="ServiceConfig.h" />
