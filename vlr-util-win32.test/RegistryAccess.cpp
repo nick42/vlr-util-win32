@@ -50,8 +50,16 @@ TEST(RegistryAccess, CreateKeyAndDeleteKey)
 	sr = oReg.EnsureKeyExists(sTestKey);
 	EXPECT_EQ(sr, SResult::Success);
 
+	// Very key exists using checking method
+	sr = oReg.CheckKeyExists(sTestKey);
+	EXPECT_EQ(sr, SResult::Success);
+
 	const auto oDeleteKeyOptions = RegistryAccess::Options_DeleteKey{}
 	.withSafeDeletePath(svzBaseKey_Test);
 	sr = oReg.DeleteKey(sTestKey, oDeleteKeyOptions);
 	EXPECT_EQ(sr, SResult::Success);
+
+	// Should now be S_FALSE for check
+	sr = oReg.CheckKeyExists(sTestKey);
+	EXPECT_EQ(sr, SResult::Success_WithNuance);
 }
