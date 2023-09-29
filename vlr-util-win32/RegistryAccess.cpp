@@ -2,6 +2,7 @@
 #include "RegistryAccess.h"
 
 #include "vlr-util/StringCompare.h"
+#include "vlr-util/util.range_checked_cast.h"
 
 #include "AutoCleanupTypedefs.h"
 
@@ -100,6 +101,112 @@ SResult RegistryAccess::DeleteKey(
 	}
 
 	return SResult::Success;
+}
+
+SResult RegistryAccess::ReadValueBase(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	DWORD& dwType_Result,
+	std::vector<BYTE>& arrData)
+{
+	SResult sr;
+	LONG lResult{};
+
+	HKEY hKey{};
+	sr = openKey(svzKeyName, KEY_READ, hKey);
+	if (!sr.isSuccess())
+	{
+		return SResult::Success_WithNuance;
+	}
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hKey);
+	auto onDestroy_CloseRegKey = AutoCloseRegKey{ hKey };
+
+	// Note: For the query, a data size 0 indicates that the data is not required. This is not 
+	// what we want here. So we need to set a default if not provided.
+	if (arrData.size() == 0)
+	{
+		arrData.resize(m_OnReadValue_nDefaultBufferSize);
+	}
+
+	size_t nIterationCount = 0;
+	while (true)
+	{
+		nIterationCount++;
+
+		DWORD dwBufferSize = util::range_checked_cast<DWORD>(arrData.size());
+		lResult = RegQueryValueEx(
+			hKey,
+			svzValueName,
+			NULL,
+			&dwType_Result,
+			arrData.data(),
+			&dwBufferSize);
+		if (lResult == ERROR_SUCCESS)
+		{
+			// Truncate buffer to data size
+			arrData.resize(dwBufferSize);
+			break;
+		}
+		if (lResult == ERROR_MORE_DATA)
+		{
+			if (nIterationCount >= m_nMaxIterationCountForRead)
+			{
+				// TODO: Add context for error
+				return E_FAIL;
+			}
+
+			arrData.resize(dwBufferSize);
+			continue;
+		}
+
+		// We got an unhandled/unexpected error
+		return __HRESULT_FROM_WIN32(lResult);
+	}
+
+	return S_OK;
+}
+
+SResult RegistryAccess::WriteValueBase(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	const DWORD& dwType,
+	const std::vector<BYTE>& arrData)
+{
+	SResult sr;
+	LONG lResult{};
+
+	HKEY hKey{};
+	sr = openKey(svzKeyName, KEY_WRITE, hKey);
+	if (!sr.isSuccess())
+	{
+		return SResult::Success_WithNuance;
+	}
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hKey);
+	auto onDestroy_CloseRegKey = AutoCloseRegKey{ hKey };
+
+	size_t nIterationCount = 0;
+	while (true)
+	{
+		nIterationCount++;
+
+		DWORD dwBufferSize = util::range_checked_cast<DWORD>(arrData.size());
+		lResult = RegSetValueEx(
+			hKey,
+			svzValueName,
+			NULL,
+			dwType,
+			arrData.data(),
+			util::range_checked_cast<DWORD>(arrData.size()));
+		if (lResult == ERROR_SUCCESS)
+		{
+			break;
+		}
+
+		// We got an unhandled/unexpected error
+		return __HRESULT_FROM_WIN32(lResult);
+	}
+
+	return S_OK;
 }
 
 SResult RegistryAccess::openKey(

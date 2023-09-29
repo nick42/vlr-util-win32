@@ -9,7 +9,7 @@ VLR_NAMESPACE_BEGIN( win32 )
 
 VLR_NAMESPACE_BEGIN( filesystem )
 
-HRESULT GetVolumePathNamesForVolumeName( const vlr::tstring& sVolumeName, std::list<vlr::tstring>& oPathNameList )
+HRESULT GetVolumePathNamesForVolumeName( const vlr::tstring& sVolumeName, std::vector<vlr::tstring>& oPathNameList )
 {
 	TCHAR pszBuffer[2048];
 	DWORD dwReturnLength{};

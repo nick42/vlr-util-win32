@@ -14,6 +14,10 @@ class RegistryAccess
 protected:
 	HKEY m_hBaseKey = {};
 
+	static constexpr size_t m_nMaxIterationCountForRead_Default = 2;
+	size_t m_nMaxIterationCountForRead = m_nMaxIterationCountForRead_Default;
+	static constexpr size_t m_OnReadValue_nDefaultBufferSize = 1024;
+
 	auto getBaseKey() const
 	{
 		return m_hBaseKey;
@@ -55,6 +59,11 @@ public:
 		tzstring_view svzValueName,
 		DWORD& dwType_Result, 
 		std::vector<BYTE>& arrData);
+	SResult WriteValueBase(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData);
 
 protected:
 	SResult openKey(
