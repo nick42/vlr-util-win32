@@ -5,11 +5,14 @@
 
 #include "vlr-util/StringCompare.h"
 #include "vlr-util/util.data_adaptor.MultiSZ.h"
+#include "vlr-util/util.convert.StringConversion.h"
 
 #include "vlr-util-win32/RegistryAccess.h"
 
 using namespace vlr;
 using namespace vlr::win32;
+
+using QWORD = unsigned __int64;
 
 static constexpr auto svzBaseKey_Test = tzstring_view{ _T("SOFTWARE\\vlr-test") };
 static constexpr auto svzBaseKey_Invalid = tzstring_view{ _T("SOFTWARE\\vlr-test-invalid") };
@@ -71,8 +74,6 @@ TEST(RegistryAccess, CreateKeyAndDeleteKey)
 TEST(RegistryAccess, ReadValueBase)
 {
 	SResult sr;
-
-	using QWORD = unsigned __int64;
 
 	static constexpr auto svzTestKey = svzBaseKey_Test;
 	static constexpr auto sTestValueName_Invalid = vlr::tzstring_view{ _T("testInvalid") };
@@ -275,7 +276,13 @@ TEST(RegistryAccess, ReadValue_String)
 	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
 
 	{
-		tstring sValue;
+		std::string sValue;
+		sr = oReg.ReadValue_String(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
+	}
+	{
+		std::wstring sValue;
 		sr = oReg.ReadValue_String(svzTestKey, sTestValueName_SZ, sValue);
 		EXPECT_EQ(sr, SResult::Success);
 		EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
@@ -293,8 +300,85 @@ TEST(RegistryAccess, WriteValue_String)
 	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
 
 	{
-		tstring sValue = svzTestValue_SZ;
+		std::string sValue = util::Convert::ToStdStringA(svzTestValue_SZ);
 		sr = oReg.WriteValue_String(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+	{
+		std::wstring sValue = util::Convert::ToStdStringW(svzTestValue_SZ);
+		sr = oReg.WriteValue_String(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+}
+
+TEST(RegistryAccess, ReadValue_Template)
+{
+	SResult sr;
+
+	static constexpr auto svzTestKey = svzBaseKey_Test;
+	static constexpr auto sTestValueName_SZ = vlr::tzstring_view{ _T("testString") };
+	static constexpr auto svzTestValue_SZ = vlr::tzstring_view{ _T("value") };
+	static constexpr auto sTestValueName_DWORD = vlr::tzstring_view{ _T("testDWORD") };
+	static constexpr auto nTestValue_DWORD = DWORD{ 42 };
+	static constexpr auto sTestValueName_QWORD = vlr::tzstring_view{ _T("testQWORD") };
+	static constexpr auto nTestValue_QWORD = QWORD{ 42 };
+	static constexpr auto sTestValueName_MultiSz = vlr::tzstring_view{ _T("testMultiSz") };
+	static const auto arrTestValue_MultiSz = std::vector<vlr::tstring>{ _T("value1"), _T("value2") };
+	static constexpr auto sTestValueName_BINARY = vlr::tzstring_view{ _T("testBinary") };
+	static const auto arrTestValue_Binary = std::vector<BYTE>{ 0x12, 0x34, 0x56, 0x78 };
+
+	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
+
+	{
+		std::string sValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
+	}
+	{
+		std::wstring sValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
+	}
+	{
+		DWORD dwValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_DWORD, dwValue);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(dwValue, nTestValue_DWORD);
+	}
+}
+
+TEST(RegistryAccess, WriteValue_Template)
+{
+	SResult sr;
+
+	static constexpr auto svzTestKey = svzBaseKey_Test;
+	static constexpr auto sTestValueName_SZ = vlr::tzstring_view{ _T("testString_Copy") };
+	static constexpr auto svzTestValue_SZ = vlr::tzstring_view{ _T("value") };
+	static constexpr auto sTestValueName_DWORD = vlr::tzstring_view{ _T("testDWORD_Copy") };
+	static constexpr auto nTestValue_DWORD = DWORD{ 42 };
+	static constexpr auto sTestValueName_QWORD = vlr::tzstring_view{ _T("testQWORD_Copy") };
+	static constexpr auto nTestValue_QWORD = QWORD{ 42 };
+	static constexpr auto sTestValueName_MultiSz = vlr::tzstring_view{ _T("testMultiSz_Copy") };
+	static const auto arrTestValue_MultiSz = std::vector<vlr::tstring>{ _T("value1"), _T("value2") };
+	static constexpr auto sTestValueName_BINARY = vlr::tzstring_view{ _T("testBinary_Copy") };
+	static const auto arrTestValue_Binary = std::vector<BYTE>{ 0x12, 0x34, 0x56, 0x78 };
+
+	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
+
+	{
+		std::string sValue = util::Convert::ToStdStringA(svzTestValue_SZ);
+		sr = oReg.WriteValue(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+	{
+		std::wstring sValue = util::Convert::ToStdStringW(svzTestValue_SZ);
+		sr = oReg.WriteValue(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+	{
+		sr = oReg.WriteValue(svzTestKey, sTestValueName_DWORD, nTestValue_DWORD);
 		EXPECT_EQ(sr, SResult::Success);
 	}
 }

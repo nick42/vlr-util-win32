@@ -83,6 +83,99 @@ public:
 		tzstring_view svzValueName,
 		const std::wstring& swValue);
 
+	SResult ReadValue_DWORD(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		DWORD& dwValue);
+	SResult WriteValue_DWORD(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const DWORD& dwValue);
+
+	template< typename TValue >
+	SResult ReadValue(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		TValue& tValue)
+	{
+		static_assert("Unhanded type");
+	}
+	template<>
+	inline SResult ReadValue<std::string>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::string& tValue)
+	{
+		return ReadValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult ReadValue<std::wstring>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::wstring& tValue)
+	{
+		return ReadValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult ReadValue<DWORD>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		DWORD& tValue)
+	{
+		return ReadValue_DWORD(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+
+	template< typename TValue >
+	SResult WriteValue(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const TValue& tValue)
+	{
+		static_assert("Unhanded type");
+	}
+	template<>
+	inline SResult WriteValue<std::string>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::string& tValue)
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult WriteValue<std::wstring>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::wstring& tValue)
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult WriteValue<DWORD>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const DWORD& tValue)
+	{
+		return WriteValue_DWORD(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+
 	// TODO? Support data coercion
 
 	SResult convertRegDataToValue_String(
@@ -115,6 +208,14 @@ public:
 		std::vector<BYTE>& arrData);
 	SResult convertValueToRegDataDirect_String_NativeType(
 		const std::wstring& swValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData);
+	SResult convertRegDataToValue_DWORD(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		DWORD& dwValue);
+	SResult convertValueToRegData_DWORD(
+		const DWORD& dwValue,
 		DWORD& dwType,
 		std::vector<BYTE>& arrData);
 

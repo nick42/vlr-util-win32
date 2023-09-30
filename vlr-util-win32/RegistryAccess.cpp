@@ -310,6 +310,56 @@ SResult RegistryAccess::WriteValue_String(
 	return SResult::Success;
 }
 
+SResult RegistryAccess::ReadValue_DWORD(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	DWORD& dwValue)
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = ReadValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = convertRegDataToValue_DWORD(
+		dwType,
+		arrData,
+		dwValue);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::WriteValue_DWORD(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	const DWORD& dwValue)
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = convertValueToRegData_DWORD(
+		dwValue,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = WriteValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
 SResult RegistryAccess::convertRegDataToValue_String(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
@@ -489,10 +539,10 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 {
 	dwType = REG_SZ;
 
-	size_t nByteCountData = (arrData.size() + 1) * sizeof(char);
+	size_t nByteCountData = (sValue.length() + 1) * sizeof(char);
 	arrData.resize(nByteCountData);
 	// Note: This is safe, because the NULL-terminator is in the memory block
-	memcpy_s(arrData.data(), arrData.size(), arrData.data(), nByteCountData);
+	memcpy_s(arrData.data(), arrData.size(), sValue.c_str(), nByteCountData);
 
 	return SResult::Success;
 }
@@ -504,10 +554,52 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 {
 	dwType = REG_SZ;
 
-	size_t nByteCountData = (arrData.size() + 1) * sizeof(wchar_t);
+	size_t nByteCountData = (sValue.length() + 1) * sizeof(wchar_t);
 	arrData.resize(nByteCountData);
 	// Note: This is safe, because the NULL-terminator is in the memory block
-	memcpy_s(arrData.data(), arrData.size(), arrData.data(), nByteCountData);
+	memcpy_s(arrData.data(), arrData.size(), sValue.c_str(), nByteCountData);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertRegDataToValue_DWORD(
+	const DWORD& dwType,
+	const std::vector<BYTE>& arrData,
+	DWORD& dwValue)
+{
+	SResult sr;
+
+	bool bDirectConversion = false;
+
+	switch (dwType)
+	{
+	case REG_DWORD:
+		bDirectConversion = true;
+		break;
+
+	default:
+		return E_UNEXPECTED;
+	}
+
+	if (bDirectConversion)
+	{
+		VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(arrData.size(), == , sizeof(DWORD));
+		dwValue = *reinterpret_cast<const DWORD*>(arrData.data());
+	}
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertValueToRegData_DWORD(
+	const DWORD& dwValue,
+	DWORD& dwType,
+	std::vector<BYTE>& arrData)
+{
+	dwType = REG_DWORD;
+
+	size_t nByteCountData = sizeof(DWORD);
+	arrData.resize(nByteCountData);
+	memcpy_s(arrData.data(), arrData.size(), &dwValue, nByteCountData);
 
 	return SResult::Success;
 }
