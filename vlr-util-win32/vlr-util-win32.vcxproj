@@ -195,6 +195,11 @@
     <ClCompile Include="structure.ACL.cpp" />
     <ClCompile Include="vlr-util-win32.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\vlr-util\vlr-util\vlr-util.vcxproj">
+      <Project>{40aced1c-610a-4a7e-af26-4966b4091c5e}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

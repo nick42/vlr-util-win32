@@ -263,3 +263,38 @@ TEST(RegistryAccess, WriteValueBase)
 		EXPECT_EQ(sr, SResult::Success);
 	}
 }
+
+TEST(RegistryAccess, ReadValue_String)
+{
+	SResult sr;
+
+	static constexpr auto svzTestKey = svzBaseKey_Test;
+	static constexpr auto sTestValueName_SZ = vlr::tzstring_view{ _T("testString") };
+	static constexpr auto svzTestValue_SZ = vlr::tzstring_view{ _T("value") };
+
+	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
+
+	{
+		tstring sValue;
+		sr = oReg.ReadValue_String(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
+	}
+}
+
+TEST(RegistryAccess, WriteValue_String)
+{
+	SResult sr;
+
+	static constexpr auto svzTestKey = svzBaseKey_Test;
+	static constexpr auto sTestValueName_SZ = vlr::tzstring_view{ _T("testString_Copy") };
+	static constexpr auto svzTestValue_SZ = vlr::tzstring_view{ _T("value") };
+
+	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
+
+	{
+		tstring sValue = svzTestValue_SZ;
+		sr = oReg.WriteValue_String(svzTestKey, sTestValueName_SZ, sValue);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+}

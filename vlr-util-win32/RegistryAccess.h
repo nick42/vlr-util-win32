@@ -4,6 +4,7 @@
 #include <vlr-util/zstring_view.h>
 #include <vlr-util/util.data_adaptor.MultiSZ.h>
 #include <vlr-util/util.Result.h>
+#include <vlr-util/ModuleContext.Compilation.h>
 
 VLR_NAMESPACE_BEGIN(vlr)
 
@@ -64,6 +65,58 @@ public:
 		tzstring_view svzValueName,
 		const DWORD& dwType,
 		const std::vector<BYTE>& arrData);
+
+	SResult ReadValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::string& saValue);
+	SResult WriteValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::string& saValue);
+	SResult ReadValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::wstring& swValue);
+	SResult WriteValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::wstring& swValue);
+
+	// TODO? Support data coercion
+
+	SResult convertRegDataToValue_String(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		std::string& saValue);
+	SResult convertValueToRegData_String(
+		const std::string& saValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData);
+	SResult convertRegDataToValue_String(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		std::wstring& swValue);
+	SResult convertValueToRegData_String(
+		const std::wstring& swValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData);
+	SResult convertRegDataToValueDirect_String_NativeType(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		std::string& saValue);
+	SResult convertRegDataToValueDirect_String_NativeType(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		std::wstring& swValue);
+	SResult convertValueToRegDataDirect_String_NativeType(
+		const std::string& saValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData);
+	SResult convertValueToRegDataDirect_String_NativeType(
+		const std::wstring& swValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData);
 
 protected:
 	SResult openKey(
