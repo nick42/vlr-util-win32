@@ -235,6 +235,28 @@ SResult RegistryAccess::ReadValue_String(
 	return SResult::Success;
 }
 
+SResult RegistryAccess::ReadValue_String(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	std::string& saValue,
+	const std::string& saDefaultResultOnNoValue)
+{
+	SResult sr;
+
+	sr = ReadValue_String(
+		svzKeyName,
+		svzValueName,
+		saValue);
+	if (sr.asHRESULT() == __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+	{
+		saValue = saDefaultResultOnNoValue;
+		return SResult::Success;
+	}
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
 SResult RegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
@@ -285,6 +307,28 @@ SResult RegistryAccess::ReadValue_String(
 	return SResult::Success;
 }
 
+SResult RegistryAccess::ReadValue_String(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	std::wstring& swValue,
+	const std::wstring& swDefaultResultOnNoValue)
+{
+	SResult sr;
+
+	sr = ReadValue_String(
+		svzKeyName,
+		svzValueName,
+		swValue);
+	if (sr.asHRESULT() == __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+	{
+		swValue = swDefaultResultOnNoValue;
+		return SResult::Success;
+	}
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
 SResult RegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
@@ -330,6 +374,28 @@ SResult RegistryAccess::ReadValue_DWORD(
 		dwType,
 		arrData,
 		dwValue);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::ReadValue_DWORD(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	DWORD& dwValue,
+	const DWORD& dwDefaultResultOnNoValue)
+{
+	SResult sr;
+
+	sr = ReadValue_DWORD(
+		svzKeyName,
+		svzValueName,
+		dwValue);
+	if (sr.asHRESULT() == __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+	{
+		dwValue = dwDefaultResultOnNoValue;
+		return SResult::Success;
+	}
 	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 
 	return SResult::Success;

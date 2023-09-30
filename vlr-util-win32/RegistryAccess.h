@@ -70,6 +70,11 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		std::string& saValue);
+	SResult ReadValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::string& saValue,
+		const std::string& saDefaultResultOnNoValue);
 	SResult WriteValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
@@ -78,6 +83,11 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		std::wstring& swValue);
+	SResult ReadValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::wstring& swValue,
+		const std::wstring& swDefaultResultOnNoValue);
 	SResult WriteValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
@@ -87,10 +97,18 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		DWORD& dwValue);
+	SResult ReadValue_DWORD(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		DWORD& dwValue,
+		const DWORD& dwDefaultResultOnNoValue);
 	SResult WriteValue_DWORD(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		const DWORD& dwValue);
+
+	// Note: This is the "high-level" interface.
+	// These methods have template specializations for default supported data types.
 
 	template< typename TValue >
 	SResult ReadValue(
@@ -100,6 +118,24 @@ public:
 	{
 		static_assert("Unhanded type");
 	}
+	template< typename TValue >
+	SResult ReadValue(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		TValue& tValue,
+		const TValue& tDefaultResultOnNoValue)
+	{
+		static_assert("Unhanded type");
+	}
+	template< typename TValue >
+	SResult WriteValue(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const TValue& tValue)
+	{
+		static_assert("Unhanded type");
+	}
+
 	template<>
 	inline SResult ReadValue<std::string>(
 		tzstring_view svzKeyName,
@@ -110,6 +146,19 @@ public:
 			svzKeyName,
 			svzValueName,
 			tValue);
+	}
+	template<>
+	inline SResult ReadValue<std::string>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::string& tValue,
+		const std::string& tDefaultResultOnNoValue)
+	{
+		return ReadValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue,
+			tDefaultResultOnNoValue);
 	}
 	template<>
 	inline SResult ReadValue<std::wstring>(
@@ -123,6 +172,19 @@ public:
 			tValue);
 	}
 	template<>
+	inline SResult ReadValue<std::wstring>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::wstring& tValue,
+		const std::wstring& tDefaultResultOnNoValue)
+	{
+		return ReadValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue,
+			tDefaultResultOnNoValue);
+	}
+	template<>
 	inline SResult ReadValue<DWORD>(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
@@ -133,15 +195,20 @@ public:
 			svzValueName,
 			tValue);
 	}
-
-	template< typename TValue >
-	SResult WriteValue(
+	template<>
+	inline SResult ReadValue<DWORD>(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		const TValue& tValue)
+		DWORD& tValue,
+		const DWORD& tDefaultResultOnNoValue)
 	{
-		static_assert("Unhanded type");
+		return ReadValue_DWORD(
+			svzKeyName,
+			svzValueName,
+			tValue,
+			tDefaultResultOnNoValue);
 	}
+
 	template<>
 	inline SResult WriteValue<std::string>(
 		tzstring_view svzKeyName,

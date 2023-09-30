@@ -382,3 +382,37 @@ TEST(RegistryAccess, WriteValue_Template)
 		EXPECT_EQ(sr, SResult::Success);
 	}
 }
+
+TEST(RegistryAccess, ReadValue_WithDefault)
+{
+	SResult sr;
+
+	static constexpr auto svzTestKey = svzBaseKey_Test;
+	static constexpr auto sTestValueName_Invalid = vlr::tzstring_view{ _T("testInvalid") };
+	static constexpr auto svzTestValue_SZ = vlr::tzstring_view{ _T("value") };
+	static constexpr auto nTestValue_DWORD = DWORD{ 42 };
+	static constexpr auto nTestValue_QWORD = QWORD{ 42 };
+	static const auto arrTestValue_MultiSz = std::vector<vlr::tstring>{ _T("value1"), _T("value2") };
+	static const auto arrTestValue_Binary = std::vector<BYTE>{ 0x12, 0x34, 0x56, 0x78 };
+
+	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
+
+	{
+		std::string sValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_Invalid, sValue, util::Convert::ToStdStringA(svzTestValue_SZ));
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
+	}
+	{
+		std::wstring sValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_Invalid, sValue, util::Convert::ToStdStringW(svzTestValue_SZ));
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
+	}
+	{
+		DWORD dwValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_Invalid, dwValue, nTestValue_DWORD);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(dwValue, nTestValue_DWORD);
+	}
+}
