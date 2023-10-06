@@ -108,7 +108,7 @@ SResult RegistryAccess::ReadValueBase(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	DWORD& dwType_Result,
-	std::vector<BYTE>& arrData)
+	std::vector<BYTE>& arrData) const
 {
 	SResult sr;
 	LONG lResult{};
@@ -171,7 +171,7 @@ SResult RegistryAccess::WriteValueBase(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData)
+	const std::vector<BYTE>& arrData) const
 {
 	SResult sr;
 	LONG lResult{};
@@ -213,7 +213,7 @@ SResult RegistryAccess::WriteValueBase(
 SResult RegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
-	std::string& saValue)
+	std::string& saValue) const
 {
 	SResult sr;
 
@@ -239,7 +239,7 @@ SResult RegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::string& saValue,
-	const std::string& saDefaultResultOnNoValue)
+	const std::string& saDefaultResultOnNoValue) const
 {
 	SResult sr;
 
@@ -260,7 +260,7 @@ SResult RegistryAccess::ReadValue_String(
 SResult RegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
-	const std::string& saValue)
+	const std::string& saValue) const
 {
 	SResult sr;
 
@@ -285,7 +285,7 @@ SResult RegistryAccess::WriteValue_String(
 SResult RegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
-	std::wstring& swValue)
+	std::wstring& swValue) const
 {
 	SResult sr;
 
@@ -311,7 +311,7 @@ SResult RegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::wstring& swValue,
-	const std::wstring& swDefaultResultOnNoValue)
+	const std::wstring& swDefaultResultOnNoValue) const
 {
 	SResult sr;
 
@@ -332,7 +332,7 @@ SResult RegistryAccess::ReadValue_String(
 SResult RegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
-	const std::wstring& swValue)
+	const std::wstring& swValue) const
 {
 	SResult sr;
 
@@ -357,7 +357,7 @@ SResult RegistryAccess::WriteValue_String(
 SResult RegistryAccess::ReadValue_DWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
-	DWORD& dwValue)
+	DWORD& dwValue) const
 {
 	SResult sr;
 
@@ -383,7 +383,7 @@ SResult RegistryAccess::ReadValue_DWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	DWORD& dwValue,
-	const DWORD& dwDefaultResultOnNoValue)
+	const DWORD& dwDefaultResultOnNoValue) const
 {
 	SResult sr;
 
@@ -404,7 +404,7 @@ SResult RegistryAccess::ReadValue_DWORD(
 SResult RegistryAccess::WriteValue_DWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
-	const DWORD& dwValue)
+	const DWORD& dwValue) const
 {
 	SResult sr;
 
@@ -426,10 +426,229 @@ SResult RegistryAccess::WriteValue_DWORD(
 	return SResult::Success;
 }
 
+SResult RegistryAccess::ReadValue_QWORD(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	QWORD& qwValue) const
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = ReadValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = convertRegDataToValue_QWORD(
+		dwType,
+		arrData,
+		qwValue);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::ReadValue_QWORD(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	QWORD& qwValue,
+	const QWORD& qwDefaultResultOnNoValue) const
+{
+	SResult sr;
+
+	sr = ReadValue_QWORD(
+		svzKeyName,
+		svzValueName,
+		qwValue);
+	if (sr.asHRESULT() == __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+	{
+		qwValue = qwDefaultResultOnNoValue;
+		return SResult::Success;
+	}
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::WriteValue_QWORD(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	const QWORD& qwValue) const
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = convertValueToRegData_QWORD(
+		qwValue,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = WriteValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::ReadValue_MultiSz(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	std::vector<vlr::tstring>& arrValueCollection) const
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = ReadValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = convertRegDataToValue_MultiSz(
+		dwType,
+		arrData,
+		arrValueCollection);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::ReadValue_MultiSz(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	std::vector<vlr::tstring>& arrValueCollection,
+	const std::vector<vlr::tstring>& arrDefaultResultOnNoValue) const
+{
+	SResult sr;
+
+	sr = ReadValue_MultiSz(
+		svzKeyName,
+		svzValueName,
+		arrValueCollection);
+	if (sr.asHRESULT() == __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+	{
+		arrValueCollection = arrDefaultResultOnNoValue;
+		return SResult::Success;
+	}
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::WriteValue_MultiSz(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	const std::vector<vlr::tstring>& arrValueCollection) const
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = convertValueToRegData_MultiSz(
+		arrValueCollection,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = WriteValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+// Note: Binary can be made faster by optimizing to not copy data.
+// Not doing this initially for consistency; update if speed for this type becomes desired.
+
+SResult RegistryAccess::ReadValue_Binary(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	std::vector<BYTE>& arrBinaryData) const
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = ReadValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = convertRegDataToValue_Binary(
+		dwType,
+		arrData,
+		arrBinaryData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::ReadValue_Binary(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	std::vector<BYTE>& arrBinaryData,
+	const std::vector<BYTE>& arrDefaultResultOnNoValue) const
+{
+	SResult sr;
+
+	sr = ReadValue_Binary(
+		svzKeyName,
+		svzValueName,
+		arrBinaryData);
+	if (sr.asHRESULT() == __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+	{
+		arrBinaryData = arrDefaultResultOnNoValue;
+		return SResult::Success;
+	}
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::WriteValue_Binary(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	const std::vector<BYTE>& arrBinaryData) const
+{
+	SResult sr;
+
+	DWORD dwType{};
+	std::vector<BYTE> arrData{};
+	sr = convertValueToRegData_Binary(
+		arrBinaryData,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	sr = WriteValueBase(
+		svzKeyName,
+		svzValueName,
+		dwType,
+		arrData);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
 SResult RegistryAccess::convertRegDataToValue_String(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
-	std::string& saValue)
+	std::string& saValue) const
 {
 	SResult sr;
 
@@ -468,7 +687,7 @@ SResult RegistryAccess::convertRegDataToValue_String(
 SResult RegistryAccess::convertValueToRegData_String(
 	const std::string& saValue,
 	DWORD& dwType,
-	std::vector<BYTE>& arrData)
+	std::vector<BYTE>& arrData) const
 {
 	SResult sr;
 
@@ -490,7 +709,7 @@ SResult RegistryAccess::convertValueToRegData_String(
 SResult RegistryAccess::convertRegDataToValue_String(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
-	std::wstring& swValue)
+	std::wstring& swValue) const
 {
 	SResult sr;
 
@@ -529,7 +748,7 @@ SResult RegistryAccess::convertRegDataToValue_String(
 SResult RegistryAccess::convertValueToRegData_String(
 	const std::wstring& swValue,
 	DWORD& dwType,
-	std::vector<BYTE>& arrData)
+	std::vector<BYTE>& arrData) const
 {
 	SResult sr;
 
@@ -551,7 +770,7 @@ SResult RegistryAccess::convertValueToRegData_String(
 SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
-	std::string& saValue)
+	std::string& saValue) const
 {
 	size_t nCountOfCharsInBuffer = arrData.size() / sizeof(char);
 	const char* pStringData = reinterpret_cast<const char*>(arrData.data());
@@ -576,7 +795,7 @@ SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
 SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
-	std::wstring& swValue)
+	std::wstring& swValue) const
 {
 	size_t nCountOfCharsInBuffer = arrData.size() / sizeof(wchar_t);
 	const wchar_t* pStringData = reinterpret_cast<const wchar_t*>(arrData.data());
@@ -601,7 +820,7 @@ SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
 SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const std::string& sValue,
 	DWORD& dwType,
-	std::vector<BYTE>& arrData)
+	std::vector<BYTE>& arrData) const
 {
 	dwType = REG_SZ;
 
@@ -616,7 +835,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const std::wstring& sValue,
 	DWORD& dwType,
-	std::vector<BYTE>& arrData)
+	std::vector<BYTE>& arrData) const
 {
 	dwType = REG_SZ;
 
@@ -631,7 +850,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 SResult RegistryAccess::convertRegDataToValue_DWORD(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
-	DWORD& dwValue)
+	DWORD& dwValue) const
 {
 	SResult sr;
 
@@ -659,13 +878,139 @@ SResult RegistryAccess::convertRegDataToValue_DWORD(
 SResult RegistryAccess::convertValueToRegData_DWORD(
 	const DWORD& dwValue,
 	DWORD& dwType,
-	std::vector<BYTE>& arrData)
+	std::vector<BYTE>& arrData) const
 {
 	dwType = REG_DWORD;
 
 	size_t nByteCountData = sizeof(DWORD);
 	arrData.resize(nByteCountData);
 	memcpy_s(arrData.data(), arrData.size(), &dwValue, nByteCountData);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertRegDataToValue_QWORD(
+	const DWORD& dwType,
+	const std::vector<BYTE>& arrData,
+	QWORD& qwValue) const
+{
+	SResult sr;
+
+	bool bDirectConversion = false;
+
+	switch (dwType)
+	{
+	case REG_QWORD:
+		bDirectConversion = true;
+		break;
+
+	default:
+		return E_UNEXPECTED;
+	}
+
+	if (bDirectConversion)
+	{
+		VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(arrData.size(), == , sizeof(QWORD));
+		qwValue = *reinterpret_cast<const QWORD*>(arrData.data());
+	}
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertValueToRegData_QWORD(
+	const QWORD& qwValue,
+	DWORD& dwType,
+	std::vector<BYTE>& arrData) const
+{
+	dwType = REG_QWORD;
+
+	size_t nByteCountData = sizeof(QWORD);
+	arrData.resize(nByteCountData);
+	memcpy_s(arrData.data(), arrData.size(), &qwValue, nByteCountData);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertRegDataToValue_MultiSz(
+	const DWORD& dwType,
+	const std::vector<BYTE>& arrData,
+	std::vector<vlr::tstring>& arrValueCollection) const
+{
+	SResult sr;
+
+	bool bDirectConversion = false;
+
+	switch (dwType)
+	{
+	case REG_MULTI_SZ:
+		bDirectConversion = true;
+		break;
+
+	default:
+		return E_UNEXPECTED;
+	}
+
+	if (bDirectConversion)
+	{
+		sr = util::data_adaptor::HelperFor_MultiSZ<TCHAR>{}.ToStructuredData(reinterpret_cast<const TCHAR*>(arrData.data()), arrValueCollection);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+	}
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertValueToRegData_MultiSz(
+	const std::vector<vlr::tstring>& arrValueCollection,
+	DWORD& dwType,
+	std::vector<BYTE>& arrData) const
+{
+	SResult sr;
+
+	dwType = REG_MULTI_SZ;
+
+	sr = util::data_adaptor::HelperFor_MultiSZ<TCHAR>{}.ToMultiSz(arrValueCollection, arrData);
+	VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertRegDataToValue_Binary(
+	const DWORD& dwType,
+	const std::vector<BYTE>& arrData,
+	std::vector<BYTE>& arrBinaryData) const
+{
+	SResult sr;
+
+	bool bDirectConversion = false;
+
+	switch (dwType)
+	{
+	case REG_BINARY:
+		bDirectConversion = true;
+		break;
+
+	default:
+		return E_UNEXPECTED;
+	}
+
+	if (bDirectConversion)
+	{
+		arrBinaryData = arrData;
+	}
+
+	return SResult::Success;
+}
+
+SResult RegistryAccess::convertValueToRegData_Binary(
+	const std::vector<BYTE>& arrBinaryData,
+	DWORD& dwType,
+	std::vector<BYTE>& arrData) const
+{
+	SResult sr;
+
+	dwType = REG_MULTI_SZ;
+
+	arrData = arrBinaryData;
 
 	return SResult::Success;
 }

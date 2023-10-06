@@ -12,6 +12,9 @@ VLR_NAMESPACE_BEGIN(win32)
 
 class RegistryAccess
 {
+public:
+	using QWORD = unsigned __int64;
+
 protected:
 	HKEY m_hBaseKey = {};
 
@@ -59,53 +62,95 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		DWORD& dwType_Result, 
-		std::vector<BYTE>& arrData);
+		std::vector<BYTE>& arrData) const;
 	SResult WriteValueBase(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData);
+		const std::vector<BYTE>& arrData) const;
 
 	SResult ReadValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		std::string& saValue);
+		std::string& saValue) const;
 	SResult ReadValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		std::string& saValue,
-		const std::string& saDefaultResultOnNoValue);
+		const std::string& saDefaultResultOnNoValue) const;
 	SResult WriteValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		const std::string& saValue);
+		const std::string& saValue) const;
 	SResult ReadValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		std::wstring& swValue);
+		std::wstring& swValue) const;
 	SResult ReadValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		std::wstring& swValue,
-		const std::wstring& swDefaultResultOnNoValue);
+		const std::wstring& swDefaultResultOnNoValue) const;
 	SResult WriteValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		const std::wstring& swValue);
+		const std::wstring& swValue) const;
 
 	SResult ReadValue_DWORD(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		DWORD& dwValue);
+		DWORD& dwValue) const;
 	SResult ReadValue_DWORD(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		DWORD& dwValue,
-		const DWORD& dwDefaultResultOnNoValue);
+		const DWORD& dwDefaultResultOnNoValue) const;
 	SResult WriteValue_DWORD(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		const DWORD& dwValue);
+		const DWORD& dwValue) const;
+
+	SResult ReadValue_QWORD(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		QWORD& qwValue) const;
+	SResult ReadValue_QWORD(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		QWORD& dwValue,
+		const QWORD& qwDefaultResultOnNoValue) const;
+	SResult WriteValue_QWORD(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const QWORD& qwValue) const;
+
+	SResult ReadValue_MultiSz(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<vlr::tstring>& arrValueCollection) const;
+	SResult ReadValue_MultiSz(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<vlr::tstring>& arrValueCollection,
+		const std::vector<vlr::tstring>& arrDefaultResultOnNoValue) const;
+	SResult WriteValue_MultiSz(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::vector<vlr::tstring>& arrValueCollection) const;
+
+	SResult ReadValue_Binary(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<BYTE>& arrData) const;
+	SResult ReadValue_Binary(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<BYTE>& arrData,
+		const std::vector<BYTE>& arrDefaultResultOnNoValue) const;
+	SResult WriteValue_Binary(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::vector<BYTE>& arrData) const;
 
 	// Note: This is the "high-level" interface.
 	// These methods have template specializations for default supported data types.
@@ -114,7 +159,7 @@ public:
 	SResult ReadValue(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		TValue& tValue)
+		TValue& tValue) const
 	{
 		static_assert("Unhanded type");
 	}
@@ -123,7 +168,7 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		TValue& tValue,
-		const TValue& tDefaultResultOnNoValue)
+		const TValue& tDefaultResultOnNoValue) const
 	{
 		static_assert("Unhanded type");
 	}
@@ -131,7 +176,7 @@ public:
 	SResult WriteValue(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		const TValue& tValue)
+		const TValue& tValue) const
 	{
 		static_assert("Unhanded type");
 	}
@@ -140,7 +185,7 @@ public:
 	inline SResult ReadValue<std::string>(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		std::string& tValue)
+		std::string& tValue) const
 	{
 		return ReadValue_String(
 			svzKeyName,
@@ -152,7 +197,7 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		std::string& tValue,
-		const std::string& tDefaultResultOnNoValue)
+		const std::string& tDefaultResultOnNoValue) const
 	{
 		return ReadValue_String(
 			svzKeyName,
@@ -161,10 +206,21 @@ public:
 			tDefaultResultOnNoValue);
 	}
 	template<>
+	inline SResult WriteValue<std::string>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::string& tValue) const
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
 	inline SResult ReadValue<std::wstring>(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		std::wstring& tValue)
+		std::wstring& tValue) const
 	{
 		return ReadValue_String(
 			svzKeyName,
@@ -176,7 +232,7 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		std::wstring& tValue,
-		const std::wstring& tDefaultResultOnNoValue)
+		const std::wstring& tDefaultResultOnNoValue) const
 	{
 		return ReadValue_String(
 			svzKeyName,
@@ -185,10 +241,22 @@ public:
 			tDefaultResultOnNoValue);
 	}
 	template<>
+	inline SResult WriteValue<std::wstring>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::wstring& tValue) const
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+
+	template<>
 	inline SResult ReadValue<DWORD>(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		DWORD& tValue)
+		DWORD& tValue) const
 	{
 		return ReadValue_DWORD(
 			svzKeyName,
@@ -200,7 +268,7 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		DWORD& tValue,
-		const DWORD& tDefaultResultOnNoValue)
+		const DWORD& tDefaultResultOnNoValue) const
 	{
 		return ReadValue_DWORD(
 			svzKeyName,
@@ -208,36 +276,121 @@ public:
 			tValue,
 			tDefaultResultOnNoValue);
 	}
-
-	template<>
-	inline SResult WriteValue<std::string>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
-		const std::string& tValue)
-	{
-		return WriteValue_String(
-			svzKeyName,
-			svzValueName,
-			tValue);
-	}
-	template<>
-	inline SResult WriteValue<std::wstring>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
-		const std::wstring& tValue)
-	{
-		return WriteValue_String(
-			svzKeyName,
-			svzValueName,
-			tValue);
-	}
 	template<>
 	inline SResult WriteValue<DWORD>(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		const DWORD& tValue)
+		const DWORD& tValue) const
 	{
 		return WriteValue_DWORD(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+
+	template<>
+	inline SResult ReadValue<QWORD>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		QWORD& tValue) const
+	{
+		return ReadValue_QWORD(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult ReadValue<QWORD>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		QWORD& tValue,
+		const QWORD& tDefaultResultOnNoValue) const
+	{
+		return ReadValue_QWORD(
+			svzKeyName,
+			svzValueName,
+			tValue,
+			tDefaultResultOnNoValue);
+	}
+	template<>
+	inline SResult WriteValue<QWORD>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const QWORD& tValue) const
+	{
+		return WriteValue_QWORD(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+
+	template<>
+	inline SResult ReadValue<std::vector<vlr::tstring>>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<vlr::tstring>& tValue) const
+	{
+		return ReadValue_MultiSz(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult ReadValue<std::vector<vlr::tstring>>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<vlr::tstring>& tValue,
+		const std::vector<vlr::tstring>& tDefaultResultOnNoValue) const
+	{
+		return ReadValue_MultiSz(
+			svzKeyName,
+			svzValueName,
+			tValue,
+			tDefaultResultOnNoValue);
+	}
+	template<>
+	inline SResult WriteValue<std::vector<vlr::tstring>>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::vector<vlr::tstring>& tValue) const
+	{
+		return WriteValue_MultiSz(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+
+	template<>
+	inline SResult ReadValue<std::vector<BYTE>>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<BYTE>& tValue) const
+	{
+		return ReadValue_Binary(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult ReadValue<std::vector<BYTE>>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		std::vector<BYTE>& tValue,
+		const std::vector<BYTE>& tDefaultResultOnNoValue) const
+	{
+		return ReadValue_Binary(
+			svzKeyName,
+			svzValueName,
+			tValue,
+			tDefaultResultOnNoValue);
+	}
+	template<>
+	inline SResult WriteValue<std::vector<BYTE>>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::vector<BYTE>& tValue) const
+	{
+		return WriteValue_Binary(
 			svzKeyName,
 			svzValueName,
 			tValue);
@@ -248,43 +401,67 @@ public:
 	SResult convertRegDataToValue_String(
 		const DWORD& dwType,
 		const std::vector<BYTE>& arrData,
-		std::string& saValue);
+		std::string& saValue) const;
 	SResult convertValueToRegData_String(
 		const std::string& saValue,
 		DWORD& dwType,
-		std::vector<BYTE>& arrData);
+		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_String(
 		const DWORD& dwType,
 		const std::vector<BYTE>& arrData,
-		std::wstring& swValue);
+		std::wstring& swValue) const;
 	SResult convertValueToRegData_String(
 		const std::wstring& swValue,
 		DWORD& dwType,
-		std::vector<BYTE>& arrData);
+		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValueDirect_String_NativeType(
 		const DWORD& dwType,
 		const std::vector<BYTE>& arrData,
-		std::string& saValue);
+		std::string& saValue) const;
 	SResult convertRegDataToValueDirect_String_NativeType(
 		const DWORD& dwType,
 		const std::vector<BYTE>& arrData,
-		std::wstring& swValue);
+		std::wstring& swValue) const;
 	SResult convertValueToRegDataDirect_String_NativeType(
 		const std::string& saValue,
 		DWORD& dwType,
-		std::vector<BYTE>& arrData);
+		std::vector<BYTE>& arrData) const;
 	SResult convertValueToRegDataDirect_String_NativeType(
 		const std::wstring& swValue,
 		DWORD& dwType,
-		std::vector<BYTE>& arrData);
+		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_DWORD(
 		const DWORD& dwType,
 		const std::vector<BYTE>& arrData,
-		DWORD& dwValue);
+		DWORD& dwValue) const;
 	SResult convertValueToRegData_DWORD(
 		const DWORD& dwValue,
 		DWORD& dwType,
-		std::vector<BYTE>& arrData);
+		std::vector<BYTE>& arrData) const;
+	SResult convertRegDataToValue_QWORD(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		QWORD& qwValue) const;
+	SResult convertValueToRegData_QWORD(
+		const QWORD& qwValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
+	SResult convertRegDataToValue_MultiSz(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		std::vector<vlr::tstring>& arrValueCollection) const;
+	SResult convertValueToRegData_MultiSz(
+		const std::vector<vlr::tstring>& arrValueCollection,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
+	SResult convertRegDataToValue_Binary(
+		const DWORD& dwType,
+		const std::vector<BYTE>& arrData,
+		std::vector<BYTE>& arrBinaryData) const;
+	SResult convertValueToRegData_Binary(
+		const std::vector<BYTE>& arrBinaryData,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
 
 protected:
 	SResult openKey(

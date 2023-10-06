@@ -12,7 +12,7 @@
 using namespace vlr;
 using namespace vlr::win32;
 
-using QWORD = unsigned __int64;
+using QWORD = RegistryAccess::QWORD;
 
 static constexpr auto svzBaseKey_Test = tzstring_view{ _T("SOFTWARE\\vlr-test") };
 static constexpr auto svzBaseKey_Invalid = tzstring_view{ _T("SOFTWARE\\vlr-test-invalid") };
@@ -347,6 +347,32 @@ TEST(RegistryAccess, ReadValue_Template)
 		EXPECT_EQ(sr, SResult::Success);
 		EXPECT_EQ(dwValue, nTestValue_DWORD);
 	}
+	{
+		QWORD qwValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_QWORD, qwValue);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(qwValue, nTestValue_QWORD);
+	}
+	{
+		std::vector<vlr::tstring> arrValueCollection;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_MultiSz, arrValueCollection);
+		EXPECT_EQ(sr, SResult::Success);
+		ASSERT_EQ(arrValueCollection.size(), arrTestValue_MultiSz.size());
+		for (size_t i = 0; i < arrValueCollection.size(); ++i)
+		{
+			EXPECT_EQ(StringCompare::CS().AreEqual(arrValueCollection[i], arrTestValue_MultiSz[i]), true);
+		}
+	}
+	{
+		std::vector<BYTE> arrData;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_BINARY, arrData);
+		EXPECT_EQ(sr, SResult::Success);
+		ASSERT_EQ(arrData.size(), arrTestValue_Binary.size());
+		for (size_t i = 0; i < arrData.size(); ++i)
+		{
+			EXPECT_EQ(arrData[i], arrTestValue_Binary[i]);
+		}
+	}
 }
 
 TEST(RegistryAccess, WriteValue_Template)
@@ -379,6 +405,18 @@ TEST(RegistryAccess, WriteValue_Template)
 	}
 	{
 		sr = oReg.WriteValue(svzTestKey, sTestValueName_DWORD, nTestValue_DWORD);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+	{
+		sr = oReg.WriteValue(svzTestKey, sTestValueName_QWORD, nTestValue_QWORD);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+	{
+		sr = oReg.WriteValue(svzTestKey, sTestValueName_MultiSz, arrTestValue_MultiSz);
+		EXPECT_EQ(sr, SResult::Success);
+	}
+	{
+		sr = oReg.WriteValue(svzTestKey, sTestValueName_BINARY, arrTestValue_Binary);
 		EXPECT_EQ(sr, SResult::Success);
 	}
 }
@@ -414,5 +452,31 @@ TEST(RegistryAccess, ReadValue_WithDefault)
 		sr = oReg.ReadValue(svzTestKey, sTestValueName_Invalid, dwValue, nTestValue_DWORD);
 		EXPECT_EQ(sr, SResult::Success);
 		EXPECT_EQ(dwValue, nTestValue_DWORD);
+	}
+	{
+		QWORD qwValue;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_Invalid, qwValue, nTestValue_QWORD);
+		EXPECT_EQ(sr, SResult::Success);
+		EXPECT_EQ(qwValue, nTestValue_QWORD);
+	}
+	{
+		std::vector<vlr::tstring> arrValueCollection;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_Invalid, arrValueCollection, arrTestValue_MultiSz);
+		EXPECT_EQ(sr, SResult::Success);
+		ASSERT_EQ(arrValueCollection.size(), arrTestValue_MultiSz.size());
+		for (size_t i = 0; i < arrValueCollection.size(); ++i)
+		{
+			EXPECT_EQ(StringCompare::CS().AreEqual(arrValueCollection[i], arrTestValue_MultiSz[i]), true);
+		}
+	}
+	{
+		std::vector<BYTE> arrData;
+		sr = oReg.ReadValue(svzTestKey, sTestValueName_Invalid, arrData, arrTestValue_Binary);
+		EXPECT_EQ(sr, SResult::Success);
+		ASSERT_EQ(arrData.size(), arrTestValue_Binary.size());
+		for (size_t i = 0; i < arrData.size(); ++i)
+		{
+			EXPECT_EQ(arrData[i], arrTestValue_Binary[i]);
+		}
 	}
 }
