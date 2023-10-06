@@ -61,7 +61,7 @@ TEST(RegistryAccess, CreateKeyAndDeleteKey)
 	sr = oReg.CheckKeyExists(sTestKey);
 	EXPECT_EQ(sr, SResult::Success);
 
-	const auto oDeleteKeyOptions = RegistryAccess::Options_DeleteKey{}
+	const auto oDeleteKeyOptions = RegistryAccess::Options_DeleteKeysOrValues{}
 	.withSafeDeletePath(svzBaseKey_Test);
 	sr = oReg.DeleteKey(sTestKey, oDeleteKeyOptions);
 	EXPECT_EQ(sr, SResult::Success);
@@ -479,4 +479,32 @@ TEST(RegistryAccess, ReadValue_WithDefault)
 			EXPECT_EQ(arrData[i], arrTestValue_Binary[i]);
 		}
 	}
+}
+
+TEST(RegistryAccess, DeleteValue)
+{
+	SResult sr;
+
+	static constexpr auto svzTestKey = svzBaseKey_Test;
+	static constexpr auto sTestValueName_NewValue = vlr::tzstring_view{ _T("testNewValue") };
+	static constexpr auto svzTestValue_SZ = vlr::tzstring_view{ _T("value") };
+
+	auto oReg = RegistryAccess{ HKEY_CURRENT_USER };
+
+	vlr::tstring sValue;
+	sr = oReg.ReadValue(svzTestKey, sTestValueName_NewValue, sValue);
+	EXPECT_EQ(sr, __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+
+	sr = oReg.WriteValue(svzTestKey, sTestValueName_NewValue, svzTestValue_SZ);
+	EXPECT_EQ(sr, S_OK);
+
+	sr = oReg.ReadValue(svzTestKey, sTestValueName_NewValue, sValue);
+	EXPECT_EQ(sr, S_OK);
+	EXPECT_EQ(StringCompare::CS().AreEqual(sValue, svzTestValue_SZ), true);
+
+	sr = oReg.DeleteValue(svzTestKey, sTestValueName_NewValue);
+	EXPECT_EQ(sr, S_OK);
+
+	sr = oReg.ReadValue(svzTestKey, sTestValueName_NewValue, sValue);
+	EXPECT_EQ(sr, __HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 }

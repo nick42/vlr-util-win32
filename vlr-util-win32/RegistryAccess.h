@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vlr-util/util.includes.h>
+#include <vlr-util/util.std_aliases.h>
 #include <vlr-util/zstring_view.h>
 #include <vlr-util/util.data_adaptor.MultiSZ.h>
 #include <vlr-util/util.Result.h>
@@ -43,9 +44,9 @@ public:
 		tzstring_view svzKeyName,
 		const Options_EnsureKeyExists& options = {}) const;
 
-	struct Options_DeleteKey
+	struct Options_DeleteKeysOrValues
 	{
-		bool m_bEnsureSafeDelete = true;
+		bool m_bEnsureSafeDelete = false;
 		std::vector<tstring> m_arrSafeDeletePaths;
 
 		decltype(auto) withSafeDeletePath(tstring_view svzPath)
@@ -56,7 +57,7 @@ public:
 	};
 	SResult DeleteKey(
 		tzstring_view svzKeyName,
-		const Options_DeleteKey& options = {}) const;
+		const Options_DeleteKeysOrValues& options = {}) const;
 
 	SResult ReadValueBase(
 		tzstring_view svzKeyName,
@@ -82,6 +83,11 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		const std::string& saValue) const;
+	SResult WriteValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::string_view& svValue) const;
+
 	SResult ReadValue_String(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
@@ -95,6 +101,10 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		const std::wstring& swValue) const;
+	SResult WriteValue_String(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::wstring_view& svValue) const;
 
 	SResult ReadValue_DWORD(
 		tzstring_view svzKeyName,
@@ -151,6 +161,11 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		const std::vector<BYTE>& arrData) const;
+
+	SResult DeleteValue(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const Options_DeleteKeysOrValues& options = {});
 
 	// Note: This is the "high-level" interface.
 	// These methods have template specializations for default supported data types.
@@ -217,6 +232,29 @@ public:
 			tValue);
 	}
 	template<>
+	inline SResult WriteValue<vlr::zstring_view>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const vlr::zstring_view& tValue) const
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult WriteValue<std::string_view>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::string_view& tValue) const
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+
+	template<>
 	inline SResult ReadValue<std::wstring>(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
@@ -245,6 +283,28 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		const std::wstring& tValue) const
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult WriteValue<vlr::wzstring_view>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const vlr::wzstring_view& tValue) const
+	{
+		return WriteValue_String(
+			svzKeyName,
+			svzValueName,
+			tValue);
+	}
+	template<>
+	inline SResult WriteValue<std::wstring_view>(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		const std::wstring_view& tValue) const
 	{
 		return WriteValue_String(
 			svzKeyName,
@@ -406,12 +466,20 @@ public:
 		const std::string& saValue,
 		DWORD& dwType,
 		std::vector<BYTE>& arrData) const;
+	SResult convertValueToRegData_String(
+		const std::string_view& svValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_String(
 		const DWORD& dwType,
 		const std::vector<BYTE>& arrData,
 		std::wstring& swValue) const;
 	SResult convertValueToRegData_String(
 		const std::wstring& swValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
+	SResult convertValueToRegData_String(
+		const std::wstring_view& svValue,
 		DWORD& dwType,
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValueDirect_String_NativeType(
@@ -428,6 +496,22 @@ public:
 		std::vector<BYTE>& arrData) const;
 	SResult convertValueToRegDataDirect_String_NativeType(
 		const std::wstring& swValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
+	SResult convertValueToRegDataDirect_String_NativeType(
+		const vlr::zstring_view& svzValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
+	SResult convertValueToRegDataDirect_String_NativeType(
+		const vlr::wzstring_view& svzValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
+	SResult convertValueToRegDataDirect_String_NativeType(
+		const std::string_view& svValue,
+		DWORD& dwType,
+		std::vector<BYTE>& arrData) const;
+	SResult convertValueToRegDataDirect_String_NativeType(
+		const std::wstring_view& svValue,
 		DWORD& dwType,
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_DWORD(
