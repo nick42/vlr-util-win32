@@ -84,6 +84,9 @@
     <ClInclude Include="AutoCleanupTypedefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RegistryAccess_Wow64KeyAccessOption.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vlr-util-win32.cpp">

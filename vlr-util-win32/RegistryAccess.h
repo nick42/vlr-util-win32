@@ -7,11 +7,13 @@
 #include <vlr-util/util.Result.h>
 #include <vlr-util/ModuleContext.Compilation.h>
 
+#include "RegistryAccess_Wow64KeyAccessOption.h"
+
 VLR_NAMESPACE_BEGIN(vlr)
 
 VLR_NAMESPACE_BEGIN(win32)
 
-class RegistryAccess
+class CRegistryAccess
 {
 public:
 	using QWORD = unsigned __int64;
@@ -23,12 +25,20 @@ protected:
 	size_t m_nMaxIterationCountForRead = m_nMaxIterationCountForRead_Default;
 	static constexpr size_t m_OnReadValue_nDefaultBufferSize = 1024;
 
+	RegistryAccess::SEWow64KeyAccessOption m_eWow64KeyAccessOption;
+
 	auto getBaseKey() const
 	{
 		return m_hBaseKey;
 	}
 
 public:
+	inline SResult SetWow64KeyAccessOption(RegistryAccess::SEWow64KeyAccessOption eWow64KeyAccessOption)
+	{
+		m_eWow64KeyAccessOption = eWow64KeyAccessOption;
+		return SResult::Success;
+	}
+
 	SResult CheckKeyExists(tzstring_view svzKeyName) const;
 	inline bool DoesKeyExist(tzstring_view svzKeyName) const
 	{
@@ -555,8 +565,8 @@ protected:
 	DWORD getWow64RedirectionKeyAccessMask() const;
 
 public:
-	RegistryAccess() = default;
-	RegistryAccess(HKEY hBaseKey)
+	CRegistryAccess() = default;
+	CRegistryAccess(HKEY hBaseKey)
 		: m_hBaseKey{ hBaseKey }
 	{}
 };

@@ -170,6 +170,7 @@
     <ClInclude Include="registry.RegKey.h" />
     <ClInclude Include="registry.RegValue.h" />
     <ClInclude Include="RegistryAccess.h" />
+    <ClInclude Include="RegistryAccess_Wow64KeyAccessOption.h" />
     <ClInclude Include="security.AceType.h" />
     <ClInclude Include="security.SIDs.h" />
     <ClInclude Include="security.tokens.h" />

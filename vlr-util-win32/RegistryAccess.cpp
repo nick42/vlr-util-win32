@@ -11,7 +11,7 @@ VLR_NAMESPACE_BEGIN(vlr)
 
 VLR_NAMESPACE_BEGIN(win32)
 
-SResult RegistryAccess::CheckKeyExists(tzstring_view svzKeyName) const
+SResult CRegistryAccess::CheckKeyExists(tzstring_view svzKeyName) const
 {
 	SResult sr;
 
@@ -27,7 +27,7 @@ SResult RegistryAccess::CheckKeyExists(tzstring_view svzKeyName) const
 	return SResult::Success;
 }
 
-SResult RegistryAccess::EnsureKeyExists(
+SResult CRegistryAccess::EnsureKeyExists(
 	tzstring_view svzKeyName,
 	const Options_EnsureKeyExists& options /*= {}*/) const
 {
@@ -69,7 +69,7 @@ SResult RegistryAccess::EnsureKeyExists(
 	}
 }
 
-SResult RegistryAccess::DeleteKey(
+SResult CRegistryAccess::DeleteKey(
 	tzstring_view svzKeyName,
 	const Options_DeleteKeysOrValues& options /*= {}*/) const
 {
@@ -104,7 +104,7 @@ SResult RegistryAccess::DeleteKey(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValueBase(
+SResult CRegistryAccess::ReadValueBase(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	DWORD& dwType_Result,
@@ -167,7 +167,7 @@ SResult RegistryAccess::ReadValueBase(
 	return S_OK;
 }
 
-SResult RegistryAccess::WriteValueBase(
+SResult CRegistryAccess::WriteValueBase(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const DWORD& dwType,
@@ -210,7 +210,7 @@ SResult RegistryAccess::WriteValueBase(
 	return S_OK;
 }
 
-SResult RegistryAccess::ReadValue_String(
+SResult CRegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::string& saValue) const
@@ -235,7 +235,7 @@ SResult RegistryAccess::ReadValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_String(
+SResult CRegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::string& saValue,
@@ -257,7 +257,7 @@ SResult RegistryAccess::ReadValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_String(
+SResult CRegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const std::string& saValue) const
@@ -282,7 +282,7 @@ SResult RegistryAccess::WriteValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_String(
+SResult CRegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const std::string_view& svValue) const
@@ -307,7 +307,7 @@ SResult RegistryAccess::WriteValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_String(
+SResult CRegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::wstring& swValue) const
@@ -332,7 +332,7 @@ SResult RegistryAccess::ReadValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_String(
+SResult CRegistryAccess::ReadValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::wstring& swValue,
@@ -354,7 +354,7 @@ SResult RegistryAccess::ReadValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_String(
+SResult CRegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const std::wstring& swValue) const
@@ -379,7 +379,7 @@ SResult RegistryAccess::WriteValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_String(
+SResult CRegistryAccess::WriteValue_String(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const std::wstring_view& svValue) const
@@ -404,7 +404,7 @@ SResult RegistryAccess::WriteValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_DWORD(
+SResult CRegistryAccess::ReadValue_DWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	DWORD& dwValue) const
@@ -429,7 +429,7 @@ SResult RegistryAccess::ReadValue_DWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_DWORD(
+SResult CRegistryAccess::ReadValue_DWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	DWORD& dwValue,
@@ -451,7 +451,7 @@ SResult RegistryAccess::ReadValue_DWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_DWORD(
+SResult CRegistryAccess::WriteValue_DWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const DWORD& dwValue) const
@@ -476,7 +476,7 @@ SResult RegistryAccess::WriteValue_DWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_QWORD(
+SResult CRegistryAccess::ReadValue_QWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	QWORD& qwValue) const
@@ -501,7 +501,7 @@ SResult RegistryAccess::ReadValue_QWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_QWORD(
+SResult CRegistryAccess::ReadValue_QWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	QWORD& qwValue,
@@ -523,7 +523,7 @@ SResult RegistryAccess::ReadValue_QWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_QWORD(
+SResult CRegistryAccess::WriteValue_QWORD(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const QWORD& qwValue) const
@@ -548,7 +548,7 @@ SResult RegistryAccess::WriteValue_QWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_MultiSz(
+SResult CRegistryAccess::ReadValue_MultiSz(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::vector<vlr::tstring>& arrValueCollection) const
@@ -573,7 +573,7 @@ SResult RegistryAccess::ReadValue_MultiSz(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_MultiSz(
+SResult CRegistryAccess::ReadValue_MultiSz(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::vector<vlr::tstring>& arrValueCollection,
@@ -595,7 +595,7 @@ SResult RegistryAccess::ReadValue_MultiSz(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_MultiSz(
+SResult CRegistryAccess::WriteValue_MultiSz(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const std::vector<vlr::tstring>& arrValueCollection) const
@@ -623,7 +623,7 @@ SResult RegistryAccess::WriteValue_MultiSz(
 // Note: Binary can be made faster by optimizing to not copy data.
 // Not doing this initially for consistency; update if speed for this type becomes desired.
 
-SResult RegistryAccess::ReadValue_Binary(
+SResult CRegistryAccess::ReadValue_Binary(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::vector<BYTE>& arrBinaryData) const
@@ -648,7 +648,7 @@ SResult RegistryAccess::ReadValue_Binary(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::ReadValue_Binary(
+SResult CRegistryAccess::ReadValue_Binary(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	std::vector<BYTE>& arrBinaryData,
@@ -670,7 +670,7 @@ SResult RegistryAccess::ReadValue_Binary(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::WriteValue_Binary(
+SResult CRegistryAccess::WriteValue_Binary(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const std::vector<BYTE>& arrBinaryData) const
@@ -695,7 +695,7 @@ SResult RegistryAccess::WriteValue_Binary(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::DeleteValue(
+SResult CRegistryAccess::DeleteValue(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const Options_DeleteKeysOrValues& options /*= {}*/)
@@ -740,7 +740,7 @@ SResult RegistryAccess::DeleteValue(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValue_String(
+SResult CRegistryAccess::convertRegDataToValue_String(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	std::string& saValue) const
@@ -779,7 +779,7 @@ SResult RegistryAccess::convertRegDataToValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_String(
+SResult CRegistryAccess::convertValueToRegData_String(
 	const std::string& saValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -801,7 +801,7 @@ SResult RegistryAccess::convertValueToRegData_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_String(
+SResult CRegistryAccess::convertValueToRegData_String(
 	const std::string_view& svValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -823,7 +823,7 @@ SResult RegistryAccess::convertValueToRegData_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValue_String(
+SResult CRegistryAccess::convertRegDataToValue_String(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	std::wstring& swValue) const
@@ -862,7 +862,7 @@ SResult RegistryAccess::convertRegDataToValue_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_String(
+SResult CRegistryAccess::convertValueToRegData_String(
 	const std::wstring& swValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -884,7 +884,7 @@ SResult RegistryAccess::convertValueToRegData_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_String(
+SResult CRegistryAccess::convertValueToRegData_String(
 	const std::wstring_view& svValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -906,7 +906,7 @@ SResult RegistryAccess::convertValueToRegData_String(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
+SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	std::string& saValue) const
@@ -931,7 +931,7 @@ SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
+SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	std::wstring& swValue) const
@@ -956,7 +956,7 @@ SResult RegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
+SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const std::string& sValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -967,7 +967,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 		arrData);
 }
 
-SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
+SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const std::wstring& sValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -978,7 +978,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 		arrData);
 }
 
-SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
+SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const vlr::zstring_view& svzValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -989,7 +989,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 		arrData);
 }
 
-SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
+SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const vlr::wzstring_view& svzValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -1000,7 +1000,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 		arrData);
 }
 
-SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
+SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const std::string_view& svValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -1016,7 +1016,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
+SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	const std::wstring_view& svValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -1032,7 +1032,7 @@ SResult RegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValue_DWORD(
+SResult CRegistryAccess::convertRegDataToValue_DWORD(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	DWORD& dwValue) const
@@ -1060,7 +1060,7 @@ SResult RegistryAccess::convertRegDataToValue_DWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_DWORD(
+SResult CRegistryAccess::convertValueToRegData_DWORD(
 	const DWORD& dwValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -1074,7 +1074,7 @@ SResult RegistryAccess::convertValueToRegData_DWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValue_QWORD(
+SResult CRegistryAccess::convertRegDataToValue_QWORD(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	QWORD& qwValue) const
@@ -1102,7 +1102,7 @@ SResult RegistryAccess::convertRegDataToValue_QWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_QWORD(
+SResult CRegistryAccess::convertValueToRegData_QWORD(
 	const QWORD& qwValue,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -1116,7 +1116,7 @@ SResult RegistryAccess::convertValueToRegData_QWORD(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValue_MultiSz(
+SResult CRegistryAccess::convertRegDataToValue_MultiSz(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	std::vector<vlr::tstring>& arrValueCollection) const
@@ -1144,7 +1144,7 @@ SResult RegistryAccess::convertRegDataToValue_MultiSz(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_MultiSz(
+SResult CRegistryAccess::convertValueToRegData_MultiSz(
 	const std::vector<vlr::tstring>& arrValueCollection,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -1159,7 +1159,7 @@ SResult RegistryAccess::convertValueToRegData_MultiSz(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertRegDataToValue_Binary(
+SResult CRegistryAccess::convertRegDataToValue_Binary(
 	const DWORD& dwType,
 	const std::vector<BYTE>& arrData,
 	std::vector<BYTE>& arrBinaryData) const
@@ -1186,7 +1186,7 @@ SResult RegistryAccess::convertRegDataToValue_Binary(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::convertValueToRegData_Binary(
+SResult CRegistryAccess::convertValueToRegData_Binary(
 	const std::vector<BYTE>& arrBinaryData,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
@@ -1200,7 +1200,7 @@ SResult RegistryAccess::convertValueToRegData_Binary(
 	return SResult::Success;
 }
 
-SResult RegistryAccess::openKey(
+SResult CRegistryAccess::openKey(
 	tzstring_view svzKeyName,
 	DWORD dwAccessMask,
 	HKEY& hKey_Result) const
@@ -1221,9 +1221,20 @@ SResult RegistryAccess::openKey(
 	return __HRESULT_FROM_WIN32(lResult);
 }
 
-DWORD RegistryAccess::getWow64RedirectionKeyAccessMask() const
+DWORD CRegistryAccess::getWow64RedirectionKeyAccessMask() const
 {
-	return 0;
+	switch (m_eWow64KeyAccessOption)
+	{
+	default:
+		VLR_ASSERT_ON_UNHANDLED_SWITCH_CASE;
+	case RegistryAccess::Wow64KeyAccessOption::Unknown:
+	case RegistryAccess::Wow64KeyAccessOption::UseDefault:
+		return 0;
+	case RegistryAccess::Wow64KeyAccessOption::UseExplicit32bit:
+		return KEY_WOW64_32KEY;
+	case RegistryAccess::Wow64KeyAccessOption::UseExplicit64bit:
+		return KEY_WOW64_64KEY;
+	}
 }
 
 VLR_NAMESPACE_END //(win32)
