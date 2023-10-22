@@ -1366,7 +1366,111 @@ SResult CRegistryAccess::RealAllValuesIntoMap(
 	};
 
 	sr = EnumAllValues(svzKeyName, fOnEnumValueData_AddToMap);
-	VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult CRegistryAccess::EnumAllSubkeys(
+	tzstring_view svzKeyName,
+	const OnEnumSubkeyData& fOnEnumSubkeyData) const
+{
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(fOnEnumSubkeyData);
+
+	SResult sr;
+	LONG lResult{};
+
+	HKEY hKey{};
+	sr = openKey(svzKeyName, KEY_READ, hKey);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hKey);
+	auto onDestroy_CloseRegKey = AutoCloseRegKey{ hKey };
+
+	DWORD dwSubkeyCount{};
+	DWORD dwMaxSubkeyNameChars{};
+	DWORD dwMaxSubkeyClassChars{};
+	lResult = RegQueryInfoKey(
+		hKey,
+		NULL,
+		NULL,
+		NULL,
+		&dwSubkeyCount,
+		&dwMaxSubkeyNameChars,
+		&dwMaxSubkeyClassChars,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL);
+	VLR_ASSERT_COMPARE_OR_RETURN_HRESULT_LAST_ERROR(lResult, == , ERROR_SUCCESS);
+	if (dwSubkeyCount == 0)
+	{
+		return S_OK;
+	}
+
+	std::vector<TCHAR> arrSubkeyNameData;
+	// Note: We need to add one char to buffer size for NULL-terminator
+	arrSubkeyNameData.resize(dwMaxSubkeyNameChars + 1);
+	std::vector<TCHAR> arrSubkeyClassData;
+	arrSubkeyClassData.resize(dwMaxSubkeyClassChars + 1);
+
+	for (DWORD i = 0; i < dwSubkeyCount; ++i)
+	{
+		EnumSubkeyData oEnumSubkeyData{};
+		oEnumSubkeyData.withIndex(i);
+
+		DWORD dwSubkeyNameSizeChars = util::range_checked_cast<DWORD>(arrSubkeyNameData.size());
+		DWORD dwSubkeyClassSizeChars = util::range_checked_cast<DWORD>(arrSubkeyClassData.size());
+
+		lResult = RegEnumKeyEx(
+			hKey,
+			i,
+			arrSubkeyNameData.data(),
+			&dwSubkeyNameSizeChars,
+			NULL,
+			arrSubkeyClassData.data(),
+			&dwSubkeyClassSizeChars,
+			&oEnumSubkeyData.m_ftLastWriteTime);
+		if (lResult == ERROR_NO_MORE_ITEMS)
+		{
+			return S_OK;
+		}
+		// Note: There's a possible race condition here, where a value might be written while we're enumerating,
+		// and it exceeds the max buffer size. Ignoring this case for now.
+		if (lResult != ERROR_SUCCESS)
+		{
+			return SResult::For_win32_ErrorCode(lResult);
+		}
+
+		oEnumSubkeyData.withName(vlr::tstring_view{arrSubkeyNameData.data(), dwSubkeyNameSizeChars});
+		oEnumSubkeyData.withClass(vlr::tstring_view{arrSubkeyClassData.data(), dwSubkeyClassSizeChars});
+
+		sr = fOnEnumSubkeyData(oEnumSubkeyData);
+		// Note: If we fail the callback, we early-abort and return the error code
+		if (!sr.isSuccess())
+		{
+			return sr;
+		}
+	}
+
+	return SResult::Success;
+}
+
+SResult CRegistryAccess::ReadAllSubkeysIntoVector(
+	tzstring_view svzKeyName,
+	std::vector<cpp::tstring>& arrSubkeyNames)
+{
+	SResult sr;
+
+	auto fOnEnumSubkeyData_AddToResult = [&](const EnumSubkeyData& oEnumSubkeyData) -> SResult
+	{
+		arrSubkeyNames.emplace_back(oEnumSubkeyData.m_svName);
+
+		return SResult::Success;
+	};
+
+	sr = EnumAllSubkeys(svzKeyName, fOnEnumSubkeyData_AddToResult);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 
 	return SResult::Success;
 }

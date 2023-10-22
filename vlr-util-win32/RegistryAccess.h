@@ -28,7 +28,7 @@ protected:
 
 	RegistryAccess::SEWow64KeyAccessOption m_eWow64KeyAccessOption;
 
-	auto getBaseKey() const
+	virtual HKEY getBaseKey() const
 	{
 		return m_hBaseKey;
 	}
@@ -612,6 +612,44 @@ public:
 	SResult RealAllValuesIntoMap(
 		tzstring_view svzKeyName,
 		std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue);
+
+	struct EnumSubkeyData
+	{
+		DWORD m_dwIndex{};
+		vlr::tstring_view m_svName;
+		vlr::tstring_view m_svClass;
+		FILETIME m_ftLastWriteTime{};
+
+		decltype(auto) withIndex(DWORD dwIndex)
+		{
+			m_dwIndex = dwIndex;
+			return *this;
+		}
+		decltype(auto) withName(vlr::tstring_view svName)
+		{
+			m_svName = svName;
+			return *this;
+		}
+		decltype(auto) withClass(vlr::tstring_view svClass)
+		{
+			m_svClass = svClass;
+			return *this;
+		}
+		decltype(auto) withLastWriteTime(const FILETIME& ftLastWriteTime)
+		{
+			m_ftLastWriteTime = ftLastWriteTime;
+			return *this;
+		}
+	};
+	using OnEnumSubkeyData = std::function<SResult(const EnumSubkeyData& oEnumSubkeyData)>;
+
+	SResult EnumAllSubkeys(
+		tzstring_view svzKeyName,
+		const OnEnumSubkeyData& fOnEnumSubkeyData) const;
+
+	SResult ReadAllSubkeysIntoVector(
+		tzstring_view svzKeyName,
+		std::vector<cpp::tstring>& arrSubkeyNames);
 
 protected:
 	SResult openKey(

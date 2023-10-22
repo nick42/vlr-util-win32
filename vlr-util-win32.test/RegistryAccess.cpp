@@ -35,6 +35,9 @@ static const auto arrTestValue_Binary = std::vector<BYTE>{ 0x12, 0x34, 0x56, 0x7
 // Value which should not exist in test data
 static constexpr auto svzTestValueName_Invalid = vlr::tzstring_view{ _T("testInvalid") };
 
+static constexpr auto svzTestValueSubkeyName_1 = vlr::tzstring_view{ _T("Subkey1") };
+static constexpr auto svzTestValueSubkeyName_2 = vlr::tzstring_view{ _T("Subkey2") };
+
 void ValidateReadDataMatch_SZ(DWORD dwType, cpp::span<const BYTE> spanData)
 {
 	EXPECT_EQ(dwType, REG_SZ);
@@ -717,4 +720,70 @@ TEST(RegistryAccess, RealAllValuesIntoMap)
 	EXPECT_EQ(m_bReadTestValue_QWORD, true);
 	EXPECT_EQ(m_bReadTestValue_MultiSZ, true);
 	EXPECT_EQ(m_bReadTestValue_Binary, true);
+}
+
+TEST(RegistryAccess, EnumAllSubkeys)
+{
+	SResult sr;
+
+	// Note: We should read all the test values
+	bool m_bReadTestSubkey_1 = false;
+	bool m_bReadTestSubkey_2 = false;
+
+	auto oReg = CRegistryAccess{ HKEY_CURRENT_USER };
+
+	auto fOnEnumValueData = [&](const CRegistryAccess::EnumSubkeyData& oEnumSubkeyData)
+	{
+		if (StringCompare::CS().AreEqual(oEnumSubkeyData.m_svName, svzTestValueSubkeyName_1))
+		{
+			m_bReadTestSubkey_1 = true;
+			return SResult::Success;
+		}
+		if (StringCompare::CS().AreEqual(oEnumSubkeyData.m_svName, svzTestValueSubkeyName_2))
+		{
+			m_bReadTestSubkey_2 = true;
+			return SResult::Success;
+		}
+
+		return SResult::Success_NoWorkDone;
+	};
+
+	sr = oReg.EnumAllSubkeys(svzTestKey, fOnEnumValueData);
+	EXPECT_EQ(sr, S_OK);
+
+
+	EXPECT_EQ(m_bReadTestSubkey_1, true);
+	EXPECT_EQ(m_bReadTestSubkey_2, true);
+}
+
+TEST(RegistryAccess, ReadAllSubkeysIntoVector)
+{
+	SResult sr;
+
+	// Note: We should read all the test values
+	bool m_bReadTestSubkey_1 = false;
+	bool m_bReadTestSubkey_2 = false;
+
+	auto oReg = CRegistryAccess{ HKEY_CURRENT_USER };
+
+	std::vector<cpp::tstring> arrSubkeyNames;
+	sr = oReg.ReadAllSubkeysIntoVector(svzTestKey, arrSubkeyNames);
+	EXPECT_EQ(sr, SResult::Success);
+
+	for (const auto& sSubkeyName : arrSubkeyNames)
+	{
+		if (StringCompare::CS().AreEqual(sSubkeyName, svzTestValueSubkeyName_1))
+		{
+			m_bReadTestSubkey_1 = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(sSubkeyName, svzTestValueSubkeyName_2))
+		{
+			m_bReadTestSubkey_2 = true;
+			continue;
+		}
+	};
+
+	EXPECT_EQ(m_bReadTestSubkey_1, true);
+	EXPECT_EQ(m_bReadTestSubkey_2, true);
 }
