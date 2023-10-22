@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vlr-util/cpp_namespace.h>
 #include <vlr-util/util.includes.h>
 #include <vlr-util/util.std_aliases.h>
 #include <vlr-util/zstring_view.h>
@@ -68,6 +69,12 @@ public:
 	SResult DeleteKey(
 		tzstring_view svzKeyName,
 		const Options_DeleteKeysOrValues& options = {}) const;
+
+	SResult ReadValueInfo(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		DWORD& dwType_Result,
+		DWORD& dwSize_Result) const;
 
 	SResult ReadValueBase(
 		tzstring_view svzKeyName,
@@ -556,6 +563,40 @@ public:
 		const std::vector<BYTE>& arrBinaryData,
 		DWORD& dwType,
 		std::vector<BYTE>& arrData) const;
+
+	struct EnumValueData
+	{
+		DWORD m_dwIndex{};
+		vlr::tstring_view m_svName;
+		DWORD m_dwType{};
+		cpp::span<BYTE> m_spanData;
+
+		decltype(auto) withIndex(DWORD dwIndex)
+		{
+			m_dwIndex = dwIndex;
+			return *this;
+		}
+		decltype(auto) withName(vlr::tstring_view svName)
+		{
+			m_svName = svName;
+			return *this;
+		}
+		decltype(auto) withType(DWORD dwType)
+		{
+			m_dwType = dwType;
+			return *this;
+		}
+		decltype(auto) withData(cpp::span<BYTE> spanData)
+		{
+			m_spanData = spanData;
+			return *this;
+		}
+	};
+	using OnEnumValueData = std::function<SResult(const EnumValueData& oEnumValueData)>;
+
+	SResult EnumAllValues(
+		tzstring_view svzKeyName,
+		const OnEnumValueData& fOnEnumValueData) const;
 
 protected:
 	SResult openKey(

@@ -104,6 +104,42 @@ SResult CRegistryAccess::DeleteKey(
 	return SResult::Success;
 }
 
+SResult CRegistryAccess::ReadValueInfo(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	DWORD& dwType_Result,
+	DWORD& dwSize_Result) const
+{
+	SResult sr;
+	LONG lResult{};
+
+	HKEY hKey{};
+	sr = openKey(svzKeyName, KEY_READ, hKey);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hKey);
+	auto onDestroy_CloseRegKey = AutoCloseRegKey{ hKey };
+
+	lResult = RegQueryValueEx(
+		hKey,
+		svzValueName,
+		NULL,
+		&dwType_Result,
+		NULL,
+		&dwSize_Result);
+	// Note: This appears to always return ERROR_SUCCESS
+	if (lResult == ERROR_SUCCESS)
+	{
+		return SResult::Success;
+	}
+	// ... but this would also sorta be expected
+	if (lResult == ERROR_MORE_DATA)
+	{
+		return SResult::Success;
+	}
+
+	return SResult::For_win32_ErrorCode(lResult);
+}
+
 SResult CRegistryAccess::ReadValueBase(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
@@ -115,10 +151,7 @@ SResult CRegistryAccess::ReadValueBase(
 
 	HKEY hKey{};
 	sr = openKey(svzKeyName, KEY_READ, hKey);
-	if (!sr.isSuccess())
-	{
-		return SResult::Success_WithNuance;
-	}
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hKey);
 	auto onDestroy_CloseRegKey = AutoCloseRegKey{ hKey };
 
@@ -178,10 +211,7 @@ SResult CRegistryAccess::WriteValueBase(
 
 	HKEY hKey{};
 	sr = openKey(svzKeyName, KEY_WRITE, hKey);
-	if (!sr.isSuccess())
-	{
-		return SResult::Success_WithNuance;
-	}
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hKey);
 	auto onDestroy_CloseRegKey = AutoCloseRegKey{ hKey };
 
@@ -1196,6 +1226,93 @@ SResult CRegistryAccess::convertValueToRegData_Binary(
 	dwType = REG_MULTI_SZ;
 
 	arrData = arrBinaryData;
+
+	return SResult::Success;
+}
+
+SResult CRegistryAccess::EnumAllValues(
+	tzstring_view svzKeyName,
+	const OnEnumValueData& fOnEnumValueData) const
+{
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(fOnEnumValueData);
+
+	SResult sr;
+	LONG lResult{};
+
+	HKEY hKey{};
+	sr = openKey(svzKeyName, KEY_READ, hKey);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hKey);
+	auto onDestroy_CloseRegKey = AutoCloseRegKey{ hKey };
+
+	DWORD dwNumValues{};
+	DWORD dwMaxValueNameChars{};
+	DWORD dwMaxValueDataBytes{};
+	lResult = RegQueryInfoKey(
+		hKey,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		&dwNumValues,
+		&dwMaxValueNameChars,
+		&dwMaxValueDataBytes,
+		NULL,
+		NULL);
+	VLR_ASSERT_COMPARE_OR_RETURN_HRESULT_LAST_ERROR(lResult, == , ERROR_SUCCESS);
+	if (dwNumValues == 0)
+	{
+		return S_OK;
+	}
+
+	std::vector<TCHAR> arrNameData;
+	// Note: We need to add one char to buffer size for NULL-terminator
+	arrNameData.resize(dwMaxValueNameChars + 1);
+	std::vector<BYTE> arrValueData;
+	arrValueData.resize(dwMaxValueDataBytes);
+
+	for (DWORD i = 0; i < dwNumValues; ++i)
+	{
+		DWORD dwValueNameSizeChars = util::range_checked_cast<DWORD>(arrNameData.size());
+		DWORD dwValueType{};
+		DWORD dwValueDataSizeBytes = util::range_checked_cast<DWORD>(arrValueData.size());
+
+		lResult = RegEnumValue(
+			hKey,
+			i,
+			arrNameData.data(),
+			&dwValueNameSizeChars,
+			NULL,
+			&dwValueType,
+			arrValueData.data(),
+			&dwValueDataSizeBytes);
+		if (lResult == ERROR_NO_MORE_ITEMS)
+		{
+			return S_OK;
+		}
+		// Note: There's a possible race condition here, where a value might be written while we're enumerating,
+		// and it exceeds the max buffer size. Ignoring this case for now.
+		if (lResult != ERROR_SUCCESS)
+		{
+			return SResult::For_win32_ErrorCode(lResult);
+		}
+
+		const auto& oEnumValueData = EnumValueData{}
+			.withIndex(i)
+			// Note: Cannot ensure this is NULL-terminated
+			.withName(vlr::tstring_view{arrNameData.data(), dwValueNameSizeChars})
+			.withType(dwValueType)
+			.withData(cpp::span<BYTE>{arrValueData.data(), dwValueDataSizeBytes})
+			;
+		sr = fOnEnumValueData(oEnumValueData);
+		// Note: If we fail the callback, we early-abort and return the error code
+		if (!sr.isSuccess())
+		{
+			return sr;
+		}
+	}
 
 	return SResult::Success;
 }
