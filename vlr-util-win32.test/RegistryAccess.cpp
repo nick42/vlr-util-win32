@@ -35,7 +35,7 @@ static const auto arrTestValue_Binary = std::vector<BYTE>{ 0x12, 0x34, 0x56, 0x7
 // Value which should not exist in test data
 static constexpr auto svzTestValueName_Invalid = vlr::tzstring_view{ _T("testInvalid") };
 
-void ValidateReadDataMatch_SZ(DWORD dwType, cpp::span<BYTE> spanData)
+void ValidateReadDataMatch_SZ(DWORD dwType, cpp::span<const BYTE> spanData)
 {
 	EXPECT_EQ(dwType, REG_SZ);
 	// Note: This is GE because in some cases, the Reg[...] call may return the string without
@@ -47,7 +47,7 @@ void ValidateReadDataMatch_SZ(DWORD dwType, cpp::span<BYTE> spanData)
 	EXPECT_EQ(StringCompare::CS().AreEqual(svzValue, svzTestValue_SZ), true);
 }
 
-void ValidateReadDataMatch_DWORD(DWORD dwType, cpp::span<BYTE> spanData)
+void ValidateReadDataMatch_DWORD(DWORD dwType, cpp::span<const BYTE> spanData)
 {
 	EXPECT_EQ(dwType, REG_DWORD);
 	EXPECT_EQ(spanData.size(), sizeof(DWORD));
@@ -56,7 +56,7 @@ void ValidateReadDataMatch_DWORD(DWORD dwType, cpp::span<BYTE> spanData)
 	EXPECT_EQ(tValue, nTestValue_DWORD);
 }
 
-void ValidateReadDataMatch_QWORD(DWORD dwType, cpp::span<BYTE> spanData)
+void ValidateReadDataMatch_QWORD(DWORD dwType, cpp::span<const BYTE> spanData)
 {
 	EXPECT_EQ(dwType, REG_QWORD);
 	EXPECT_EQ(spanData.size(), sizeof(QWORD));
@@ -65,7 +65,7 @@ void ValidateReadDataMatch_QWORD(DWORD dwType, cpp::span<BYTE> spanData)
 	EXPECT_EQ(tValue, nTestValue_QWORD);
 }
 
-void ValidateReadDataMatch_MultiSZ(DWORD dwType, cpp::span<BYTE> spanData)
+void ValidateReadDataMatch_MultiSZ(DWORD dwType, cpp::span<const BYTE> spanData)
 {
 	EXPECT_EQ(dwType, REG_MULTI_SZ);
 
@@ -77,7 +77,7 @@ void ValidateReadDataMatch_MultiSZ(DWORD dwType, cpp::span<BYTE> spanData)
 	}
 }
 
-void ValidateReadDataMatch_Binary(DWORD dwType, cpp::span<BYTE> spanData)
+void ValidateReadDataMatch_Binary(DWORD dwType, cpp::span<const BYTE> spanData)
 {
 	EXPECT_EQ(dwType, REG_BINARY);
 
@@ -645,6 +645,72 @@ TEST(RegistryAccess, EnumAllValues)
 
 	sr = oReg.EnumAllValues(svzTestKey, fOnEnumValueData);
 	EXPECT_EQ(sr, S_OK);
+
+	EXPECT_EQ(m_bReadTestValue_SZ, true);
+	EXPECT_EQ(m_bReadTestValue_DWORD, true);
+	EXPECT_EQ(m_bReadTestValue_QWORD, true);
+	EXPECT_EQ(m_bReadTestValue_MultiSZ, true);
+	EXPECT_EQ(m_bReadTestValue_Binary, true);
+}
+
+TEST(RegistryAccess, RealAllValuesIntoMap)
+{
+	SResult sr;
+
+	// Note: We should read all the test values
+	bool m_bReadTestValue_SZ = false;
+	bool m_bReadTestValue_DWORD = false;
+	bool m_bReadTestValue_QWORD = false;
+	bool m_bReadTestValue_MultiSZ = false;
+	bool m_bReadTestValue_Binary = false;
+
+	auto oReg = CRegistryAccess{ HKEY_CURRENT_USER };
+
+	std::unordered_map<vlr::tstring, CRegistryAccess::ValueMapEntry> mapNameToValue;
+	sr = oReg.RealAllValuesIntoMap(svzTestKey, mapNameToValue);
+	EXPECT_EQ(sr, S_OK);
+
+	for (const auto& mapEntry : mapNameToValue)
+	{
+		const auto& sValueName = mapEntry.first;
+		const auto& oValueMapEntry = mapEntry.second;
+
+		if (StringCompare::CS().AreEqual(sValueName, svzTestValueName_SZ))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_SZ, nullptr);
+			EXPECT_EQ(StringCompare::CS().AreEqual(*oValueMapEntry.m_spValue_SZ, svzTestValue_SZ), true);
+			m_bReadTestValue_SZ = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(sValueName, svzTestValueName_DWORD))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_DWORD, nullptr);
+			EXPECT_EQ(*oValueMapEntry.m_spValue_DWORD, nTestValue_DWORD);
+			m_bReadTestValue_DWORD = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(sValueName, svzTestValueName_QWORD))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_QWORD, nullptr);
+			EXPECT_EQ(*oValueMapEntry.m_spValue_QWORD, nTestValue_QWORD);
+			m_bReadTestValue_QWORD = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(sValueName, svzTestValueName_MultiSz))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_MultiSZ, nullptr);
+			//ValidateReadDataMatch_MultiSZ(oEnumValueData.m_dwType, oEnumValueData.m_spanData);
+			m_bReadTestValue_MultiSZ = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(sValueName, svzTestValueName_BINARY))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_Binary, nullptr);
+			//ValidateReadDataMatch_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData);
+			m_bReadTestValue_Binary = true;
+			continue;
+		}
+	};
 
 	EXPECT_EQ(m_bReadTestValue_SZ, true);
 	EXPECT_EQ(m_bReadTestValue_DWORD, true);

@@ -204,7 +204,7 @@ SResult CRegistryAccess::WriteValueBase(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData) const
+	cpp::span<const BYTE> spanData) const
 {
 	SResult sr;
 	LONG lResult{};
@@ -220,14 +220,14 @@ SResult CRegistryAccess::WriteValueBase(
 	{
 		nIterationCount++;
 
-		DWORD dwBufferSize = util::range_checked_cast<DWORD>(arrData.size());
+		DWORD dwBufferSize = util::range_checked_cast<DWORD>(spanData.size());
 		lResult = RegSetValueEx(
 			hKey,
 			svzValueName,
 			NULL,
 			dwType,
-			arrData.data(),
-			util::range_checked_cast<DWORD>(arrData.size()));
+			spanData.data(),
+			util::range_checked_cast<DWORD>(spanData.size()));
 		if (lResult == ERROR_SUCCESS)
 		{
 			break;
@@ -703,14 +703,14 @@ SResult CRegistryAccess::ReadValue_Binary(
 SResult CRegistryAccess::WriteValue_Binary(
 	tzstring_view svzKeyName,
 	tzstring_view svzValueName,
-	const std::vector<BYTE>& arrBinaryData) const
+	cpp::span<const BYTE> spanData) const
 {
 	SResult sr;
 
 	DWORD dwType{};
 	std::vector<BYTE> arrData{};
 	sr = convertValueToRegData_Binary(
-		arrBinaryData,
+		spanData,
 		dwType,
 		arrData);
 	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
@@ -772,7 +772,7 @@ SResult CRegistryAccess::DeleteValue(
 
 SResult CRegistryAccess::convertRegDataToValue_String(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	std::string& saValue) const
 {
 	SResult sr;
@@ -794,13 +794,13 @@ SResult CRegistryAccess::convertRegDataToValue_String(
 	{
 		if constexpr (ModuleContext::Compilation::DefaultCharTypeIs_char())
 		{
-			sr = convertRegDataToValueDirect_String_NativeType(dwType, arrData, saValue);
+			sr = convertRegDataToValueDirect_String_NativeType(dwType, spanData, saValue);
 			VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 		}
 		else
 		{
 			std::wstring sValueNative;
-			sr = convertRegDataToValueDirect_String_NativeType(dwType, arrData, sValueNative);
+			sr = convertRegDataToValueDirect_String_NativeType(dwType, spanData, sValueNative);
 			VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 			saValue = util::Convert::ToStdStringA(sValueNative);
 		}
@@ -855,7 +855,7 @@ SResult CRegistryAccess::convertValueToRegData_String(
 
 SResult CRegistryAccess::convertRegDataToValue_String(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	std::wstring& swValue) const
 {
 	SResult sr;
@@ -878,13 +878,13 @@ SResult CRegistryAccess::convertRegDataToValue_String(
 		if constexpr (ModuleContext::Compilation::DefaultCharTypeIs_char())
 		{
 			std::string sValueNative;
-			sr = convertRegDataToValueDirect_String_NativeType(dwType, arrData, sValueNative);
+			sr = convertRegDataToValueDirect_String_NativeType(dwType, spanData, sValueNative);
 			VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 			swValue = util::Convert::ToStdStringW(sValueNative);
 		}
 		else
 		{
-			sr = convertRegDataToValueDirect_String_NativeType(dwType, arrData, swValue);
+			sr = convertRegDataToValueDirect_String_NativeType(dwType, spanData, swValue);
 			VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 		}
 	}
@@ -938,11 +938,11 @@ SResult CRegistryAccess::convertValueToRegData_String(
 
 SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	std::string& saValue) const
 {
-	size_t nCountOfCharsInBuffer = arrData.size() / sizeof(char);
-	const char* pStringData = reinterpret_cast<const char*>(arrData.data());
+	size_t nCountOfCharsInBuffer = spanData.size() / sizeof(char);
+	const char* pStringData = reinterpret_cast<const char*>(spanData.data());
 	bool bStringIsNullTerminated = (pStringData[nCountOfCharsInBuffer - 1] == _T('\0'));
 	size_t nStringLength = bStringIsNullTerminated ? nCountOfCharsInBuffer - 1 : nCountOfCharsInBuffer;
 	if (bStringIsNullTerminated)
@@ -963,11 +963,11 @@ SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 
 SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	std::wstring& swValue) const
 {
-	size_t nCountOfCharsInBuffer = arrData.size() / sizeof(wchar_t);
-	const wchar_t* pStringData = reinterpret_cast<const wchar_t*>(arrData.data());
+	size_t nCountOfCharsInBuffer = spanData.size() / sizeof(wchar_t);
+	const wchar_t* pStringData = reinterpret_cast<const wchar_t*>(spanData.data());
 	bool bStringIsNullTerminated = (pStringData[nCountOfCharsInBuffer - 1] == _T('\0'));
 	size_t nStringLength = bStringIsNullTerminated ? nCountOfCharsInBuffer - 1 : nCountOfCharsInBuffer;
 	if (bStringIsNullTerminated)
@@ -1064,7 +1064,7 @@ SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 
 SResult CRegistryAccess::convertRegDataToValue_DWORD(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	DWORD& dwValue) const
 {
 	SResult sr;
@@ -1083,8 +1083,8 @@ SResult CRegistryAccess::convertRegDataToValue_DWORD(
 
 	if (bDirectConversion)
 	{
-		VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(arrData.size(), == , sizeof(DWORD));
-		dwValue = *reinterpret_cast<const DWORD*>(arrData.data());
+		VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(spanData.size(), == , sizeof(DWORD));
+		dwValue = *reinterpret_cast<const DWORD*>(spanData.data());
 	}
 
 	return SResult::Success;
@@ -1106,7 +1106,7 @@ SResult CRegistryAccess::convertValueToRegData_DWORD(
 
 SResult CRegistryAccess::convertRegDataToValue_QWORD(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	QWORD& qwValue) const
 {
 	SResult sr;
@@ -1125,8 +1125,8 @@ SResult CRegistryAccess::convertRegDataToValue_QWORD(
 
 	if (bDirectConversion)
 	{
-		VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(arrData.size(), == , sizeof(QWORD));
-		qwValue = *reinterpret_cast<const QWORD*>(arrData.data());
+		VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(spanData.size(), == , sizeof(QWORD));
+		qwValue = *reinterpret_cast<const QWORD*>(spanData.data());
 	}
 
 	return SResult::Success;
@@ -1148,7 +1148,7 @@ SResult CRegistryAccess::convertValueToRegData_QWORD(
 
 SResult CRegistryAccess::convertRegDataToValue_MultiSz(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	std::vector<vlr::tstring>& arrValueCollection) const
 {
 	SResult sr;
@@ -1167,7 +1167,7 @@ SResult CRegistryAccess::convertRegDataToValue_MultiSz(
 
 	if (bDirectConversion)
 	{
-		sr = util::data_adaptor::HelperFor_MultiSZ<TCHAR>{}.ToStructuredData(reinterpret_cast<const TCHAR*>(arrData.data()), arrValueCollection);
+		sr = util::data_adaptor::HelperFor_MultiSZ<TCHAR>{}.ToStructuredData(reinterpret_cast<const TCHAR*>(spanData.data()), arrValueCollection);
 		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
 	}
 
@@ -1191,7 +1191,7 @@ SResult CRegistryAccess::convertValueToRegData_MultiSz(
 
 SResult CRegistryAccess::convertRegDataToValue_Binary(
 	const DWORD& dwType,
-	const std::vector<BYTE>& arrData,
+	cpp::span<const BYTE> spanData,
 	std::vector<BYTE>& arrBinaryData) const
 {
 	SResult sr;
@@ -1210,22 +1210,21 @@ SResult CRegistryAccess::convertRegDataToValue_Binary(
 
 	if (bDirectConversion)
 	{
-		arrBinaryData = arrData;
+		arrBinaryData = std::vector<BYTE>{ spanData.begin(), spanData.end() };
 	}
 
 	return SResult::Success;
 }
 
 SResult CRegistryAccess::convertValueToRegData_Binary(
-	const std::vector<BYTE>& arrBinaryData,
+	cpp::span<const BYTE> spanData,
 	DWORD& dwType,
 	std::vector<BYTE>& arrData) const
 {
 	SResult sr;
 
-	dwType = REG_MULTI_SZ;
-
-	arrData = arrBinaryData;
+	dwType = REG_BINARY;
+	arrData = std::vector<BYTE>{ spanData.begin(), spanData.end() };
 
 	return SResult::Success;
 }
@@ -1313,6 +1312,61 @@ SResult CRegistryAccess::EnumAllValues(
 			return sr;
 		}
 	}
+
+	return SResult::Success;
+}
+
+SResult CRegistryAccess::RealAllValuesIntoMap(
+	tzstring_view svzKeyName,
+	std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue)
+{
+	SResult sr;
+
+	auto fOnEnumValueData_AddToMap = [&](const CRegistryAccess::EnumValueData& oEnumValueData) -> SResult
+	{
+		auto& oValueMapEntry = mapNameToValue[vlr::tstring{oEnumValueData.m_svName}];
+		oValueMapEntry.m_dwType = oEnumValueData.m_dwType;
+
+		switch (oEnumValueData.m_dwType)
+		{
+		case REG_SZ:
+			oValueMapEntry.m_spValue_SZ = cpp::make_shared<cpp::tstring>();
+			sr = convertRegDataToValue_String(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_SZ);
+			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+			break;
+		case REG_DWORD:
+			oValueMapEntry.m_spValue_DWORD = cpp::make_shared<DWORD>();
+			sr = convertRegDataToValue_DWORD(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_DWORD);
+			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+			break;
+		case REG_QWORD:
+			oValueMapEntry.m_spValue_QWORD = cpp::make_shared<QWORD>();
+			sr = convertRegDataToValue_QWORD(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_QWORD);
+			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+			break;
+		case REG_MULTI_SZ:
+			oValueMapEntry.m_spValue_MultiSZ = cpp::make_shared<std::vector<cpp::tstring>>();
+			sr = convertRegDataToValue_MultiSz(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_MultiSZ);
+			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+			break;
+		case REG_BINARY:
+			oValueMapEntry.m_spValue_Binary = cpp::make_shared<std::vector<BYTE>>();
+			sr = convertRegDataToValue_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_Binary);
+			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+			break;
+
+		default:
+			oValueMapEntry.m_spValue_TypeUnhandled = cpp::make_shared<std::vector<BYTE>>();
+			sr = convertRegDataToValue_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_TypeUnhandled);
+			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+			break;
+		}
+
+		return SResult::Success;
+	};
+
+	sr = EnumAllValues(svzKeyName, fOnEnumValueData_AddToMap);
+	VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
 
 	return SResult::Success;
 }

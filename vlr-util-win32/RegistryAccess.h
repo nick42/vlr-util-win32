@@ -85,7 +85,7 @@ public:
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData) const;
+		cpp::span<const BYTE> spanData) const;
 
 	SResult ReadValue_String(
 		tzstring_view svzKeyName,
@@ -177,7 +177,7 @@ public:
 	SResult WriteValue_Binary(
 		tzstring_view svzKeyName,
 		tzstring_view svzValueName,
-		const std::vector<BYTE>& arrData) const;
+		cpp::span<const BYTE> spanData) const;
 
 	SResult DeleteValue(
 		tzstring_view svzKeyName,
@@ -477,7 +477,7 @@ public:
 
 	SResult convertRegDataToValue_String(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		std::string& saValue) const;
 	SResult convertValueToRegData_String(
 		const std::string& saValue,
@@ -489,7 +489,7 @@ public:
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_String(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		std::wstring& swValue) const;
 	SResult convertValueToRegData_String(
 		const std::wstring& swValue,
@@ -501,11 +501,11 @@ public:
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValueDirect_String_NativeType(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		std::string& saValue) const;
 	SResult convertRegDataToValueDirect_String_NativeType(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		std::wstring& swValue) const;
 	SResult convertValueToRegDataDirect_String_NativeType(
 		const std::string& saValue,
@@ -533,7 +533,7 @@ public:
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_DWORD(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		DWORD& dwValue) const;
 	SResult convertValueToRegData_DWORD(
 		const DWORD& dwValue,
@@ -541,7 +541,7 @@ public:
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_QWORD(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		QWORD& qwValue) const;
 	SResult convertValueToRegData_QWORD(
 		const QWORD& qwValue,
@@ -549,7 +549,7 @@ public:
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_MultiSz(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		std::vector<vlr::tstring>& arrValueCollection) const;
 	SResult convertValueToRegData_MultiSz(
 		const std::vector<vlr::tstring>& arrValueCollection,
@@ -557,10 +557,10 @@ public:
 		std::vector<BYTE>& arrData) const;
 	SResult convertRegDataToValue_Binary(
 		const DWORD& dwType,
-		const std::vector<BYTE>& arrData,
+		cpp::span<const BYTE> spanData,
 		std::vector<BYTE>& arrBinaryData) const;
 	SResult convertValueToRegData_Binary(
-		const std::vector<BYTE>& arrBinaryData,
+		cpp::span<const BYTE> spanData,
 		DWORD& dwType,
 		std::vector<BYTE>& arrData) const;
 
@@ -569,7 +569,7 @@ public:
 		DWORD m_dwIndex{};
 		vlr::tstring_view m_svName;
 		DWORD m_dwType{};
-		cpp::span<BYTE> m_spanData;
+		cpp::span<const BYTE> m_spanData;
 
 		decltype(auto) withIndex(DWORD dwIndex)
 		{
@@ -586,7 +586,7 @@ public:
 			m_dwType = dwType;
 			return *this;
 		}
-		decltype(auto) withData(cpp::span<BYTE> spanData)
+		decltype(auto) withData(cpp::span<const BYTE> spanData)
 		{
 			m_spanData = spanData;
 			return *this;
@@ -597,6 +597,21 @@ public:
 	SResult EnumAllValues(
 		tzstring_view svzKeyName,
 		const OnEnumValueData& fOnEnumValueData) const;
+
+	// Note: This does data copies and allocations, so prefer enum for search/speed
+	struct ValueMapEntry
+	{
+		DWORD m_dwType{};
+		cpp::shared_ptr<cpp::tstring> m_spValue_SZ;
+		cpp::shared_ptr<DWORD> m_spValue_DWORD;
+		cpp::shared_ptr<QWORD> m_spValue_QWORD;
+		cpp::shared_ptr<std::vector<cpp::tstring>> m_spValue_MultiSZ;
+		cpp::shared_ptr<std::vector<BYTE>> m_spValue_Binary;
+		cpp::shared_ptr<std::vector<BYTE>> m_spValue_TypeUnhandled;
+	};
+	SResult RealAllValuesIntoMap(
+		tzstring_view svzKeyName,
+		std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue);
 
 protected:
 	SResult openKey(
