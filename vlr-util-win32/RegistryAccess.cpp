@@ -1316,6 +1316,53 @@ SResult CRegistryAccess::EnumAllValues(
 	return SResult::Success;
 }
 
+SResult CRegistryAccess::populateValueMapEntryFromEnumValueData(
+	const EnumValueData& oEnumValueData,
+	ValueMapEntry& oValueMapEntry)
+{
+	SResult sr;
+
+	oValueMapEntry.m_dwType = oEnumValueData.m_dwType;
+	oValueMapEntry.m_sValueName = cpp::tstring{ oEnumValueData.m_svName };
+
+	switch (oEnumValueData.m_dwType)
+	{
+	case REG_SZ:
+		oValueMapEntry.m_spValue_SZ = cpp::make_shared<cpp::tstring>();
+		sr = convertRegDataToValue_String(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_SZ);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+		break;
+	case REG_DWORD:
+		oValueMapEntry.m_spValue_DWORD = cpp::make_shared<DWORD>();
+		sr = convertRegDataToValue_DWORD(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_DWORD);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+		break;
+	case REG_QWORD:
+		oValueMapEntry.m_spValue_QWORD = cpp::make_shared<QWORD>();
+		sr = convertRegDataToValue_QWORD(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_QWORD);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+		break;
+	case REG_MULTI_SZ:
+		oValueMapEntry.m_spValue_MultiSZ = cpp::make_shared<std::vector<cpp::tstring>>();
+		sr = convertRegDataToValue_MultiSz(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_MultiSZ);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+		break;
+	case REG_BINARY:
+		oValueMapEntry.m_spValue_Binary = cpp::make_shared<std::vector<BYTE>>();
+		sr = convertRegDataToValue_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_Binary);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+		break;
+
+	default:
+		oValueMapEntry.m_spValue_TypeUnhandled = cpp::make_shared<std::vector<BYTE>>();
+		sr = convertRegDataToValue_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_TypeUnhandled);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+		break;
+	}
+
+	return SResult::Success;
+}
+
 SResult CRegistryAccess::RealAllValuesIntoMap(
 	tzstring_view svzKeyName,
 	std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue)
@@ -1325,47 +1372,100 @@ SResult CRegistryAccess::RealAllValuesIntoMap(
 	auto fOnEnumValueData_AddToMap = [&](const CRegistryAccess::EnumValueData& oEnumValueData) -> SResult
 	{
 		auto& oValueMapEntry = mapNameToValue[vlr::tstring{oEnumValueData.m_svName}];
-		oValueMapEntry.m_dwType = oEnumValueData.m_dwType;
-
-		switch (oEnumValueData.m_dwType)
-		{
-		case REG_SZ:
-			oValueMapEntry.m_spValue_SZ = cpp::make_shared<cpp::tstring>();
-			sr = convertRegDataToValue_String(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_SZ);
-			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
-			break;
-		case REG_DWORD:
-			oValueMapEntry.m_spValue_DWORD = cpp::make_shared<DWORD>();
-			sr = convertRegDataToValue_DWORD(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_DWORD);
-			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
-			break;
-		case REG_QWORD:
-			oValueMapEntry.m_spValue_QWORD = cpp::make_shared<QWORD>();
-			sr = convertRegDataToValue_QWORD(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_QWORD);
-			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
-			break;
-		case REG_MULTI_SZ:
-			oValueMapEntry.m_spValue_MultiSZ = cpp::make_shared<std::vector<cpp::tstring>>();
-			sr = convertRegDataToValue_MultiSz(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_MultiSZ);
-			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
-			break;
-		case REG_BINARY:
-			oValueMapEntry.m_spValue_Binary = cpp::make_shared<std::vector<BYTE>>();
-			sr = convertRegDataToValue_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_Binary);
-			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
-			break;
-
-		default:
-			oValueMapEntry.m_spValue_TypeUnhandled = cpp::make_shared<std::vector<BYTE>>();
-			sr = convertRegDataToValue_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_TypeUnhandled);
-			VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
-			break;
-		}
+		sr = populateValueMapEntryFromEnumValueData(oEnumValueData, oValueMapEntry);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
 
 		return SResult::Success;
 	};
 
 	sr = EnumAllValues(svzKeyName, fOnEnumValueData_AddToMap);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	return SResult::Success;
+}
+
+SResult CRegistryAccess::ReadValueObfuscated(
+	tzstring_view svzKeyName,
+	tzstring_view svzValueName,
+	ValueMapEntry& oValueMapEntry)
+{
+	SResult sr;
+
+	auto fValueMatchesForRead = [&](const CRegistryAccess::EnumValueData& oEnumValueData) -> SResult
+	{
+		if (StringCompare::CS().AreEqual(oEnumValueData.m_svName, svzValueName))
+		{
+			return SResult::Success;
+		}
+
+		return SResult::Success_WithNuance;
+	};
+
+	bool bFoundValue = false;
+	auto fOnEnumValueData_PopulateOnMatch = [&](const CRegistryAccess::EnumValueData& oEnumValueData) -> SResult
+	{
+		sr = fValueMatchesForRead(oEnumValueData);
+		if (sr != SResult::Success)
+		{
+			return SResult::Success_NoWorkDone;
+		}
+
+		bFoundValue = true;
+
+		sr = populateValueMapEntryFromEnumValueData(oEnumValueData, oValueMapEntry);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+
+		return SResult::Success;
+	};
+
+	sr = EnumAllValues(svzKeyName, fOnEnumValueData_PopulateOnMatch);
+	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
+
+	if (!bFoundValue)
+	{
+		return SResult::Success_WithNuance;
+	}
+
+	return SResult::Success;
+}
+
+SResult CRegistryAccess::ReadValuesObfuscated(
+	tzstring_view svzKeyName,
+	const std::vector<cpp::tstring>& arrValueNames,
+	std::vector<ValueMapEntry>& arrValueMapEntryCollection)
+{
+	SResult sr;
+
+	auto fValueMatchesForRead = [&](const CRegistryAccess::EnumValueData& oEnumValueData) -> SResult
+	{
+		for (const auto& sValueName : arrValueNames)
+		{
+			if (StringCompare::CS().AreEqual(oEnumValueData.m_svName, sValueName))
+			{
+				return SResult::Success;
+			}
+		}
+
+		return SResult::Success_WithNuance;
+	};
+
+	auto fOnEnumValueData_PopulateOnMatch = [&](const CRegistryAccess::EnumValueData& oEnumValueData) -> SResult
+	{
+		sr = fValueMatchesForRead(oEnumValueData);
+		if (sr != SResult::Success)
+		{
+			return SResult::Success_NoWorkDone;
+		}
+
+		auto& oValueMapEntry = arrValueMapEntryCollection.emplace_back();
+
+		sr = populateValueMapEntryFromEnumValueData(oEnumValueData, oValueMapEntry);
+		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
+
+		return SResult::Success;
+	};
+
+	sr = EnumAllValues(svzKeyName, fOnEnumValueData_PopulateOnMatch);
 	VLR_ON_SR_ERROR_RETURN_VALUE(sr);
 
 	return SResult::Success;

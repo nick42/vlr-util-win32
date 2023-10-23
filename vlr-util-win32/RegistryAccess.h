@@ -601,6 +601,7 @@ public:
 	// Note: This does data copies and allocations, so prefer enum for search/speed
 	struct ValueMapEntry
 	{
+		cpp::tstring m_sValueName;
 		DWORD m_dwType{};
 		cpp::shared_ptr<cpp::tstring> m_spValue_SZ;
 		cpp::shared_ptr<DWORD> m_spValue_DWORD;
@@ -609,9 +610,27 @@ public:
 		cpp::shared_ptr<std::vector<BYTE>> m_spValue_Binary;
 		cpp::shared_ptr<std::vector<BYTE>> m_spValue_TypeUnhandled;
 	};
+
+	SResult populateValueMapEntryFromEnumValueData(
+		const EnumValueData& oEnumValueData,
+		ValueMapEntry& oValueMapEntry);
+
 	SResult RealAllValuesIntoMap(
 		tzstring_view svzKeyName,
 		std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue);
+
+	// This is a method which can be used to read a value without exposing the name of the value which is being read.
+	// Since registry access calls can be audited, reading a value by name exposes the name. Instead of this, we can 
+	// read all values, and filter for the value(s) we are interested in.
+
+	SResult ReadValueObfuscated(
+		tzstring_view svzKeyName,
+		tzstring_view svzValueName,
+		ValueMapEntry& oValueMapEntry);
+	SResult ReadValuesObfuscated(
+		tzstring_view svzKeyName,
+		const std::vector<cpp::tstring>& arrValueNames,
+		std::vector<ValueMapEntry>& arrValueMapEntryCollection);
 
 	struct EnumSubkeyData
 	{

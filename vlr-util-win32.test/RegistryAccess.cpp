@@ -722,6 +722,95 @@ TEST(RegistryAccess, RealAllValuesIntoMap)
 	EXPECT_EQ(m_bReadTestValue_Binary, true);
 }
 
+TEST(RegistryAccess, ReadValueObfuscated)
+{
+	SResult sr;
+
+	bool m_bReadTestValue_SZ = false;
+
+	auto oReg = CRegistryAccess{ HKEY_CURRENT_USER };
+
+	CRegistryAccess::ValueMapEntry oValueMapEntry;
+	sr = oReg.ReadValueObfuscated(svzTestKey, svzTestValueName_Invalid, oValueMapEntry);
+	// This should be missing, and return S_FALSE
+	EXPECT_EQ(sr, SResult::Success_WithNuance);
+
+	sr = oReg.ReadValueObfuscated(svzTestKey, svzTestValueName_SZ, oValueMapEntry);
+	EXPECT_EQ(sr, SResult::Success);
+	ASSERT_NE(oValueMapEntry.m_spValue_SZ, nullptr);
+	EXPECT_EQ(StringCompare::CS().AreEqual(*oValueMapEntry.m_spValue_SZ, svzTestValue_SZ), true);
+}
+
+TEST(RegistryAccess, ReadValuesObfuscated)
+{
+	SResult sr;
+
+	// Note: We should read all the test values
+	bool m_bReadTestValue_SZ = false;
+	bool m_bReadTestValue_DWORD = false;
+	bool m_bReadTestValue_QWORD = false;
+	bool m_bReadTestValue_MultiSZ = false;
+	bool m_bReadTestValue_Binary = false;
+
+	auto oReg = CRegistryAccess{ HKEY_CURRENT_USER };
+
+	std::vector<cpp::tstring> arrValueNames;
+	arrValueNames.push_back(svzTestValueName_SZ);
+	arrValueNames.push_back(svzTestValueName_DWORD);
+	arrValueNames.push_back(svzTestValueName_QWORD);
+	arrValueNames.push_back(svzTestValueName_MultiSz);
+	arrValueNames.push_back(svzTestValueName_BINARY);
+
+	std::vector<CRegistryAccess::ValueMapEntry> arrValueMapEntryCollection;
+	sr = oReg.ReadValuesObfuscated(svzTestKey, arrValueNames, arrValueMapEntryCollection);
+	EXPECT_EQ(sr, S_OK);
+
+	for (const auto& oValueMapEntry : arrValueMapEntryCollection)
+	{
+		if (StringCompare::CS().AreEqual(oValueMapEntry.m_sValueName, svzTestValueName_SZ))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_SZ, nullptr);
+			EXPECT_EQ(StringCompare::CS().AreEqual(*oValueMapEntry.m_spValue_SZ, svzTestValue_SZ), true);
+			m_bReadTestValue_SZ = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(oValueMapEntry.m_sValueName, svzTestValueName_DWORD))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_DWORD, nullptr);
+			EXPECT_EQ(*oValueMapEntry.m_spValue_DWORD, nTestValue_DWORD);
+			m_bReadTestValue_DWORD = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(oValueMapEntry.m_sValueName, svzTestValueName_QWORD))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_QWORD, nullptr);
+			EXPECT_EQ(*oValueMapEntry.m_spValue_QWORD, nTestValue_QWORD);
+			m_bReadTestValue_QWORD = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(oValueMapEntry.m_sValueName, svzTestValueName_MultiSz))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_MultiSZ, nullptr);
+			//ValidateReadDataMatch_MultiSZ(oEnumValueData.m_dwType, oEnumValueData.m_spanData);
+			m_bReadTestValue_MultiSZ = true;
+			continue;
+		}
+		if (StringCompare::CS().AreEqual(oValueMapEntry.m_sValueName, svzTestValueName_BINARY))
+		{
+			ASSERT_NE(oValueMapEntry.m_spValue_Binary, nullptr);
+			//ValidateReadDataMatch_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData);
+			m_bReadTestValue_Binary = true;
+			continue;
+		}
+	};
+
+	EXPECT_EQ(m_bReadTestValue_SZ, true);
+	EXPECT_EQ(m_bReadTestValue_DWORD, true);
+	EXPECT_EQ(m_bReadTestValue_QWORD, true);
+	EXPECT_EQ(m_bReadTestValue_MultiSZ, true);
+	EXPECT_EQ(m_bReadTestValue_Binary, true);
+}
+
 TEST(RegistryAccess, EnumAllSubkeys)
 {
 	SResult sr;
