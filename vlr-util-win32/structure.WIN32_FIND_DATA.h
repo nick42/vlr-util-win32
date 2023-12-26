@@ -3,11 +3,11 @@
 #include <vlr-util/util.includes.h>
 #include <vlr-util/util.IsBitSet.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( structure )
+namespace structure {
 
 struct CAccessorFor_WIN32_FIND_DATA
 	: public WIN32_FIND_DATA
@@ -48,8 +48,8 @@ inline decltype(auto) MakeStructureAccessor( const WIN32_FIND_DATA* pFindData )
 	return *reinterpret_cast<const CAccessorFor_WIN32_FIND_DATA*>(pFindData);
 }
 
-VLR_NAMESPACE_END //( structure )
+} // namespace structure
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

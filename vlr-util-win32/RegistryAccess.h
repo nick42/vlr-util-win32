@@ -10,9 +10,9 @@
 
 #include "RegistryAccess_Wow64KeyAccessOption.h"
 
-VLR_NAMESPACE_BEGIN(vlr)
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN(win32)
+namespace win32 {
 
 class CRegistryAccess
 {
@@ -684,6 +684,6 @@ public:
 	{}
 };
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

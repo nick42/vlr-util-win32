@@ -2,7 +2,7 @@
 
 #include <vlr-util/util.includes.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
 enum class AceType : unsigned int
 {
@@ -43,4 +43,4 @@ enum class AceType : unsigned int
 //#define ACCESS_MAX_MS_V5_ACE_TYPE               (0x15)
 };
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

@@ -9,11 +9,11 @@
 
 #include <vlr-util-win32/security.SIDs.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( structure )
+namespace structure {
 
 vlr::tstring CAccessControlEntryBase::GetUniqueDescriptor() const
 {
@@ -104,8 +104,8 @@ SPCAccessControlEntryBase MakeStructureSP_AccessControlEntry( LPVOID pvACE )
 	}
 }
 
-VLR_NAMESPACE_END //( structure )
+} // namespace structure
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

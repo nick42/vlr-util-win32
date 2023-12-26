@@ -7,11 +7,11 @@
 #include <vlr-util/util.includes.h>
 #include <vlr-util/ActionOnDestruction.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( filesystem )
+namespace filesystem {
 
 class iterator_volumes
 	: public boost::iterator_facade<iterator_volumes, vlr::tstring, boost::forward_traversal_tag, const vlr::tstring&>
@@ -173,8 +173,8 @@ struct enum_volumes
 	}
 };
 
-VLR_NAMESPACE_END //( filesystem )
+} // namespace filesystem
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

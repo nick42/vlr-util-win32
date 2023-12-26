@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "ServiceControl.h"
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
 std::optional<SC_HANDLE> CServiceControl::GetOpenHandle_SCM() const
 {
@@ -142,6 +142,6 @@ SResult CServiceControl::SCM_OpenService(
 	return S_OK;
 }
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

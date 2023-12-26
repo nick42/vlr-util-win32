@@ -9,11 +9,11 @@
 
 #include <vlr-util-win32/registry.RegValue.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( registry )
+namespace registry {
 
 struct RegEnumValueResult
 	: public CRegValue
@@ -170,8 +170,8 @@ HRESULT iterator_RegEnumValue::OnAdaptorMethod_increment()
 	VLR_HANDLE_ASSERTION_FAILURE__AND_RETURN_EXPRESSION( E_UNEXPECTED );
 }
 
-VLR_NAMESPACE_END //( registry )
+} // namespace registry
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

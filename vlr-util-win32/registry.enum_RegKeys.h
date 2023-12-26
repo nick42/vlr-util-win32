@@ -8,11 +8,11 @@
 
 #include <vlr-util-win32/registry.iterator_RegEnumKey.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( registry )
+namespace registry {
 
 class enum_RegKeys
 {
@@ -35,8 +35,8 @@ public:
 	{}
 };
 
-VLR_NAMESPACE_END //( registry )
+} // namespace registry
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

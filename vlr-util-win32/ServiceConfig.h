@@ -3,9 +3,9 @@
 #include <vlr-util/util.includes.h>
 #include <vlr-util/util.logical_zstring_view.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
 class CServiceConfig
 {
@@ -42,6 +42,6 @@ public:
 
 };
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

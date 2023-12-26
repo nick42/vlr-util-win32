@@ -6,11 +6,11 @@
 
 #include <vlr-util-win32/structure.ACE.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( structure )
+namespace structure {
 
 bool CAccessorFor_ACL::HasMetaValue_EntirelyInherited() const
 {
@@ -114,8 +114,8 @@ HRESULT CAccessControlList::Initialize( const ACL* pACL )
 	return S_OK;
 }
 
-VLR_NAMESPACE_END //( structure )
+} // namespace structure
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

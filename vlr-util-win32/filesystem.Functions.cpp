@@ -3,11 +3,11 @@
 
 #include <vlr-util/util.data_adaptor.MultiSZ.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( filesystem )
+namespace filesystem {
 
 HRESULT GetVolumePathNamesForVolumeName( const vlr::tstring& sVolumeName, std::vector<vlr::tstring>& oPathNameList )
 {
@@ -24,8 +24,8 @@ HRESULT GetVolumePathNamesForVolumeName( const vlr::tstring& sVolumeName, std::v
 	return S_OK;
 }
 
-VLR_NAMESPACE_END //( filesystem )
+} // namespace filesystem
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

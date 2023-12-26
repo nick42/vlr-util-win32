@@ -10,13 +10,13 @@
 #include <vlr-util-win32/enum.WELL_KNOWN_SID_TYPE.h>
 #include <vlr-util-win32/enum.SID_NAME_USE.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( security )
+namespace security {
 
-VLR_NAMESPACE_BEGIN( SIDs )
+namespace SIDs {
 
 HRESULT CSidInfo::PopulateData_StringSid()
 {
@@ -309,10 +309,10 @@ HRESULT DoLookupAccountSid(
 	return S_OK;
 }
 
-VLR_NAMESPACE_END //( SIDs )
+} // namespace SIDs
 
-VLR_NAMESPACE_END //( security )
+} // namespace security
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

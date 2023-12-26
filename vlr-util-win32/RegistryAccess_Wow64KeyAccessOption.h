@@ -4,11 +4,11 @@
 #include <vlr-util/enums.FormatEnum.h>
 #include <vlr-util/enums.SmartEnum.h>
 
-VLR_NAMESPACE_BEGIN(vlr)
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN(win32)
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN(RegistryAccess)
+namespace RegistryAccess {
 
 enum Wow64KeyAccessOption
 {
@@ -19,11 +19,11 @@ enum Wow64KeyAccessOption
 };
 constexpr auto MAX_VALUE = UseExplicit64bit;
 
-VLR_NAMESPACE_END //(RegistryAccess)
+} // namespace RegistryAccess
 
-VLR_NAMESPACE_END //(win32)
+} // namespace win32
 
-VLR_NAMESPACE_BEGIN(enums)
+namespace enums {
 
 template<>
 class CFormatEnum<win32::RegistryAccess::Wow64KeyAccessOption>
@@ -77,16 +77,16 @@ public:
 	}
 };
 
-VLR_NAMESPACE_END //(enums)
+} // namespace enums
 
-VLR_NAMESPACE_BEGIN(win32)
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN(RegistryAccess)
+namespace RegistryAccess {
 
 using SEWow64KeyAccessOption = enums::SmartEnum<Wow64KeyAccessOption, Unknown, enums::CFormatEnum<Wow64KeyAccessOption>, enums::RangeCheckForEnum<Wow64KeyAccessOption>>;
 
-VLR_NAMESPACE_END //(RegistryAccess)
+} // namespace RegistryAccess
 
-VLR_NAMESPACE_END //(win32)
+} // namespace win32
 
-VLR_NAMESPACE_END //(vlr)
+} // namespace vlr

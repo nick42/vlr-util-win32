@@ -3,9 +3,9 @@
 #include <vlr-util/util.includes.h>
 #include <vlr-util/enums.FormatEnum.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( enums )
+namespace enums {
 
 template<>
 class CFormatEnum<SID_NAME_USE>
@@ -39,6 +39,6 @@ public:
     }
 };
 
-VLR_NAMESPACE_END //( enums )
+} // namespace enums
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr

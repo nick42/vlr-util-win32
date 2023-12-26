@@ -8,13 +8,13 @@
 #include <vlr-util/util.includes.h>
 #include <vlr-util/zstring_view.h>
 
-VLR_NAMESPACE_BEGIN( vlr )
+namespace vlr {
 
-VLR_NAMESPACE_BEGIN( win32 )
+namespace win32 {
 
-VLR_NAMESPACE_BEGIN( security )
+namespace security {
 
-VLR_NAMESPACE_BEGIN( SIDs )
+namespace SIDs {
 
 class CSidNameLookupResult;
 using SPCSidNameLookupResult = std::shared_ptr<CSidNameLookupResult>;
@@ -127,10 +127,10 @@ HRESULT DoLookupAccountSid(
 	const CSidInfo& oSidInfo,
 	SPCSidNameLookupResult& spSidNameLookupResult_Result );
 
-VLR_NAMESPACE_END //( SIDs )
+} // namespace SIDs
 
-VLR_NAMESPACE_END //( security )
+} // namespace security
 
-VLR_NAMESPACE_END //( win32 )
+} // namespace win32
 
-VLR_NAMESPACE_END //( vlr )
+} // namespace vlr
