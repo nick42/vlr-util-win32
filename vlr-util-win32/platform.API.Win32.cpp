@@ -38,14 +38,16 @@ const Win32::F_IsWow64Process2& CWin32::GetFunction_IsWow64Process2()
 
 const CDynamicLoadedLibrary& CWin32::GetDynamicLoadLibrary(const vlr::tzstring_view svzLibraryName)
 {
-	auto iterIndex = m_mapLoadNameToLibrary.find(svzLibraryName);
+	auto sLibraryName = svzLibraryName.toStdString();
+
+	auto iterIndex = m_mapLoadNameToLibrary.find(sLibraryName);
 	if (iterIndex != m_mapLoadNameToLibrary.end())
 	{
 		return iterIndex->second;
 	}
 
-	auto& oDynamicLoadLibrary = m_mapLoadNameToLibrary[svzLibraryName];
-	oDynamicLoadLibrary.m_sLoadName = svzLibraryName.toStdString();
+	auto& oDynamicLoadLibrary = m_mapLoadNameToLibrary[sLibraryName];
+	oDynamicLoadLibrary.m_sLoadName = sLibraryName;
 
 	// TODO? Add more options around loading
 	if (m_fResultModuleLoad)
