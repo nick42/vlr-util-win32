@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AutoCleanupTypedefs.h" />
+    <ClInclude Include="DynamicLoadedLibrary.h" />
     <ClInclude Include="enum.SID_NAME_USE.h" />
     <ClInclude Include="enum.WELL_KNOWN_SID_TYPE.h" />
     <ClInclude Include="filesystem.enum_files.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="filesystem.Functions.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="platform.API.Win32.h" />
     <ClInclude Include="registry.enum_RegKeys.h" />
     <ClInclude Include="registry.enum_RegValues.h" />
     <ClInclude Include="registry.iterator_RegEnumKey.h" />
@@ -188,6 +190,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="platform.API.Win32.cpp" />
     <ClCompile Include="RegistryAccess.cpp" />
     <ClCompile Include="security.SIDs.cpp" />
     <ClCompile Include="security.tokens.cpp" />

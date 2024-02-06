@@ -87,6 +87,12 @@
     <ClInclude Include="RegistryAccess_Wow64KeyAccessOption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="platform.API.Win32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicLoadedLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vlr-util-win32.cpp">
@@ -114,6 +120,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RegistryAccess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platform.API.Win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
