@@ -755,11 +755,11 @@ TEST(RegistryAccess, ReadValuesObfuscated)
 	auto oReg = CRegistryAccess{ HKEY_CURRENT_USER };
 
 	std::vector<cpp::tstring> arrValueNames;
-	arrValueNames.push_back(svzTestValueName_SZ);
-	arrValueNames.push_back(svzTestValueName_DWORD);
-	arrValueNames.push_back(svzTestValueName_QWORD);
-	arrValueNames.push_back(svzTestValueName_MultiSz);
-	arrValueNames.push_back(svzTestValueName_BINARY);
+	arrValueNames.push_back(svzTestValueName_SZ.toStdString());
+	arrValueNames.push_back(svzTestValueName_DWORD.toStdString());
+	arrValueNames.push_back(svzTestValueName_QWORD.toStdString());
+	arrValueNames.push_back(svzTestValueName_MultiSz.toStdString());
+	arrValueNames.push_back(svzTestValueName_BINARY.toStdString());
 
 	std::vector<CRegistryAccess::ValueMapEntry> arrValueMapEntryCollection;
 	sr = oReg.ReadValuesObfuscated(svzTestKey, arrValueNames, arrValueMapEntryCollection);
