@@ -156,6 +156,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AutoCleanupTypedefs.h" />
+    <ClInclude Include="com.CoInitManager.h" />
+    <ClInclude Include="com.CoInitSecuritySettings.h" />
+    <ClInclude Include="com.CoInitState.h" />
     <ClInclude Include="DynamicLoadedLibrary.h" />
     <ClInclude Include="enum.SID_NAME_USE.h" />
     <ClInclude Include="enum.WELL_KNOWN_SID_TYPE.h" />
@@ -183,6 +186,8 @@
     <ClInclude Include="structure.WIN32_FIND_DATA.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="com.CoInitManager.cpp" />
+    <ClCompile Include="com.CoInitState.cpp" />
     <ClCompile Include="filesystem.Functions.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

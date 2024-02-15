@@ -93,6 +93,15 @@
     <ClInclude Include="DynamicLoadedLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="com.CoInitState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="com.CoInitManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="com.CoInitSecuritySettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vlr-util-win32.cpp">
@@ -123,6 +132,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="platform.API.Win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="com.CoInitManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="com.CoInitState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
