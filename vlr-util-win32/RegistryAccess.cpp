@@ -29,7 +29,7 @@ SResult CRegistryAccess::CheckKeyExists(tzstring_view svzKeyName) const
 
 SResult CRegistryAccess::EnsureKeyExists(
 	tzstring_view svzKeyName,
-	const Options_EnsureKeyExists& options /*= {}*/) const
+	const Options_EnsureKeyExists& /*options*/ /*= {}*/) const
 {
 	SResult sr;
 	LONG lResult{};
@@ -227,7 +227,7 @@ SResult CRegistryAccess::WriteValueBase(
 			NULL,
 			dwType,
 			spanData.data(),
-			util::range_checked_cast<DWORD>(spanData.size()));
+			dwBufferSize);
 		if (lResult == ERROR_SUCCESS)
 		{
 			break;
@@ -937,7 +937,7 @@ SResult CRegistryAccess::convertValueToRegData_String(
 }
 
 SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
-	const DWORD& dwType,
+	const DWORD& /*dwType*/,
 	cpp::span<const BYTE> spanData,
 	std::string& saValue) const
 {
@@ -962,7 +962,7 @@ SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 }
 
 SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
-	const DWORD& dwType,
+	const DWORD& /*dwType*/,
 	cpp::span<const BYTE> spanData,
 	std::wstring& swValue) const
 {

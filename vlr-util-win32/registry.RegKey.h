@@ -86,7 +86,7 @@ public:
 		static constexpr DWORD dwFlagCombination_32and64Rights = RRF_SUBKEY_WOW6464KEY | RRF_SUBKEY_WOW6432KEY;
 		if ((dwFlags & dwFlagCombination_32and64Rights) == dwFlagCombination_32and64Rights)
 		{
-			vlr::assert::HandleCheckFailure( _T( "RRF_SUBKEY_WOW6464KEY and RRF_SUBKEY_WOW6432KEY both set" ) );
+			VLR_ASSERTIONS_HANDLE_CHECK_FAILURE(_T("RRF_SUBKEY_WOW6464KEY and RRF_SUBKEY_WOW6432KEY both set"));
 			// Pick one arbitrarily
 			dwFlags &= (~dwFlagCombination_32and64Rights);
 			dwFlags |= RRF_SUBKEY_WOW6432KEY;
