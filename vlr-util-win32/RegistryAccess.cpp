@@ -1338,7 +1338,7 @@ SResult CRegistryAccess::populateValueMapEntryFromEnumValueData(
 	switch (oEnumValueData.m_dwType)
 	{
 	case REG_SZ:
-	//case REG_EXPAND_SZ:
+	case REG_EXPAND_SZ:
 		oValueMapEntry.m_spValue_SZ = cpp::make_shared<cpp::tstring>();
 		sr = convertRegDataToValue_String(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_SZ);
 		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
