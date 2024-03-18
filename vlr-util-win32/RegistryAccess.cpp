@@ -1216,6 +1216,16 @@ SResult CRegistryAccess::convertRegDataToValue_Binary(
 	return SResult::Success;
 }
 
+SResult CRegistryAccess::convertRegDataToValue_Binary_AsFallback(
+	const DWORD& /*dwType*/,
+	cpp::span<const BYTE> spanData,
+	std::vector<BYTE>& arrBinaryData) const
+{
+	arrBinaryData = std::vector<BYTE>{ spanData.begin(), spanData.end() };
+
+	return SResult::Success;
+}
+
 SResult CRegistryAccess::convertValueToRegData_Binary(
 	cpp::span<const BYTE> spanData,
 	DWORD& dwType,
@@ -1318,7 +1328,7 @@ SResult CRegistryAccess::EnumAllValues(
 
 SResult CRegistryAccess::populateValueMapEntryFromEnumValueData(
 	const EnumValueData& oEnumValueData,
-	ValueMapEntry& oValueMapEntry)
+	ValueMapEntry& oValueMapEntry) const
 {
 	SResult sr;
 
@@ -1328,6 +1338,7 @@ SResult CRegistryAccess::populateValueMapEntryFromEnumValueData(
 	switch (oEnumValueData.m_dwType)
 	{
 	case REG_SZ:
+	//case REG_EXPAND_SZ:
 		oValueMapEntry.m_spValue_SZ = cpp::make_shared<cpp::tstring>();
 		sr = convertRegDataToValue_String(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_SZ);
 		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
@@ -1355,7 +1366,7 @@ SResult CRegistryAccess::populateValueMapEntryFromEnumValueData(
 
 	default:
 		oValueMapEntry.m_spValue_TypeUnhandled = cpp::make_shared<std::vector<BYTE>>();
-		sr = convertRegDataToValue_Binary(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_TypeUnhandled);
+		sr = convertRegDataToValue_Binary_AsFallback(oEnumValueData.m_dwType, oEnumValueData.m_spanData, *oValueMapEntry.m_spValue_TypeUnhandled);
 		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
 		break;
 	}
@@ -1365,7 +1376,7 @@ SResult CRegistryAccess::populateValueMapEntryFromEnumValueData(
 
 SResult CRegistryAccess::RealAllValuesIntoMap(
 	tzstring_view svzKeyName,
-	std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue)
+	std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue) const
 {
 	SResult sr;
 

@@ -559,6 +559,10 @@ public:
 		const DWORD& dwType,
 		cpp::span<const BYTE> spanData,
 		std::vector<BYTE>& arrBinaryData) const;
+	SResult convertRegDataToValue_Binary_AsFallback(
+		const DWORD& dwType,
+		cpp::span<const BYTE> spanData,
+		std::vector<BYTE>& arrBinaryData) const;
 	SResult convertValueToRegData_Binary(
 		cpp::span<const BYTE> spanData,
 		DWORD& dwType,
@@ -613,11 +617,11 @@ public:
 
 	SResult populateValueMapEntryFromEnumValueData(
 		const EnumValueData& oEnumValueData,
-		ValueMapEntry& oValueMapEntry);
+		ValueMapEntry& oValueMapEntry) const;
 
 	SResult RealAllValuesIntoMap(
 		tzstring_view svzKeyName,
-		std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue);
+		std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue) const;
 
 	// This is a method which can be used to read a value without exposing the name of the value which is being read.
 	// Since registry access calls can be audited, reading a value by name exposes the name. Instead of this, we can 

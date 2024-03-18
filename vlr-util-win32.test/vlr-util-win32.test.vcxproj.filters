@@ -30,6 +30,9 @@
     <ClCompile Include="CoInitManager.test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AppOptionSource_Registry.test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

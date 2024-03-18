@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AppOptionSource_Registry.h" />
     <ClInclude Include="AutoCleanupTypedefs.h" />
     <ClInclude Include="com.CoInitManager.h" />
     <ClInclude Include="com.CoInitSecuritySettings.h" />
@@ -186,6 +187,7 @@
     <ClInclude Include="structure.WIN32_FIND_DATA.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AppOptionSource_Registry.cpp" />
     <ClCompile Include="com.CoInitManager.cpp" />
     <ClCompile Include="com.CoInitState.cpp" />
     <ClCompile Include="filesystem.Functions.cpp" />
