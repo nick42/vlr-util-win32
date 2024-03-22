@@ -15,6 +15,11 @@ SResult CAppOptionSource_Registry::ReadAllValuesFromPathAsOptions(
 
 	std::unordered_map<vlr::tstring, CRegistryAccess::ValueMapEntry> mapNameToValue;
 	sr = oReg.RealAllValuesIntoMap(svzPath, mapNameToValue);
+	if (sr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+	{
+		// This means the key doesn't exist; treating this as a normal NOOP result
+		return S_FALSE;
+	}
 	VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
 
 	for (const auto& oMapPair : mapNameToValue)
