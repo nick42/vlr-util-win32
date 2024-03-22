@@ -13,6 +13,66 @@
 using namespace vlr;
 using namespace vlr::win32;
 
+TEST(RegistryAccess, MakeRegistryPath)
+{
+	static constexpr tzstring_view svzBaseKey_Unqualified = _T("SOFTWARE\\vlr-test");
+	static constexpr tzstring_view svzBaseKey_TrailingSeparator = _T("SOFTWARE\\vlr-test\\");
+	static constexpr tzstring_view svzBaseKey_NoMatch1 = _T("SOFTWARE\\vlr-test ");
+	static constexpr tzstring_view svzSubkey_Unqualified = _T("subkey");
+	static constexpr tzstring_view svzSubkey_PrefixSeparator = _T("\\subkey");
+	static constexpr tzstring_view svzSubkey_PostfixSeparator = _T("subkey\\");
+	static constexpr tzstring_view svzSubkey_BothSeparators = _T("\\subkey\\");
+	static constexpr tzstring_view svzSubkey_MultiSeparators = _T("\\subkey\\\\");
+	static constexpr tzstring_view svzExpectedResult = _T("SOFTWARE\\vlr-test\\subkey");
+
+	static const auto oStringCompareCS = StringCompare::CS();
+
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_Unqualified, svzSubkey_Unqualified);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_Unqualified, svzSubkey_PrefixSeparator);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_Unqualified, svzSubkey_PostfixSeparator);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_Unqualified, svzSubkey_BothSeparators);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_Unqualified, svzSubkey_MultiSeparators);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_TrailingSeparator, svzSubkey_Unqualified);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_TrailingSeparator, svzSubkey_PrefixSeparator);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_TrailingSeparator, svzSubkey_PostfixSeparator);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_TrailingSeparator, svzSubkey_BothSeparators);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_TrailingSeparator, svzSubkey_MultiSeparators);
+		EXPECT_TRUE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+	{
+		auto svValue = MakeRegistryPath(svzBaseKey_NoMatch1, svzSubkey_Unqualified);
+		EXPECT_FALSE(oStringCompareCS.AreEqual(svValue, svzExpectedResult));
+	}
+}
+
 using QWORD = CRegistryAccess::QWORD;
 
 static constexpr auto svzBaseKey_Test = tzstring_view{ _T("SOFTWARE\\vlr-test") };

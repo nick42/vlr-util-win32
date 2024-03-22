@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vlr-util/cpp_namespace.h>
+#include <vlr-util/strings.split.h>
 #include <vlr-util/util.includes.h>
 #include <vlr-util/util.std_aliases.h>
 #include <vlr-util/zstring_view.h>
@@ -13,6 +14,38 @@
 namespace vlr {
 
 namespace win32 {
+
+template <typename TChar, typename... Args>
+decltype(auto) MakeRegistryPath(std::basic_string_view<TChar> svPathPrefix, std::basic_string_view<TChar> svPathComponent, Args&&... args)
+{
+	// Note, possible rainy-day optimization:
+	// Convert to use fmt::join (https://fmt.dev/latest/api.html), by constexpr conversion of args to std::array,
+	// and transformation to range by trimming string_view elements.
+
+	constexpr auto fGetFormatString = [] {
+		if constexpr (std::is_same_v<TChar, wchar_t>)
+		{
+			return L"{}\\{}";
+		}
+		else
+		{
+			return "{}\\{}";
+		}
+	};
+	constexpr auto svzChars_PathSeparators = strings::DelimitersSpec<TChar>::GetChars_PathSeparators();
+
+	auto sPath = fmt::format(fGetFormatString(),
+		strings::GetTrimmedStringView(svPathPrefix, svzChars_PathSeparators),
+		strings::GetTrimmedStringView(svPathComponent, svzChars_PathSeparators));
+	if constexpr (sizeof...(args) == 0)
+	{
+		return sPath;
+	}
+	else
+	{
+		return MakeRegistryPath(sPath, args);
+	}
+}
 
 class CRegistryAccess
 {

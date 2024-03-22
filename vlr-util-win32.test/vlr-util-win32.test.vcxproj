@@ -152,7 +152,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="platform.API.Win32.cpp" />
-    <ClCompile Include="RegistryAccess.cpp" />
+    <ClCompile Include="RegistryAccess.test.cpp" />
     <ClCompile Include="vlr-util-win32.test.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -18,7 +18,7 @@
     <ClCompile Include="vlr-util-win32.test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RegistryAccess.cpp">
+    <ClCompile Include="RegistryAccess.test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
