@@ -31,7 +31,7 @@ SResult CAppOptionSource_Registry::ReadAllValuesFromPathAsOptions(
 		auto fMakeAppOptionSpecifiedValue = [&](const auto& tValue)
 		{
 			spSpecifiedValue = std::make_shared<CAppOptionSpecifiedValue>(
-				AppOptionSource::SystemConfigRespository,
+				CAppOptionSourceInfo{ AppOptionSource::SystemConfigRespository, svzPath },
 				sNativeOptionName,
 				tValue);
 		};
