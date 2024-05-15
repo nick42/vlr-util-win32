@@ -16,8 +16,9 @@ enum Wow64KeyAccessOption
 	UseDefault,
 	UseExplicit32bit,
 	UseExplicit64bit,
+	UsePlatformNative,
 };
-constexpr auto MAX_VALUE = UseExplicit64bit;
+constexpr auto MAX_VALUE = UsePlatformNative;
 
 } // namespace RegistryAccess
 
@@ -43,6 +44,7 @@ public:
 			VLR_ON_CASE_RETURN_STRING_OF_VALUE(win32::RegistryAccess::UseDefault);
 			VLR_ON_CASE_RETURN_STRING_OF_VALUE(win32::RegistryAccess::UseExplicit32bit);
 			VLR_ON_CASE_RETURN_STRING_OF_VALUE(win32::RegistryAccess::UseExplicit64bit);
+			VLR_ON_CASE_RETURN_STRING_OF_VALUE(win32::RegistryAccess::UsePlatformNative);
 
 		default:
 			return base_type::FormatAsNumber(eValue);

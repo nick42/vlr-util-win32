@@ -3,6 +3,8 @@
 #include <vlr-util/util.Result.h>
 #include <vlr-util/util.std_aliases.h>
 
+#include "DynamicLoadInfo_Library.h"
+
 namespace vlr {
 
 namespace win32 {
@@ -10,12 +12,21 @@ namespace win32 {
 class CDynamicLoadedLibrary
 {
 public:
-	vlr::tstring m_sLoadName;
+	CDynamicLoadInfo_Library m_oLoadInfo;
 	SResult m_srLoadResult;
 	HMODULE m_hLibrary{};
 
 	// Note: Normally, this should be true; library references are reference counted.
 	bool m_bFreeLibraryOnDestroy = true;
+
+public:
+	inline bool LibraryLoadedSuccessfully() const
+	{
+		return true
+			&& m_srLoadResult.isSuccess()
+			&& (m_hLibrary != NULL)
+			;
+	}
 
 protected:
 	inline SResult OnDestructor_FreeLibrary()

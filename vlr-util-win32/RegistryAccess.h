@@ -72,6 +72,11 @@ public:
 		m_eWow64KeyAccessOption = eWow64KeyAccessOption;
 		return SResult::Success;
 	}
+	// Set the instance to access the system-native portion of the registry, based on system config
+	//inline SResult SetWow64Value_ForSystemNativeReg()
+	//{
+	//	return SResult::Success;
+	//}
 
 	SResult CheckKeyExists(tzstring_view svzKeyName) const;
 	inline bool DoesKeyExist(tzstring_view svzKeyName) const

@@ -24,7 +24,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="platform.API.Win32.cpp">
+    <ClCompile Include="platform.API.Win32.test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CoInitManager.test.cpp">
@@ -38,5 +38,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="app.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
   </ItemGroup>
 </Project>

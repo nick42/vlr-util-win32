@@ -20,7 +20,7 @@ TEST(AppOptionSource_Registry, ReadAllValuesFromPathAsOptions)
 	sr = oAppOptionSource_Registry.ReadAllValuesFromPathAsOptions(oReg, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion"));
 	EXPECT_EQ(sr, S_OK);
 	// This should have some values
-	EXPECT_GE(oAppOptions.GetCount_SpecifiedValues(), 5);
+	EXPECT_GE(oAppOptions.GetCount_SpecifiedValues(), 5U);
 
 	// Look for something which should be there...
 	{

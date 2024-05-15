@@ -161,14 +161,18 @@
     <ClInclude Include="com.CoInitSecuritySettings.h" />
     <ClInclude Include="com.CoInitState.h" />
     <ClInclude Include="DynamicLoadedLibrary.h" />
+    <ClInclude Include="DynamicLoadInfo_Function.h" />
+    <ClInclude Include="DynamicLoadInfo_Library.h" />
     <ClInclude Include="enum.SID_NAME_USE.h" />
     <ClInclude Include="enum.WELL_KNOWN_SID_TYPE.h" />
     <ClInclude Include="filesystem.enum_files.h" />
     <ClInclude Include="filesystem.enum_volumes.h" />
     <ClInclude Include="filesystem.Functions.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ModuleContext.Runtime.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="platform.API.Win32.h" />
+    <ClInclude Include="PlatformInfo.h" />
     <ClInclude Include="registry.enum_RegKeys.h" />
     <ClInclude Include="registry.enum_RegValues.h" />
     <ClInclude Include="registry.iterator_RegEnumKey.h" />
@@ -190,7 +194,10 @@
     <ClCompile Include="AppOptionSource_Registry.cpp" />
     <ClCompile Include="com.CoInitManager.cpp" />
     <ClCompile Include="com.CoInitState.cpp" />
+    <ClCompile Include="DynamicLoadInfo_Function.cpp" />
+    <ClCompile Include="DynamicLoadInfo_Library.cpp" />
     <ClCompile Include="filesystem.Functions.cpp" />
+    <ClCompile Include="ModuleContext.Runtime.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -198,6 +205,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="platform.API.Win32.cpp" />
+    <ClCompile Include="PlatformInfo.cpp" />
     <ClCompile Include="RegistryAccess.cpp" />
     <ClCompile Include="security.SIDs.cpp" />
     <ClCompile Include="security.tokens.cpp" />

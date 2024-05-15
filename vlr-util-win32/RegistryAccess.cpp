@@ -6,6 +6,7 @@
 #include "vlr-util/util.convert.StringConversion.h"
 
 #include "AutoCleanupTypedefs.h"
+#include "ModuleContext.Runtime.h"
 
 namespace vlr {
 
@@ -1620,6 +1621,15 @@ DWORD CRegistryAccess::getWow64RedirectionKeyAccessMask() const
 		return KEY_WOW64_32KEY;
 	case RegistryAccess::Wow64KeyAccessOption::UseExplicit64bit:
 		return KEY_WOW64_64KEY;
+	case RegistryAccess::Wow64KeyAccessOption::UsePlatformNative:
+		if (vlr::ModuleContext::Runtime::NativePlatformIs_64bit())
+		{
+			return KEY_WOW64_64KEY;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 }
 
