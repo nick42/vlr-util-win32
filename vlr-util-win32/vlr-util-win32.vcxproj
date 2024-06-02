@@ -169,6 +169,7 @@
     <ClInclude Include="filesystem.enum_volumes.h" />
     <ClInclude Include="filesystem.Functions.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GUID.h" />
     <ClInclude Include="ModuleContext.Runtime.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="platform.API.Win32.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="DynamicLoadInfo_Function.cpp" />
     <ClCompile Include="DynamicLoadInfo_Library.cpp" />
     <ClCompile Include="filesystem.Functions.cpp" />
+    <ClCompile Include="GUID.cpp" />
     <ClCompile Include="ModuleContext.Runtime.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

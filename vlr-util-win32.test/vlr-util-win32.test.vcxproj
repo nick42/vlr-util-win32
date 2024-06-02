@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClCompile Include="AppOptionSource_Registry.test.cpp" />
     <ClCompile Include="CoInitManager.test.cpp" />
+    <ClCompile Include="GUID.test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
