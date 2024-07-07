@@ -33,6 +33,12 @@ public:
 		return m_dwFlags_LoadLibraryEx;
 	}
 
+	decltype(auto) GetLibraryName_FilenameOnly() const
+	{
+		// TODO: Implement this...
+		return m_sLibraryName;
+	}
+
 public:
 	CDynamicLoadInfo_Library() = default;
 	CDynamicLoadInfo_Library(vlr::tzstring_view svzLibraryName)

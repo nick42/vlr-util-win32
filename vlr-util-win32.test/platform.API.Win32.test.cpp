@@ -4,6 +4,7 @@
 
 #include <vlr-util/ActionOnDestruction.h>
 
+#include "vlr-util-win32/platform.DynamicLoadProc.h"
 #include "vlr-util-win32/platform.API.Win32.h"
 
 using namespace vlr;
@@ -38,7 +39,8 @@ struct TestPlatformAPI_Win32
 		return bMeetsVersionRequirement;
 	}
 
-	platform::API::CWin32 m_oPlatformAPI_Win32;
+	platform::CDynamicLoadProc m_oDynamicLoadProc;
+	platform::API::CWin32 m_oPlatformAPI_Win32{ &m_oDynamicLoadProc };
 };
 
 TEST_F(TestPlatformAPI_Win32, GetFunction_IsWow64Process2)
@@ -66,7 +68,7 @@ TEST_F(TestPlatformAPI_Win32, GetFunction_IsWow64Process2)
 	EXPECT_EQ(bResult, TRUE);
 }
 
-TEST_F(TestPlatformAPI_Win32, TryLoadFunction)
+TEST_F(TestPlatformAPI_Win32, TryPopulateFunction)
 {
 	typedef BOOL (WINAPI *API_IsWow64Process)(
 		/*[in]*/  HANDLE hProcess,
@@ -79,7 +81,7 @@ TEST_F(TestPlatformAPI_Win32, TryLoadFunction)
 	SResult sr;
 
 	SPCDynamicLoadedFunctionBase spDynamicLoadFunction;
-	sr = m_oPlatformAPI_Win32.TryLoadFunction(oLoadInfo, spDynamicLoadFunction);
+	sr = m_oDynamicLoadProc.TryPopulateFunction(oLoadInfo, spDynamicLoadFunction);
 	ASSERT_EQ(sr, S_OK);
 	ASSERT_EQ(spDynamicLoadFunction->m_srLoadResult, S_OK);
 	ASSERT_NE(spDynamicLoadFunction, nullptr);
@@ -98,7 +100,7 @@ TEST_F(TestPlatformAPI_Win32, TryLoadFunction)
 	EXPECT_EQ(bResult, TRUE);
 }
 
-TEST_F(TestPlatformAPI_Win32, TryLoadFunction_WithInvalidDll)
+TEST_F(TestPlatformAPI_Win32, TryPopulateFunction_WithInvalidDll)
 {
 	typedef BOOL(WINAPI* API_IsWow64Process)(
 		/*[in]*/  HANDLE hProcess,
@@ -112,7 +114,7 @@ TEST_F(TestPlatformAPI_Win32, TryLoadFunction_WithInvalidDll)
 	SResult sr;
 
 	SPCDynamicLoadedFunctionBase spDynamicLoadFunction;
-	sr = m_oPlatformAPI_Win32.TryLoadFunction(oLoadInfo, spDynamicLoadFunction);
+	sr = m_oDynamicLoadProc.TryPopulateFunction(oLoadInfo, spDynamicLoadFunction);
 	ASSERT_EQ(sr, S_OK);
 	ASSERT_EQ(spDynamicLoadFunction->m_srLoadResult, S_OK);
 	ASSERT_NE(spDynamicLoadFunction, nullptr);
@@ -131,7 +133,7 @@ TEST_F(TestPlatformAPI_Win32, TryLoadFunction_WithInvalidDll)
 	EXPECT_EQ(bResult, TRUE);
 }
 
-TEST_F(TestPlatformAPI_Win32, TryLoadFunction_ThenTypedLoad)
+TEST_F(TestPlatformAPI_Win32, TryPopulateFunction_ThenTypedLoad)
 {
 	if (!VersionHasFunction_IsWow64Process2())
 	{
@@ -145,7 +147,7 @@ TEST_F(TestPlatformAPI_Win32, TryLoadFunction_ThenTypedLoad)
 	SResult sr;
 
 	SPCDynamicLoadedFunctionBase spDynamicLoadFunction;
-	sr = m_oPlatformAPI_Win32.TryLoadFunction(oLoadInfo, spDynamicLoadFunction);
+	sr = m_oDynamicLoadProc.TryPopulateFunction(oLoadInfo, spDynamicLoadFunction);
 	ASSERT_EQ(sr, S_OK);
 	ASSERT_EQ(spDynamicLoadFunction->m_srLoadResult, S_OK);
 	ASSERT_NE(spDynamicLoadFunction, nullptr);

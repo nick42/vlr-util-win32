@@ -173,6 +173,7 @@
     <ClInclude Include="ModuleContext.Runtime.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="platform.API.Win32.h" />
+    <ClInclude Include="platform.DynamicLoadProc.h" />
     <ClInclude Include="PlatformInfo.h" />
     <ClInclude Include="registry.enum_RegKeys.h" />
     <ClInclude Include="registry.enum_RegValues.h" />
@@ -207,6 +208,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="platform.API.Win32.cpp" />
+    <ClCompile Include="platform.DynamicLoadProc.cpp" />
     <ClCompile Include="PlatformInfo.cpp" />
     <ClCompile Include="RegistryAccess.cpp" />
     <ClCompile Include="security.SIDs.cpp" />
