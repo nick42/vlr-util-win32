@@ -17,7 +17,7 @@ const Win32::F_IsWow64Process2& CWin32::GetFunction_IsWow64Process2()
 
 	auto slDataAccess = std::scoped_lock{ m_mutexDataAccess };
 
-	static constexpr vlr::zstring_view svzFunctionName = "IsWow64Process2";
+	static constexpr vlr::tzstring_view svzFunctionName = _T("IsWow64Process2");
 	static constexpr vlr::tzstring_view svzLibraryName = _T("Kernel32.dll");
 
 	if (m_spIsWow64Process2)
@@ -29,7 +29,7 @@ const Win32::F_IsWow64Process2& CWin32::GetFunction_IsWow64Process2()
 
 	CDynamicLoadInfo_Function oLoadInfo;
 	oLoadInfo.m_vecLibraryLoadInfo.push_back(CDynamicLoadInfo_Library{ svzLibraryName });
-	oLoadInfo.m_saFunctionName = svzFunctionName.toStdString();
+	oLoadInfo.m_sFunctionName = svzFunctionName.toStdString();
 
 	// We want the typed function version in the map, so we create and pass in
 	m_spIsWow64Process2 = std::make_shared<Win32::F_IsWow64Process2>();

@@ -166,6 +166,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="platform.API.Win32.test.cpp" />
+    <ClCompile Include="platform.DynamicLoadProc.test.cpp" />
     <ClCompile Include="RegistryAccess.test.cpp" />
     <ClCompile Include="vlr-util-win32.test.cpp" />
   </ItemGroup>

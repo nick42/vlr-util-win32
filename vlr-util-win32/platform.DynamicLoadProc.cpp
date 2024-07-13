@@ -9,14 +9,114 @@ namespace win32 {
 
 namespace platform {
 
+SResult CDynamicLoadProc::ResolveDynamicLoadForLibrary(
+	CDynamicLoadedLibrary& oDynamicLoadLibrary)
+{
+	SResult sr;
+
+	// This should not be the case on a call...
+	if (oDynamicLoadLibrary.HasLoadBeenAttempted())
+	{
+		vlr::assert::HandleCheckFailure(VLR_LOG_CONTEXT_WARNING, _T("Unexpected call state for dynamic library resolution"));
+		return SResult::Success_NoWorkDone;
+	}
+
+	// TODO? Add more options around loading
+	if (m_fResultModuleLoad)
+	{
+		HMODULE hLibrary{};
+		sr = m_fResultModuleLoad(oDynamicLoadLibrary.m_oLoadInfo, hLibrary);
+		oDynamicLoadLibrary.m_srLoadResult = sr;
+		oDynamicLoadLibrary.m_hLibrary = hLibrary;
+
+		return SResult::Success;
+	}
+
+	sr = ResolveDynamicLoadForLibrary_PreLoaded(oDynamicLoadLibrary);
+	if (!sr.isSuccess())
+	{
+		// Failure on load; propagate the failure code
+		return sr;
+	}
+	if (sr == SResult::Success)
+	{
+		// Resolved from pre-loaded
+		return sr;
+	}
+
+	sr = ResolveDynamicLoadForLibrary_Default(oDynamicLoadLibrary);
+	if (!sr.isSuccess())
+	{
+		// Failure on load; propagate the failure code
+		return sr;
+	}
+
+	return SResult::Success;
+}
+
+SResult CDynamicLoadProc::ResolveDynamicLoadForLibrary_PreLoaded(
+	CDynamicLoadedLibrary& oDynamicLoadLibrary)
+{
+	if (!oDynamicLoadLibrary.m_oLoadInfo.GetExpectLibraryAlreadyLoaded())
+	{
+		return SResult::Success_NoWorkDone;
+	}
+
+	BOOL bResult{};
+
+	auto sLibraryName = oDynamicLoadLibrary.m_oLoadInfo.GetLibraryName_Normalized();
+
+	HMODULE hModule{};
+	bResult = ::GetModuleHandleEx(
+		0,
+		sLibraryName.c_str(),
+		&hModule);
+	if (!bResult)
+	{
+		oDynamicLoadLibrary.m_srLoadResult = SResult::For_win32_LastError();
+		return oDynamicLoadLibrary.m_srLoadResult;
+	}
+
+	oDynamicLoadLibrary.m_srLoadResult = S_OK;
+	oDynamicLoadLibrary.m_hLibrary = hModule;
+
+	return SResult::Success;
+}
+
+SResult CDynamicLoadProc::ResolveDynamicLoadForLibrary_Default(
+	CDynamicLoadedLibrary& oDynamicLoadLibrary)
+{
+	auto sLibraryName = oDynamicLoadLibrary.m_oLoadInfo.GetLibraryName_Normalized();
+	DWORD dwFlags = oDynamicLoadLibrary.m_oLoadInfo.GetEffectiveFlags_LoadLibraryEx();
+
+	oDynamicLoadLibrary.m_hLibrary = ::LoadLibraryEx(
+		sLibraryName.c_str(),
+		NULL,
+		dwFlags);
+	if (oDynamicLoadLibrary.m_hLibrary)
+	{
+		oDynamicLoadLibrary.m_srLoadResult = S_OK;
+	}
+	else
+	{
+		oDynamicLoadLibrary.m_srLoadResult = SResult::For_win32_LastError();
+	}
+
+	return oDynamicLoadLibrary.m_srLoadResult;
+}
+
 SResult CDynamicLoadProc::PopulateFunctionIdentifier(
 	const CDynamicLoadInfo_Function& oLoadInfo_Function,
 	const CDynamicLoadInfo_Library& oLoadInfo_Library,
 	vlr::tstring& sFunctionIdentifier)
 {
+	// Note: We use '/' as the delineator, because this won't be present in valid library names or function names.
+	// We use the unqualified filename, because this is how Windows stores dynamic library references _normally_.
+	// Note: It is possible to have multiple path-qualified DLL's with the same names loaded; TBD to support this.
+
 	sFunctionIdentifier = fmt::format(_T("{}/{}"),
 		oLoadInfo_Library.GetLibraryName_FilenameOnly(),
-		util::Convert::ToStdString(oLoadInfo_Function.m_saFunctionName));
+		oLoadInfo_Function.m_sFunctionName);
 
 	return SResult::Success;
 }
@@ -24,6 +124,16 @@ SResult CDynamicLoadProc::PopulateFunctionIdentifier(
 SResult CDynamicLoadProc::SaveLoadResultToMap(
 	const CDynamicLoadInfo_Function& oLoadInfo_Function,
 	const CDynamicLoadInfo_Library& oLoadInfo_Library,
+	SResult srLoadResult,
+	const SPCDynamicLoadedFunctionBase& spDynamicLoadedFunction)
+{
+	auto sFunctionIdentifier = GetFunctionIdentifier_Inline(oLoadInfo_Function, oLoadInfo_Library);
+
+	return SaveLoadResultToMap(sFunctionIdentifier, srLoadResult, spDynamicLoadedFunction);
+}
+
+SResult CDynamicLoadProc::SaveLoadResultToMap(
+	const vlr::tstring& sFunctionIdentifier,
 	SResult srLoadResult,
 	const SPCDynamicLoadedFunctionBase& spDynamicLoadedFunction)
 {
@@ -36,8 +146,6 @@ SResult CDynamicLoadProc::SaveLoadResultToMap(
 		spDynamicLoadedFunction_ToBeSaved = std::make_shared<CDynamicLoadedFunctionBase>();
 		spDynamicLoadedFunction_ToBeSaved->m_srLoadResult = srLoadResult;
 	}
-
-	auto sFunctionIdentifier = GetFunctionIdentifier_Inline(oLoadInfo_Function, oLoadInfo_Library);
 
 	auto slDataAccess = std::scoped_lock{ m_mutexDataAccess };
 
@@ -53,40 +161,24 @@ const CDynamicLoadedLibrary& CDynamicLoadProc::GetDynamicLoadLibrary(const vlr::
 
 const CDynamicLoadedLibrary& CDynamicLoadProc::GetDynamicLoadLibrary(const CDynamicLoadInfo_Library& oLoadInfo)
 {
+	SResult sr;
+
 	auto slDataAccess = std::scoped_lock{ m_mutexDataAccess };
 
-	auto iterIndex = m_mapLoadNameToLibrary.find(oLoadInfo.getLibraryName());
-	if (iterIndex != m_mapLoadNameToLibrary.end())
+	// Note: We will always populate a map entry for the library, even if the load fails, so no need to do multiple lookups.
+
+	auto& oDynamicLoadLibrary = m_mapLoadNameToLibrary[oLoadInfo.GetLibraryName_FilenameOnly()];
+	if (oDynamicLoadLibrary.HasLoadBeenAttempted())
 	{
-		return iterIndex->second;
-	}
-
-	auto& oDynamicLoadLibrary = m_mapLoadNameToLibrary[oLoadInfo.getLibraryName()];
-	oDynamicLoadLibrary.m_oLoadInfo = oLoadInfo;
-
-	// TODO? Add more options around loading
-	if (m_fResultModuleLoad)
-	{
-		HMODULE hLibrary{};
-		auto sr = m_fResultModuleLoad(oLoadInfo.getLibraryName(), hLibrary);
-		oDynamicLoadLibrary.m_srLoadResult = sr;
-		oDynamicLoadLibrary.m_hLibrary = hLibrary;
-
 		return oDynamicLoadLibrary;
 	}
 
-	oDynamicLoadLibrary.m_hLibrary = ::LoadLibraryEx(
-		oDynamicLoadLibrary.m_oLoadInfo.getLibraryName().c_str(),
-		NULL,
-		oDynamicLoadLibrary.m_oLoadInfo.getFLags_LoadLibraryEx());
-	if (oDynamicLoadLibrary.m_hLibrary)
-	{
-		oDynamicLoadLibrary.m_srLoadResult = S_OK;
-	}
-	else
-	{
-		oDynamicLoadLibrary.m_srLoadResult = SResult::For_win32_LastError();
-	}
+	// Attempt the load
+
+	oDynamicLoadLibrary.m_oLoadInfo = oLoadInfo;
+
+	sr = ResolveDynamicLoadForLibrary(oDynamicLoadLibrary);
+	VLR_ASSERT_SR_SUCCEEDED_OR_CONTINUE(sr);
 
 	return oDynamicLoadLibrary;
 }
@@ -159,7 +251,7 @@ SResult CDynamicLoadProc::TryPopulateFunction(
 			continue;
 		}
 
-		auto fProc = ::GetProcAddress(oDynamicLoadLibrary.m_hLibrary, oLoadInfo.m_saFunctionName.c_str());
+		auto fProc = ::GetProcAddress(oDynamicLoadLibrary.m_hLibrary, util::Convert::ToStdStringA(oLoadInfo.m_sFunctionName).c_str());
 		if (!fProc)
 		{
 			// Not found in this library
@@ -174,7 +266,7 @@ SResult CDynamicLoadProc::TryPopulateFunction(
 		VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(spDynamicLoadFunction_Loaded);
 
 		spDynamicLoadFunction_Loaded->m_srLoadResult = SResult::Success;
-		spDynamicLoadFunction_Loaded->m_pvRawFunctionPointer = fProc;
+		spDynamicLoadFunction_Loaded->SetFromRawPtr(fProc);
 
 		sr = SaveLoadResultToMap(oLoadInfo, oLoadInfo_Library, SResult::Success, spDynamicLoadFunction_Loaded);
 		VLR_ASSERT_SR_SUCCEEDED_OR_CONTINUE(sr);

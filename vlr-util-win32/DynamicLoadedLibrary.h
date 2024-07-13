@@ -20,6 +20,10 @@ public:
 	bool m_bFreeLibraryOnDestroy = true;
 
 public:
+	inline bool HasLoadBeenAttempted() const
+	{
+		return (m_srLoadResult.isSet());
+	}
 	inline bool LibraryLoadedSuccessfully() const
 	{
 		return true

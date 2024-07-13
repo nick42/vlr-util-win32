@@ -75,7 +75,7 @@ TEST_F(TestPlatformAPI_Win32, TryPopulateFunction)
 		/*[out]*/ PBOOL  Wow64Process);
 
 	CDynamicLoadInfo_Function oLoadInfo;
-	oLoadInfo.m_saFunctionName = "IsWow64Process";
+	oLoadInfo.m_sFunctionName = _T("IsWow64Process");
 	oLoadInfo.m_vecLibraryLoadInfo.emplace_back(_T("kernel32.dll"));
 
 	SResult sr;
@@ -107,7 +107,7 @@ TEST_F(TestPlatformAPI_Win32, TryPopulateFunction_WithInvalidDll)
 		/*[out]*/ PBOOL  Wow64Process);
 
 	CDynamicLoadInfo_Function oLoadInfo;
-	oLoadInfo.m_saFunctionName = "IsWow64Process";
+	oLoadInfo.m_sFunctionName = _T("IsWow64Process");
 	oLoadInfo.m_vecLibraryLoadInfo.emplace_back(_T("invalid.dll"));
 	oLoadInfo.m_vecLibraryLoadInfo.emplace_back(_T("kernel32.dll"));
 
@@ -141,7 +141,7 @@ TEST_F(TestPlatformAPI_Win32, TryPopulateFunction_ThenTypedLoad)
 	}
 
 	CDynamicLoadInfo_Function oLoadInfo;
-	oLoadInfo.m_saFunctionName = "IsWow64Process2";
+	oLoadInfo.m_sFunctionName = _T("IsWow64Process2");
 	oLoadInfo.m_vecLibraryLoadInfo.emplace_back(_T("kernel32.dll"));
 
 	SResult sr;

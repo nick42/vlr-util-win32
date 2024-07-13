@@ -12,7 +12,7 @@ namespace win32 {
 class CDynamicLoadInfo_Function
 {
 public:
-	std::string m_saFunctionName;
+	vlr::tstring m_sFunctionName;
 	std::vector<CDynamicLoadInfo_Library> m_vecLibraryLoadInfo;
 };
 

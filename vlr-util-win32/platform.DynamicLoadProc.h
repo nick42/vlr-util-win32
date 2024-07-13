@@ -34,6 +34,13 @@ protected:
 
 	std::map<vlr::tstring, SPCDynamicLoadedFunctionBase, vlr::StringCompare::asCaseInsensitive> m_mapFunctionIdentifierToLoadedInstance;
 
+	SResult ResolveDynamicLoadForLibrary(
+		CDynamicLoadedLibrary& oDynamicLoadLibrary);
+	SResult ResolveDynamicLoadForLibrary_PreLoaded(
+		CDynamicLoadedLibrary& oDynamicLoadLibrary);
+	SResult ResolveDynamicLoadForLibrary_Default(
+		CDynamicLoadedLibrary& oDynamicLoadLibrary);
+
 	SResult PopulateFunctionIdentifier(
 		const CDynamicLoadInfo_Function& oLoadInfo_Function,
 		const CDynamicLoadInfo_Library& oLoadInfo_Library,
@@ -52,11 +59,17 @@ protected:
 		const CDynamicLoadInfo_Library& oLoadInfo_Library,
 		SResult srLoadResult,
 		const SPCDynamicLoadedFunctionBase& spDynamicLoadedFunction);
+	SResult SaveLoadResultToMap(
+		const vlr::tstring& sFunctionIdentifier,
+		SResult srLoadResult,
+		const SPCDynamicLoadedFunctionBase& spDynamicLoadedFunction);
 
 public:
 	const CDynamicLoadedLibrary& GetDynamicLoadLibrary(const vlr::tzstring_view svzLibraryName);
 	const CDynamicLoadedLibrary& GetDynamicLoadLibrary(const CDynamicLoadInfo_Library& oLoadInfo);
 
+	// Note: If spDynamicLoadFunction_Typed is not null, this method will populate this instance on success, and store in the map.
+	// This allows the class to potentially cache the typed version of a function class, rather than just the untyped base.
 	SResult TryPopulateFunction(
 		const CDynamicLoadInfo_Function& oLoadInfo,
 		SPCDynamicLoadedFunctionBase& spDynamicLoadFunction_Result,
@@ -71,7 +84,7 @@ public:
 
 	// Note: Use this member to specify an override for module resolution (eg: to add enhanced security).
 	// The current default simply calls LoadLibary.
-	using FResolveModuleLoad = std::function<SResult(const vlr::tzstring_view svzLibraryName, HMODULE hLibrary)>;
+	using FResolveModuleLoad = std::function<SResult(const CDynamicLoadInfo_Library& oLoadInfo, HMODULE hLibrary)>;
 	FResolveModuleLoad m_fResultModuleLoad;
 
 };
