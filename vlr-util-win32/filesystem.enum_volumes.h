@@ -33,12 +33,12 @@ protected:
 	static HRESULT OnDestroy_CloseFindVolume( RefCountedDataBlock* pRefCountedDataBlock );
 
 public:
-	inline decltype(auto) With_BeginIteration()
+	inline decltype(auto) withBeginIteration()
 	{
 		OnIterationBegin();
 		return *this;
 	}
-	inline decltype(auto) GetLastError() const
+	inline const auto& GetLastError() const
 	{
 		return m_odwLastError;
 	}

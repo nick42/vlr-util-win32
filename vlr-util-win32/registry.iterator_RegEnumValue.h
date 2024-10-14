@@ -52,7 +52,7 @@ protected:
 	HRESULT OnAdaptorMethod_increment();
 
 public:
-	inline decltype(auto) GetLastError() const
+	inline const auto& GetLastError() const
 	{
 		return m_odwLastError;
 	}

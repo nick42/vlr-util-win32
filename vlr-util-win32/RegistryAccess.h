@@ -16,7 +16,7 @@ namespace vlr {
 namespace win32 {
 
 template <typename TChar, typename... Args>
-decltype(auto) MakeRegistryPath(std::basic_string_view<TChar> svPathPrefix, std::basic_string_view<TChar> svPathComponent, Args&&... args)
+auto MakeRegistryPath(std::basic_string_view<TChar> svPathPrefix, std::basic_string_view<TChar> svPathComponent, Args&&... args)
 {
 	// Note, possible rainy-day optimization:
 	// Convert to use fmt::join (https://fmt.dev/latest/api.html), by constexpr conversion of args to std::array,

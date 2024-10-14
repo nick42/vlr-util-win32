@@ -54,23 +54,23 @@ public:
 		return *this;
 	}
 
-	decltype(auto) GetLibraryName() const
+	inline const auto& GetLibraryName() const
 	{
 		return m_sLibraryName;
 	}
-	decltype(auto) GetExplicitFlags_LoadLibraryEx() const
+	inline const auto& GetExplicitFlags_LoadLibraryEx() const
 	{
 		return m_optExplicitFlags_LoadLibraryEx;
 	}
-	decltype(auto) GetLibraryName_Normalized() const
+	inline const auto& GetLibraryName_Normalized() const
 	{
 		return m_sLibraryName_Normalized;
 	}
-	decltype(auto) GetLibraryName_FilenameOnly() const
+	inline const auto& GetLibraryName_FilenameOnly() const
 	{
 		return m_sLibraryFilename;
 	}
-	decltype(auto) GetExpectLibraryAlreadyLoaded() const
+	inline const auto& GetExpectLibraryAlreadyLoaded() const
 	{
 		return m_bExpectLibraryAlreadyLoaded;
 	}

@@ -114,7 +114,7 @@ public:
 		hr = util::data_adaptor::HelperFor_MultiSZ<wchar_t>{}.ToStructuredData( pcwszValue, oValueCollection );
 		VLR_ASSERT_HR_SUCCEEDED_OR_RETURN_FAILURE_VALUE( hr );
 
-		return std::move( oValueCollection );
+		return oValueCollection;
 	}
 
 public:

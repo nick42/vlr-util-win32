@@ -39,7 +39,7 @@ protected:
 	static HRESULT OnDestroy_FindClose( RefCountedDataBlock* pRefCountedDataBlock );
 
 public:
-	inline decltype(auto) GetLastError() const
+	inline const auto& GetLastError() const
 	{
 		return m_odwLastError;
 	}
