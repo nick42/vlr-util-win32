@@ -9,7 +9,9 @@ namespace vlr {
 
 namespace win32 {
 
-class CDynamicLoadedLibrary
+namespace detail {
+
+class CDynamicLoadedLibraryData
 {
 public:
 	CDynamicLoadInfo_Library m_oLoadInfo;
@@ -32,8 +34,15 @@ public:
 			;
 	}
 
+};
+
+} // namespace detail
+
+class CDynamicLoadedLibrary
+	: public detail::CDynamicLoadedLibraryData
+{
 protected:
-	inline SResult OnDestructor_FreeLibrary()
+	inline SResult OnInvalidate_FreeLibrary()
 	{
 		if (m_hLibrary == nullptr)
 		{
@@ -52,7 +61,31 @@ protected:
 public:
 	~CDynamicLoadedLibrary()
 	{
-		OnDestructor_FreeLibrary();
+		OnInvalidate_FreeLibrary();
+	}
+
+	// Note: Need "rule of 5" here, to ensure we free any loaded library before copying in new data
+
+	CDynamicLoadedLibrary() = default;
+	CDynamicLoadedLibrary(const CDynamicLoadedLibrary& oOther)
+	{
+		OnInvalidate_FreeLibrary();
+		static_cast<CDynamicLoadedLibraryData&>(*this) = oOther;
+	}
+	CDynamicLoadedLibrary(CDynamicLoadedLibrary&& oOther)
+	{
+		OnInvalidate_FreeLibrary();
+		static_cast<CDynamicLoadedLibraryData&>(*this) = std::move(oOther);
+	}
+	decltype(auto) operator=(const CDynamicLoadedLibrary& oOther)
+	{
+		OnInvalidate_FreeLibrary();
+		static_cast<CDynamicLoadedLibraryData&>(*this) = oOther;
+	}
+	decltype(auto) operator=(CDynamicLoadedLibrary&& oOther)
+	{
+		OnInvalidate_FreeLibrary();
+		static_cast<CDynamicLoadedLibraryData&>(*this) = std::move(oOther);
 	}
 };
 
