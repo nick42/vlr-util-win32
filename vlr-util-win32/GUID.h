@@ -1,7 +1,10 @@
 #pragma once
 
-#include "vlr-util/config.h"
-#include "vlr-util/util.Result.h"
+#include <vlr-util/config.h>
+#include <vlr-util/util.Result.h>
+#include <vlr-util/zstring_view.h>
+
+// Note: Win32 IID and CLSID are typedefs of GUID, so can be used with this class also
 
 namespace vlr {
 
@@ -18,7 +21,7 @@ public:
 	vlr::tstring ToString() const;
 
 	SResult ParseString(vlr::wzstring_view svzFormatValue);
-	// Note: Win32 method uses LPOLESTR, so char version involves conversion
+	// Note: Win32 method uses LPOLESTR, so char version involves string type conversion
 	SResult ParseString(vlr::zstring_view svzFormatValue);
 
 public:
@@ -43,6 +46,12 @@ public:
 	constexpr CGUID(const GUID& oGUID)
 		: GUID{ oGUID }
 	{}
+	template <typename TString>
+	CGUID(const TString& tString)
+		: GUID{}
+	{
+		ParseString(tString);
+	}
 };
 
 } // namespace win32
