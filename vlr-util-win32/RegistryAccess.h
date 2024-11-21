@@ -59,6 +59,8 @@ protected:
 	size_t m_nMaxIterationCountForRead = m_nMaxIterationCountForRead_Default;
 	static constexpr size_t m_OnReadValue_nDefaultBufferSize = 1024;
 
+	bool m_bOnStringRead_TruncateToFirstNull = true;
+
 	RegistryAccess::SEWow64KeyAccessOption m_eWow64KeyAccessOption;
 
 	virtual HKEY getBaseKey() const
@@ -77,6 +79,12 @@ public:
 	//{
 	//	return SResult::Success;
 	//}
+
+	inline decltype(auto) withOnStringRead_TruncateToFirstNull(bool bOnStringRead_TruncateToFirstNull)
+	{
+		m_bOnStringRead_TruncateToFirstNull = bOnStringRead_TruncateToFirstNull;
+		return *this;
+	}
 
 	SResult CheckKeyExists(tzstring_view svzKeyName) const;
 	inline bool DoesKeyExist(tzstring_view svzKeyName) const
@@ -537,6 +545,9 @@ public:
 		const std::wstring_view& svValue,
 		DWORD& dwType,
 		std::vector<BYTE>& arrData) const;
+	template <typename TStringView>
+	SResult onConvertToString_TruncateToFirstNull(
+		TStringView& svValue) const;
 	SResult convertRegDataToValueDirect_String_NativeType(
 		const DWORD& dwType,
 		cpp::span<const BYTE> spanData,
@@ -725,6 +736,30 @@ public:
 		: m_hBaseKey{ hBaseKey }
 	{}
 };
+
+// Note: Logically, TStringView is a std::string_view or std::wstring_view, or derived, class
+
+template <typename TStringView>
+SResult CRegistryAccess::onConvertToString_TruncateToFirstNull(
+	TStringView& svValue) const
+{
+	if (!m_bOnStringRead_TruncateToFirstNull)
+	{
+		return SResult::Success_NoWorkDone;
+	}
+
+	for (size_t nIndex = 0; nIndex < svValue.length(); ++nIndex)
+	{
+		if (svValue[nIndex] != 0)
+		{
+			continue;
+		}
+		svValue = TStringView{ svValue.data(), nIndex };
+		break;
+	}
+
+	return SResult::Success;
+}
 
 } // namespace win32
 

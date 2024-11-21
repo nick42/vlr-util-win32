@@ -946,18 +946,11 @@ SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const char* pStringData = reinterpret_cast<const char*>(spanData.data());
 	bool bStringIsNullTerminated = (pStringData[nCountOfCharsInBuffer - 1] == _T('\0'));
 	size_t nStringLength = bStringIsNullTerminated ? nCountOfCharsInBuffer - 1 : nCountOfCharsInBuffer;
-	if (bStringIsNullTerminated)
-	{
-		// Read as NULL-terminated string
-		auto svzValue = zstring_view{ pStringData, nStringLength, zstring_view::StringIsNullTerminated{} };
-		saValue = svzValue.toStdString();
-	}
-	else
-	{
-		// Read as string_view (not NULL-terminated)
-		auto svValue = std::string_view{ pStringData, nStringLength };
-		saValue = std::string{ svValue };
-	}
+
+	// Read as string_view (not necessarily NULL-terminated)
+	auto svValue = std::string_view{ pStringData, nStringLength };
+	onConvertToString_TruncateToFirstNull(svValue);
+	saValue = std::string{ svValue };
 
 	return SResult::Success;
 }
@@ -971,18 +964,11 @@ SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	const wchar_t* pStringData = reinterpret_cast<const wchar_t*>(spanData.data());
 	bool bStringIsNullTerminated = (pStringData[nCountOfCharsInBuffer - 1] == _T('\0'));
 	size_t nStringLength = bStringIsNullTerminated ? nCountOfCharsInBuffer - 1 : nCountOfCharsInBuffer;
-	if (bStringIsNullTerminated)
-	{
-		// Read as NULL-terminated string
-		auto svzValue = wzstring_view{ pStringData, nStringLength, wzstring_view::StringIsNullTerminated{} };
-		swValue = svzValue.toStdString();
-	}
-	else
-	{
-		// Read as string_view (not NULL-terminated)
-		auto svValue = std::wstring_view{ pStringData, nStringLength };
-		swValue = std::wstring{ svValue };
-	}
+
+	// Read as string_view (not necessarily NULL-terminated)
+	auto svValue = std::wstring_view{ pStringData, nStringLength };
+	onConvertToString_TruncateToFirstNull(svValue);
+	swValue = std::wstring{ svValue };
 
 	return SResult::Success;
 }
@@ -1309,7 +1295,7 @@ SResult CRegistryAccess::EnumAllValues(
 			return SResult::For_win32_ErrorCode(lResult);
 		}
 
-		const auto& oEnumValueData = EnumValueData{}
+		const auto oEnumValueData = EnumValueData{}
 			.withIndex(i)
 			// Note: Cannot ensure this is NULL-terminated
 			.withName(vlr::tstring_view{arrNameData.data(), dwValueNameSizeChars})
