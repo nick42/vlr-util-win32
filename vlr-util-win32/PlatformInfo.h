@@ -23,6 +23,7 @@ protected:
 	SResult m_srPopulateResult_PlatformIs_Win64;
 	bool m_bPlatformIs_Win64 = false;
 	SResult PopulateValue_PlatformIs_Win64();
+	SResult PopulateValue_PlatformIs_Win64_For32bitCompilation();
 
 public:
 	bool GetValue_PlatformIs_Win64();

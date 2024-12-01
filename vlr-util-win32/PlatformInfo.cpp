@@ -18,7 +18,14 @@ SResult CPlatformInfo::PopulateValue_PlatformIs_Win64()
 		m_srPopulateResult_PlatformIs_Win64 = S_OK;
 		return S_OK;
 	}
+	else
+	{
+		return PopulateValue_PlatformIs_Win64_For32bitCompilation();
+	}
+}
 
+SResult CPlatformInfo::PopulateValue_PlatformIs_Win64_For32bitCompilation()
+{
 	HANDLE hProcessToken = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId());
 	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hProcessToken);
 	auto oOnDestroy_CloseProcessToken = vlr::MakeActionOnDestruction([&] {
