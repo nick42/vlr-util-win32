@@ -62,6 +62,8 @@ public:
 		m_ulDesiredAccess = KEY_READ | KEY_WRITE;
 		return *this;
 	}
+
+	VLR_DEFINE_DEFAULT_CONSTRUCTOR_CONSTEXPR_NOEXCEPT(Options_OpenKey);
 };
 
 struct Options_GetValue
@@ -95,6 +97,7 @@ public:
 		return dwFlags;
 	}
 
+	VLR_DEFINE_DEFAULT_CONSTRUCTOR_CONSTEXPR_NOEXCEPT(Options_GetValue);
 };
 
 struct Result_GetValue

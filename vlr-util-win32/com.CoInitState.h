@@ -15,6 +15,8 @@ struct CoInitFlags
 {
 public:
 	DWORD m_dwCoInit = COINIT_MULTITHREADED;
+
+	VLR_DEFINE_DEFAULT_CONSTRUCTOR_CONSTEXPR_NOEXCEPT(CoInitFlags);
 };
 
 class CCoInitState
