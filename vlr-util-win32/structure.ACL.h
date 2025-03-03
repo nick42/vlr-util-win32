@@ -20,18 +20,18 @@ struct CAccessorFor_ACL
 {
 	bool HasMetaValue_EntirelyInherited() const;
 
-	CAccessorFor_ACL( const CAccessorFor_ACL& ) = delete;
+	CAccessorFor_ACL(const CAccessorFor_ACL&) = delete;
 };
 
-inline decltype(auto) MakeStructureAccessor( ACL* pFindData )
+inline decltype(auto) MakeStructureAccessor(ACL* pFindData)
 {
-	static_assert(sizeof( CAccessorFor_ACL ) == sizeof( ACL ));
+	static_assert(sizeof(CAccessorFor_ACL) == sizeof(ACL));
 	return *reinterpret_cast<CAccessorFor_ACL*>(pFindData);
 }
 
-inline decltype(auto) MakeStructureAccessor( const ACL* pFindData )
+inline decltype(auto) MakeStructureAccessor(const ACL* pFindData)
 {
-	static_assert(sizeof( CAccessorFor_ACL ) == sizeof( ACL ));
+	static_assert(sizeof(CAccessorFor_ACL) == sizeof(ACL));
 	return *reinterpret_cast<const CAccessorFor_ACL*>(pFindData);
 }
 
@@ -41,21 +41,21 @@ public:
 	std::vector<SPCAccessControlEntryBase> m_oAccessControlEntryList;
 
 public:
-	bool IsEffectivelyIdenticalTo( const CAccessControlList& oOther );
+	bool IsEffectivelyIdenticalTo(const CAccessControlList& oOther);
 
 public:
-	HRESULT LogData( const logging::CMessageContext& oMessageContext ) const;
+	HRESULT LogData(const logging::CMessageContext& oMessageContext) const;
 
 protected:
-	HRESULT Initialize( const ACL* pACL );
+	HRESULT Initialize(const ACL* pACL);
 
 public:
 	CAccessControlList() = default;
-	CAccessControlList( const ACL* pACL )
+	CAccessControlList(const ACL* pACL)
 	{
-		Initialize( pACL );
+		Initialize(pACL);
 	}
-	CAccessControlList( const CAccessControlList& ) = default;
+	CAccessControlList(const CAccessControlList&) = default;
 };
 using SPCAccessControlList = std::shared_ptr<CAccessControlList>;
 

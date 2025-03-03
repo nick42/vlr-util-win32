@@ -21,21 +21,21 @@ struct CAccessorFor_ACE_HEADER
 {
 	inline bool HasFlag_Inherited() const
 	{
-		return util::IsBitSet( AceFlags, INHERITED_ACE );
+		return util::IsBitSet(AceFlags, INHERITED_ACE);
 	}
 
-	CAccessorFor_ACE_HEADER( const CAccessorFor_ACE_HEADER& ) = delete;
+	CAccessorFor_ACE_HEADER(const CAccessorFor_ACE_HEADER&) = delete;
 };
 
-inline decltype(auto) MakeStructureAccessor( ACE_HEADER* pFindData )
+inline decltype(auto) MakeStructureAccessor(ACE_HEADER* pFindData)
 {
-	static_assert(sizeof( CAccessorFor_ACE_HEADER ) == sizeof( ACE_HEADER ));
+	static_assert(sizeof(CAccessorFor_ACE_HEADER) == sizeof(ACE_HEADER));
 	return *reinterpret_cast<CAccessorFor_ACE_HEADER*>(pFindData);
 }
 
-inline decltype(auto) MakeStructureAccessor( const ACE_HEADER* pFindData )
+inline decltype(auto) MakeStructureAccessor(const ACE_HEADER* pFindData)
 {
-	static_assert(sizeof( CAccessorFor_ACE_HEADER ) == sizeof( ACE_HEADER ));
+	static_assert(sizeof(CAccessorFor_ACE_HEADER) == sizeof(ACE_HEADER));
 	return *reinterpret_cast<const CAccessorFor_ACE_HEADER*>(pFindData);
 }
 
@@ -48,7 +48,7 @@ public:
 	virtual vlr::tstring GetUniqueDescriptor() const = 0;
 	virtual vlr::tstring GetDisplayString_Description() const = 0;
 
-	virtual bool IsIdentical( const IAccessControlEntry* pOther ) const = 0;
+	virtual bool IsIdentical(const IAccessControlEntry* pOther) const = 0;
 
 public:
 	virtual ~IAccessControlEntry() = default;
@@ -63,17 +63,17 @@ public:
 
 public:
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACE_HEADER>>::type* = nullptr >
-	static auto& AccessMember_AceType( TStructure* pAceHeader )
+	static auto& AccessMember_AceType(TStructure* pAceHeader)
 	{
 		return pAceHeader->AceType;
 	}
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACE_HEADER>>::type* = nullptr >
-	static auto& AccessMember_AceFlags( TStructure* pAceHeader )
+	static auto& AccessMember_AceFlags(TStructure* pAceHeader)
 	{
 		return pAceHeader->AceFlags;
 	}
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACE_HEADER>>::type* = nullptr >
-	static auto& AccessMember_AceSize( TStructure* pAceHeader )
+	static auto& AccessMember_AceSize(TStructure* pAceHeader)
 	{
 		return pAceHeader->AceSize;
 	}
@@ -89,36 +89,36 @@ public:
 	}
 	inline auto& AceType()
 	{
-		return AccessMember_AceType( BufferPtrAs_ACE_HEADER() );
+		return AccessMember_AceType(BufferPtrAs_ACE_HEADER());
 	}
 	inline auto& AceType() const
 	{
-		return AccessMember_AceType( BufferPtrAs_ACE_HEADER() );
+		return AccessMember_AceType(BufferPtrAs_ACE_HEADER());
 	}
 	inline auto& AceFlags()
 	{
-		return AccessMember_AceFlags( BufferPtrAs_ACE_HEADER() );
+		return AccessMember_AceFlags(BufferPtrAs_ACE_HEADER());
 	}
 	inline auto& AceFlags() const
 	{
-		return AccessMember_AceFlags( BufferPtrAs_ACE_HEADER() );
+		return AccessMember_AceFlags(BufferPtrAs_ACE_HEADER());
 	}
 	inline auto& AceSize()
 	{
-		return AccessMember_AceSize( BufferPtrAs_ACE_HEADER() );
+		return AccessMember_AceSize(BufferPtrAs_ACE_HEADER());
 	}
 	inline auto& AceSize() const
 	{
-		return AccessMember_AceSize( BufferPtrAs_ACE_HEADER() );
+		return AccessMember_AceSize(BufferPtrAs_ACE_HEADER());
 	}
 
 public:
-	bool IsIdentical_Hacky( const CAccessControlEntryBase& oOther ) const
+	bool IsIdentical_Hacky(const CAccessControlEntryBase& oOther) const
 	{
 		return true
 			&& (AceType() == oOther.AceType())
 			&& (AceSize() == oOther.AceSize())
-			&& (memcmp( m_oEntryData.data() + sizeof( ACE_HEADER ), oOther.m_oEntryData.data() + sizeof( ACE_HEADER ), AceSize() - sizeof( ACE_HEADER ) ) == 0)
+			&& (memcmp(m_oEntryData.data() + sizeof(ACE_HEADER), oOther.m_oEntryData.data() + sizeof(ACE_HEADER), AceSize() - sizeof(ACE_HEADER)) == 0)
 			;
 	}
 
@@ -135,7 +135,7 @@ public:
 	virtual vlr::tstring GetUniqueDescriptor() const;
 	virtual vlr::tstring GetDisplayString_Description() const;
 
-	virtual bool IsIdentical( const IAccessControlEntry* pOther ) const
+	virtual bool IsIdentical(const IAccessControlEntry* pOther) const
 	{
 		auto pOtherTyped = dynamic_cast<const CAccessControlEntryBase*>(pOther);
 		if (!pOtherTyped)
@@ -144,7 +144,7 @@ public:
 		}
 
 		// Default is hacky; type-specific subclass can do better
-		return IsIdentical_Hacky( *pOtherTyped );
+		return IsIdentical_Hacky(*pOtherTyped);
 	}
 
 public:
@@ -166,20 +166,20 @@ public:
 	}
 
 protected:
-	HRESULT Initialize( LPVOID pvACE )
+	HRESULT Initialize(LPVOID pvACE)
 	{
 		auto pACE_HEADER = reinterpret_cast<const ACE_HEADER*>(pvACE);
-		auto nSize = AccessMember_AceSize( pACE_HEADER );
-		m_oEntryData.resize( nSize );
-		memcpy_s( m_oEntryData.data(), m_oEntryData.size(), pvACE, nSize );
+		auto nSize = AccessMember_AceSize(pACE_HEADER);
+		m_oEntryData.resize(nSize);
+		memcpy_s(m_oEntryData.data(), m_oEntryData.size(), pvACE, nSize);
 
 		return S_OK;
 	}
 
 public:
-	CAccessControlEntryBase( LPVOID pvACE )
+	CAccessControlEntryBase(LPVOID pvACE)
 	{
-		Initialize( pvACE );
+		Initialize(pvACE);
 	}
 	virtual ~CAccessControlEntryBase() = default;
 };
@@ -189,9 +189,10 @@ class CAccessControlEntry_Unknown
 	: public CAccessControlEntryBase
 {
 public:
-	CAccessControlEntry_Unknown( LPVOID pvACE )
+	CAccessControlEntry_Unknown(LPVOID pvACE)
 		: CAccessControlEntryBase{ pvACE }
-	{}
+	{
+	}
 };
 
 class CAccessControlEntry_AccessAllowed
@@ -199,12 +200,12 @@ class CAccessControlEntry_AccessAllowed
 {
 public:
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACCESS_ALLOWED_ACE>>::type* = nullptr >
-	static auto& AccessMember_AccessMask( TStructure* pAceHeader )
+	static auto& AccessMember_AccessMask(TStructure* pAceHeader)
 	{
 		return pAceHeader->Mask;
 	}
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACCESS_ALLOWED_ACE>>::type* = nullptr >
-	static auto& AccessMember_SidStart( TStructure* pAceHeader )
+	static auto& AccessMember_SidStart(TStructure* pAceHeader)
 	{
 		return pAceHeader->SidStart;
 	}
@@ -220,20 +221,20 @@ public:
 	}
 	inline auto& AccessMask()
 	{
-		return AccessMember_AccessMask( BufferPtrAs_ACCESS_ALLOWED_ACE() );
+		return AccessMember_AccessMask(BufferPtrAs_ACCESS_ALLOWED_ACE());
 	}
 	inline auto& AccessMask() const
 	{
-		return AccessMember_AccessMask( BufferPtrAs_ACCESS_ALLOWED_ACE() );
+		return AccessMember_AccessMask(BufferPtrAs_ACCESS_ALLOWED_ACE());
 	}
 	inline auto SidPtr()
 	{
-		auto& SidStart = AccessMember_SidStart( BufferPtrAs_ACCESS_ALLOWED_ACE() );
+		auto& SidStart = AccessMember_SidStart(BufferPtrAs_ACCESS_ALLOWED_ACE());
 		return reinterpret_cast<PSID>(&SidStart);
 	}
 	inline auto SidPtr() const
 	{
-		auto& SidStart = AccessMember_SidStart( BufferPtrAs_ACCESS_ALLOWED_ACE() );
+		auto& SidStart = AccessMember_SidStart(BufferPtrAs_ACCESS_ALLOWED_ACE());
 		return reinterpret_cast<LPCVOID>(&SidStart);
 	}
 
@@ -241,13 +242,13 @@ public:
 	vlr::win32::security::SIDs::CSidInfo m_oSidInfo;
 
 public:
-	HRESULT PopulateStringSid( std::optional<vlr::tstring>& osStringSid ) const;
-	HRESULT PopulateSidNameLookupResult( vlr::win32::security::SIDs::SPCSidNameLookupResult& spSidNameLookupResult_Result ) const;
+	HRESULT PopulateStringSid(std::optional<vlr::tstring>& osStringSid) const;
+	HRESULT PopulateSidNameLookupResult(vlr::win32::security::SIDs::SPCSidNameLookupResult& spSidNameLookupResult_Result) const;
 	vlr::tstring GetStringSid();
 	vlr::tstring GetStringSid() const;
 
 public:
-	virtual bool IsIdentical( const CAccessControlEntryBase& oOther ) const
+	virtual bool IsIdentical(const CAccessControlEntryBase& oOther) const
 	{
 		return true
 			&& (GetDisplayString_Description() == oOther.GetDisplayString_Description())
@@ -287,14 +288,14 @@ protected:
 	}
 
 public:
-	CAccessControlEntry_AccessAllowed( LPVOID pvACE )
+	CAccessControlEntry_AccessAllowed(LPVOID pvACE)
 		: CAccessControlEntryBase{ pvACE }
 	{
 		Initialize();
 	}
 };
 
-SPCAccessControlEntryBase MakeStructureSP_AccessControlEntry( LPVOID pvACE );
+SPCAccessControlEntryBase MakeStructureSP_AccessControlEntry(LPVOID pvACE);
 
 } // namespace structure
 

@@ -184,6 +184,8 @@
     <ClInclude Include="RegistryAccess.h" />
     <ClInclude Include="RegistryAccess_Wow64KeyAccessOption.h" />
     <ClInclude Include="security.AceType.h" />
+    <ClInclude Include="security.SECURITY_ATTRIBUTES.h" />
+    <ClInclude Include="security.SECURITY_DESCRIPTOR.h" />
     <ClInclude Include="security.SIDs.h" />
     <ClInclude Include="security.tokens.h" />
     <ClInclude Include="ServiceConfig.h" />
@@ -211,6 +213,8 @@
     <ClCompile Include="platform.DynamicLoadProc.cpp" />
     <ClCompile Include="PlatformInfo.cpp" />
     <ClCompile Include="RegistryAccess.cpp" />
+    <ClCompile Include="security.SECURITY_ATTRIBUTES.cpp" />
+    <ClCompile Include="security.SECURITY_DESCRIPTOR.cpp" />
     <ClCompile Include="security.SIDs.cpp" />
     <ClCompile Include="security.tokens.cpp" />
     <ClCompile Include="ServiceControl.cpp" />

@@ -165,7 +165,7 @@ struct enum_volumes
 {
 	inline auto begin() const
 	{
-		return iterator_volumes{}.With_BeginIteration();
+		return iterator_volumes{}.withBeginIteration();
 	}
 	inline auto end() const
 	{

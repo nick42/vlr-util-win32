@@ -17,22 +17,22 @@ namespace structure {
 
 vlr::tstring CAccessControlEntryBase::GetUniqueDescriptor() const
 {
-	auto sDescriptor = vlr::formatpf( _T( "%04X|%08X|%s" ),
+	auto sDescriptor = vlr::formatpf(_T("%04X|%08X|%s"),
 		AceType(),
-		GetAsApplicable_AccessMask().value_or( 0 ),
-		GetAsApplicable_StringSid().value_or( _T( "" ) ) );
+		GetAsApplicable_AccessMask().value_or(0),
+		GetAsApplicable_StringSid().value_or(_T("")));
 	return sDescriptor;
 }
 
 vlr::tstring CAccessControlEntryBase::GetDisplayString_Description() const
 {
-	auto sDisplayString = vlr::formatpf( _T( "ACE type %d; size %d" ),
+	auto sDisplayString = vlr::formatpf(_T("ACE type %d; size %d"),
 		AceType(),
-		AceSize() );
+		AceSize());
 	return sDisplayString;
 }
 
-HRESULT CAccessControlEntry_AccessAllowed::PopulateStringSid( std::optional<vlr::tstring>& osStringSid ) const
+HRESULT CAccessControlEntry_AccessAllowed::PopulateStringSid(std::optional<vlr::tstring>& osStringSid) const
 {
 	static const auto _tFailureValue = E_FAIL;
 
@@ -48,9 +48,9 @@ HRESULT CAccessControlEntry_AccessAllowed::PopulateStringSid( std::optional<vlr:
 	return S_OK;
 }
 
-HRESULT CAccessControlEntry_AccessAllowed::PopulateSidNameLookupResult( vlr::win32::security::SIDs::SPCSidNameLookupResult& spSidNameLookupResult_Result ) const
+HRESULT CAccessControlEntry_AccessAllowed::PopulateSidNameLookupResult(vlr::win32::security::SIDs::SPCSidNameLookupResult& spSidNameLookupResult_Result) const
 {
-	return vlr::win32::security::SIDs::DoLookupAccountSid( nullptr, m_oSidInfo, spSidNameLookupResult_Result );
+	return vlr::win32::security::SIDs::DoLookupAccountSid(nullptr, m_oSidInfo, spSidNameLookupResult_Result);
 }
 
 vlr::tstring CAccessControlEntry_AccessAllowed::GetStringSid()
@@ -62,9 +62,9 @@ vlr::tstring CAccessControlEntry_AccessAllowed::GetStringSid()
 		return m_oSidInfo.m_osStringSid.value();
 	}
 
-	PopulateStringSid( m_oSidInfo.m_osStringSid );
+	PopulateStringSid(m_oSidInfo.m_osStringSid);
 
-	return m_oSidInfo.m_osStringSid.value_or( vlr::tstring{} );
+	return m_oSidInfo.m_osStringSid.value_or(vlr::tstring{});
 }
 
 vlr::tstring CAccessControlEntry_AccessAllowed::GetStringSid() const
@@ -77,30 +77,30 @@ vlr::tstring CAccessControlEntry_AccessAllowed::GetStringSid() const
 	}
 
 	std::optional<vlr::tstring> osStringSid;
-	PopulateStringSid( osStringSid );
+	PopulateStringSid(osStringSid);
 
-	return osStringSid.value_or( vlr::tstring{} );
+	return osStringSid.value_or(vlr::tstring{});
 }
 
 vlr::tstring CAccessControlEntry_AccessAllowed::GetDisplayString_Description() const
 {
-	auto sDisplayString = vlr::formatpf( _T( "ACCESS_ALLOWED_ACE; ACCESS_MASK %08X; Sid: %s" ),
+	auto sDisplayString = vlr::formatpf(_T("ACCESS_ALLOWED_ACE; ACCESS_MASK %08X; Sid: %s"),
 		AccessMask(),
-		m_oSidInfo.GetDisplay_Default() );
+		m_oSidInfo.GetDisplay_Default());
 	return sDisplayString;
 }
 
-SPCAccessControlEntryBase MakeStructureSP_AccessControlEntry( LPVOID pvACE )
+SPCAccessControlEntryBase MakeStructureSP_AccessControlEntry(LPVOID pvACE)
 {
-	auto&& oAceHeader = MakeStructureAccessor( static_cast<const ACE_HEADER*>(pvACE) );
+	auto&& oAceHeader = MakeStructureAccessor(static_cast<const ACE_HEADER*>(pvACE));
 
 	switch (oAceHeader.AceType)
 	{
 	case ACCESS_ALLOWED_ACE_TYPE:
-		return std::make_shared<CAccessControlEntry_AccessAllowed>( pvACE );
+		return std::make_shared<CAccessControlEntry_AccessAllowed>(pvACE);
 
 	default:
-		return std::make_shared<CAccessControlEntry_Unknown>( pvACE );
+		return std::make_shared<CAccessControlEntry_Unknown>(pvACE);
 	}
 }
 

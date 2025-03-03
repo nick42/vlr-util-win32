@@ -27,18 +27,18 @@ public:
 	SPCSidNameLookupResult m_spSidNameLookupResult;
 
 public:
-	inline decltype(auto) With_PSID( PSID pSid )
+	inline decltype(auto) withPSID(PSID pSid)
 	{
 		m_pSid = pSid;
 		m_osStringSid = {};
 		return *this;
 	}
-	inline decltype(auto) With_StringSid( const vlr::tstring& sStringSid )
+	inline decltype(auto) withStringSid(const vlr::tstring& sStringSid)
 	{
 		m_osStringSid = sStringSid;
 		return *this;
 	}
-	inline decltype(auto) With_SidNameLookupResult( const SPCSidNameLookupResult& spSidNameLookupResult )
+	inline decltype(auto) withSidNameLookupResult(const SPCSidNameLookupResult& spSidNameLookupResult)
 	{
 		m_spSidNameLookupResult = spSidNameLookupResult;
 		return *this;
@@ -48,7 +48,7 @@ public:
 	HRESULT PopulateData_StringSid();
 	HRESULT PopulateData_SidNameLookupResult();
 
-	HRESULT PopulateStringSid( std::optional<vlr::tstring>& osStringSid ) const;
+	HRESULT PopulateStringSid(std::optional<vlr::tstring>& osStringSid) const;
 	vlr::tstring GetStringSid();
 	vlr::tstring GetStringSid() const;
 
@@ -57,14 +57,20 @@ public:
 
 public:
 	CSidInfo() = default;
-	CSidInfo( PSID pSid )
+	CSidInfo(PSID pSid)
 		: m_pSid{ pSid }
-	{}
+	{
+	}
 };
 
 class CSidNameLookupResult
 {
 public:
+	std::atomic<bool> m_bIsLookupResultComplete{ false };
+	std::thread::id m_oOwningLookupThreadID{};
+	// Note: If this is a failure code, then we failed the lookup processing unexpectedly
+	SResult m_srGeneralProcessingResult;
+
 	std::optional<vlr::tstring> m_osLookupSystemName;
 	std::optional<DWORD> m_odwLookupError;
 
@@ -80,8 +86,7 @@ public:
 class CSidNameLookupCache
 {
 protected:
-	using TLookupResultStatus = std::pair<bool, SPCSidNameLookupResult>;
-	std::map<vlr::tstring, TLookupResultStatus> m_oStringSidToLookupResultMap;
+	std::map<vlr::tstring, SPCSidNameLookupResult> m_oStringSidToLookupResultMap;
 	mutable std::shared_mutex m_oAccessSync_StringSidToLookupResultMap;
 
 	//mutable std::mutex m_oWaitEvent_LookuResultChanged;
@@ -89,27 +94,16 @@ protected:
 public:
 	HRESULT GetLookupResult(
 		const vlr::tstring& sStringSid,
-		SPCSidNameLookupResult& spSidNameLookupResult_Result );
-
-	//struct LookupProcessingToken
-	//{
-	//	CSidNameLookupCache& oSidNameLookupCache;
-	//	vlr::tstring m_sStringSid;
-	//	bool m_bAcquiredProccessingToken = false;
-	//	std::unique_lock<std::mutex> m_oWaitEventLock;
-
-	//	LookupProcessingToken(
-	//		CSidNameLookupCache& oSidNameLookupCache,
-	//		const vlr::tstring& sStringSid );
-	//};
-
-	//HRESULT AcquireLookupProcessingToken(
-	//	const vlr::tstring& sStringSid,
-	//	std::shared_ptr<LookupProcessingToken>& spLookupProcessingToken_Result );
-
+		SPCSidNameLookupResult& spSidNameLookupResult_Result);
 	HRESULT SetLookupResult(
 		const vlr::tstring& sStringSid,
-		const SPCSidNameLookupResult& spSidNameLookupResult );
+		const SPCSidNameLookupResult& spSidNameLookupResult);
+	// Note: This does two possible things:
+	// - If the lookup is already created in the cache, returns the value
+	// - If the lookup has not been done before, returns a new instance, with the "lookup complete" flag set to false
+	HRESULT OnLookup_PopulateLookupResult(
+		const vlr::tstring& sStringSid,
+		SPCSidNameLookupResult& spSidNameLookupResult);
 
 	HRESULT PopulateCache_WellKnownSids();
 
@@ -120,12 +114,12 @@ public:
 
 HRESULT DoConvertSidToStringSid(
 	PSID pSid,
-	vlr::tstring& sStringSid );
+	vlr::tstring& sStringSid);
 
 HRESULT DoLookupAccountSid(
 	LPCTSTR pcszLookupSystemName,
 	const CSidInfo& oSidInfo,
-	SPCSidNameLookupResult& spSidNameLookupResult_Result );
+	SPCSidNameLookupResult& spSidNameLookupResult_Result);
 
 } // namespace SIDs
 
