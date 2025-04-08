@@ -36,7 +36,7 @@ SResult CServiceControl::Connect(
 		return SResult::For_win32_LastError();
 	}
 
-	m_spAutoCleanupSCM = cpp::make_shared<util::CAutoCleanup_SC_HANDLE>( hSCM );
+	m_spAutoCleanupSCM = cpp::make_shared<util::win32::CAutoCleanup_SC_HANDLE>( hSCM );
 
 	return S_OK;
 }
@@ -112,7 +112,7 @@ SResult CServiceControl::SCM_DeleteService(
 		DELETE,
 		hService );
 	VLR_ON_HR_NON_S_OK__RETURN_HRESULT( hr );
-	auto oOnDestroy_CloseService = util::CAutoCleanup_SC_HANDLE{ hService };
+	auto oOnDestroy_CloseService = util::win32::CAutoCleanup_SC_HANDLE{ hService };
 
 	return SCM_DeleteService( hService );
 }

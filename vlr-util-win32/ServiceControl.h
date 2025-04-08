@@ -3,9 +3,9 @@
 #include <vlr-util/util.includes.h>
 #include <vlr-util/util.Result.h>
 #include <vlr-util/ops.NetworkTargetInfo.h>
-#include <vlr-util/util.AutoCleanup_SC_HANDLE.h>
 
 #include <vlr-util-win32/ServiceConfig.h>
+#include <vlr-util-win32/util.AutoCleanup_SC_HANDLE.h>
 
 namespace vlr {
 
@@ -14,7 +14,7 @@ namespace win32 {
 class CServiceControl
 {
 protected:
-	cpp::shared_ptr<util::CAutoCleanup_SC_HANDLE> m_spAutoCleanupSCM;
+	cpp::shared_ptr<util::win32::CAutoCleanup_SC_HANDLE> m_spAutoCleanupSCM;
 
 	std::optional<SC_HANDLE> GetOpenHandle_SCM() const;
 
