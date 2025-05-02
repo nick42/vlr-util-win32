@@ -89,6 +89,10 @@
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
+  <!-- Automatically build for static CRT linkage if building within vcpkg, with appropriate triplet-->
+  <PropertyGroup>
+    <CRT_LINKAGE_STATIC Condition="$(VcpkgTriplet.Contains('-static'))">True</CRT_LINKAGE_STATIC>
+  </PropertyGroup>
   <!-- Settings for aggregate configurations: -->
   <ItemDefinitionGroup>
     <ClCompile>
