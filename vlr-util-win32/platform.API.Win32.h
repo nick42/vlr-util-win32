@@ -40,11 +40,7 @@ using F_IsWow64Process2 = vlr::CDynamicLoadedFunction<BOOL WINAPI(
 class CWin32
 {
 public:
-	static auto& GetSharedInstance()
-	{
-		static CWin32 theInstance;
-		return theInstance;
-	}
+	static CWin32& GetSharedInstance();
 
 protected:
 	CDynamicLoadProc* m_pDynamicLoadProc_Override = nullptr;

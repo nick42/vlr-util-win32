@@ -9,6 +9,12 @@ namespace win32 {
 
 namespace platform {
 
+CDynamicLoadProc& CDynamicLoadProc::GetSharedInstance()
+{
+	static CDynamicLoadProc theInstance;
+	return theInstance;
+}
+
 SResult CDynamicLoadProc::ResolveDynamicLoadForLibrary(
 	CDynamicLoadedLibrary& oDynamicLoadLibrary)
 {

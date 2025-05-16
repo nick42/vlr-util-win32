@@ -11,6 +11,12 @@ namespace platform {
 
 namespace API {
 
+CWin32& CWin32::GetSharedInstance()
+{
+	static CWin32 theInstance;
+	return theInstance;
+}
+
 const Win32::F_IsWow64Process2& CWin32::GetFunction_IsWow64Process2()
 {
 	static const auto _tFailureValue = Win32::F_IsWow64Process2{};

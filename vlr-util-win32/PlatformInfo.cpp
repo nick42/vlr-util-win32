@@ -8,6 +8,12 @@ namespace vlr {
 
 namespace win32 {
 
+CPlatformInfo& CPlatformInfo::GetSharedInstance()
+{
+	static auto theInstance = CPlatformInfo{};
+	return theInstance;
+}
+
 SResult CPlatformInfo::PopulateValue_PlatformIs_Win64()
 {
 	auto slDataAccess = std::scoped_lock{ m_mutexDataAccess };

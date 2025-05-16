@@ -20,11 +20,7 @@ namespace platform {
 class CDynamicLoadProc
 {
 public:
-	static auto& GetSharedInstance()
-	{
-		static CDynamicLoadProc theInstance;
-		return theInstance;
-	}
+	static CDynamicLoadProc& GetSharedInstance();
 
 protected:
 	std::recursive_mutex m_mutexDataAccess;

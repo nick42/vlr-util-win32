@@ -11,11 +11,7 @@ namespace win32 {
 class CPlatformInfo
 {
 public:
-	static auto& GetSharedInstance()
-	{
-		static auto theInstance = CPlatformInfo{};
-		return theInstance;
-	}
+	static CPlatformInfo& GetSharedInstance();
 
 protected:
 	mutable std::mutex m_mutexDataAccess;
