@@ -46,7 +46,7 @@ public:
 	decltype(auto) withExpectLibraryAlreadyLoaded(bool bValue = true)
 	{
 		m_bExpectLibraryAlreadyLoaded = bValue;
-		return true;
+		return *this;
 	}
 	decltype(auto) withOnAbsolutePathQualified_SetFlag_AlternativeSearchPath(bool bValue)
 	{
