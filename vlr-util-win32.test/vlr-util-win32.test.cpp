@@ -8,6 +8,9 @@
 
 int main(int argc, char** argv)
 {
+	// Note: Assertions in tests are somewhat normal when testing failure cases, so we will suppress the debug break
+	vlr::assert::Callbacks::getSharedInstanceMutable().m_fHandleCheckFailure = [](const auto& oMessageContext, auto svzMessage) {};
+
 	testing::InitGoogleTest(&argc, argv);
 	auto nResult_GoogleTest = RUN_ALL_TESTS();
 

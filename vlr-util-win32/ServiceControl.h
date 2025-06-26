@@ -19,6 +19,12 @@ protected:
 	std::optional<SC_HANDLE> GetOpenHandle_SCM() const;
 
 public:
+	inline SC_HANDLE GetOpenHandle_SCM_OrNull() const
+	{
+		auto optHandle = GetOpenHandle_SCM();
+		return optHandle.value_or(nullptr);
+	}
+
 	SResult Connect(
 		const ops::CNetworkTargetInfo& oNetworkTargetInfo,
 		DWORD dwDesiredAccess = SC_MANAGER_ALL_ACCESS );
@@ -36,6 +42,10 @@ public:
 		vlr::tzstring_view svzServiceName,
 		DWORD dwDesiredAccess,
 		SC_HANDLE& hService_Result );
+
+	SResult SCM_QueryServiceConfig(
+		SC_HANDLE& hService,
+		std::vector<BYTE>& vecServiceConfigData);
 
 };
 

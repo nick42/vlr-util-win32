@@ -142,6 +142,49 @@ SResult CServiceControl::SCM_OpenService(
 	return S_OK;
 }
 
+SResult CServiceControl::SCM_QueryServiceConfig(
+	SC_HANDLE& hService,
+	std::vector<BYTE>& vecServiceConfigData)
+{
+	VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION(hService, != , nullptr, HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER));
+	VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION(hService, != , INVALID_HANDLE_VALUE, HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER));
+
+	// Pick a semi-reasonable default size, if buffer not pre-allocated
+	// Note: Docs say 8K max data size
+	if (vecServiceConfigData.size() == 0)
+	{
+		vecServiceConfigData.resize(4096);
+	}
+
+	for (size_t nAttempt = 0; nAttempt < 2; ++nAttempt)
+	{
+		DWORD dwBufferSizeBytes = vlr::util::range_checked_cast<DWORD>(vecServiceConfigData.size());
+
+		DWORD dwRequiredBufferSize{};
+		BOOL bResult = QueryServiceConfig(
+			hService,
+			reinterpret_cast<LPQUERY_SERVICE_CONFIG>(vecServiceConfigData.data()),
+			dwBufferSizeBytes,
+			&dwRequiredBufferSize);
+		if (bResult)
+		{
+			return S_OK;
+		}
+		DWORD dwLastError = ::GetLastError();
+		if (dwLastError == ERROR_INSUFFICIENT_BUFFER)
+		{
+			VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(dwRequiredBufferSize, > , dwBufferSizeBytes);
+			vecServiceConfigData.resize(dwRequiredBufferSize);
+			continue;
+		}
+		return SResult::For_win32_ErrorCode(dwLastError);
+	}
+
+	// Ran out of retries
+
+	return E_UNEXPECTED;
+}
+
 } // namespace win32
 
 } // namespace vlr

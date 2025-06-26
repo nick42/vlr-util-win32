@@ -39,6 +39,9 @@
     <ClCompile Include="platform.DynamicLoadProc.test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ServiceControl.test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
