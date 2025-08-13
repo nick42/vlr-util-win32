@@ -143,7 +143,7 @@ SResult CServiceControl::SCM_OpenService(
 }
 
 SResult CServiceControl::SCM_QueryServiceConfig(
-	SC_HANDLE& hService,
+	SC_HANDLE hService,
 	std::vector<BYTE>& vecServiceConfigData)
 {
 	VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION(hService, != , nullptr, HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER));

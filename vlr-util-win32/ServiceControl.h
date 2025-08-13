@@ -44,7 +44,7 @@ public:
 		SC_HANDLE& hService_Result );
 
 	SResult SCM_QueryServiceConfig(
-		SC_HANDLE& hService,
+		SC_HANDLE hService,
 		std::vector<BYTE>& vecServiceConfigData);
 
 };
