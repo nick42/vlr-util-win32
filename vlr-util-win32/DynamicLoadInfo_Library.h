@@ -28,49 +28,49 @@ protected:
 	bool m_bOnAbsolutePathQualified_SetFlag_AlternativeSearchPath = true;
 
 public:
-	decltype(auto) withLibraryName(vlr::tzstring_view svzLibraryName)
+	inline auto& withLibraryName(vlr::tzstring_view svzLibraryName)
 	{
 		SetLibraryName(svzLibraryName);
 		return *this;
 	}
-	decltype(auto) withExplicitFlags_LoadLibraryEx(DWORD dwFlags)
+	constexpr auto& withExplicitFlags_LoadLibraryEx(DWORD dwFlags) noexcept
 	{
 		m_optExplicitFlags_LoadLibraryEx = dwFlags;
 		return *this;
 	}
-	decltype(auto) withExplicitFlags_LoadLibraryEx_Clear()
+	constexpr auto& withExplicitFlags_LoadLibraryEx_Clear() noexcept
 	{
 		m_optExplicitFlags_LoadLibraryEx = {};
 		return *this;
 	}
-	decltype(auto) withExpectLibraryAlreadyLoaded(bool bValue = true)
+	constexpr auto& withExpectLibraryAlreadyLoaded(bool bValue = true) noexcept
 	{
 		m_bExpectLibraryAlreadyLoaded = bValue;
 		return *this;
 	}
-	decltype(auto) withOnAbsolutePathQualified_SetFlag_AlternativeSearchPath(bool bValue)
+	constexpr auto& withOnAbsolutePathQualified_SetFlag_AlternativeSearchPath(bool bValue) noexcept
 	{
 		m_bOnAbsolutePathQualified_SetFlag_AlternativeSearchPath = bValue;
 		return *this;
 	}
 
-	inline const auto& GetLibraryName() const
+	constexpr const auto& GetLibraryName() const
 	{
 		return m_sLibraryName;
 	}
-	inline const auto& GetExplicitFlags_LoadLibraryEx() const
+	constexpr const auto& GetExplicitFlags_LoadLibraryEx() const
 	{
 		return m_optExplicitFlags_LoadLibraryEx;
 	}
-	inline const auto& GetLibraryName_Normalized() const
+	constexpr const auto& GetLibraryName_Normalized() const
 	{
 		return m_sLibraryName_Normalized;
 	}
-	inline const auto& GetLibraryName_FilenameOnly() const
+	constexpr const auto& GetLibraryName_FilenameOnly() const
 	{
 		return m_sLibraryFilename;
 	}
-	inline const auto& GetExpectLibraryAlreadyLoaded() const
+	constexpr const auto& GetExpectLibraryAlreadyLoaded() const
 	{
 		return m_bExpectLibraryAlreadyLoaded;
 	}

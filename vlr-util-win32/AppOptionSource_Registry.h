@@ -30,7 +30,7 @@ protected:
 	}
 
 public:
-	decltype(auto) withAppOptionsOverride(CAppOptions* pAppOptions)
+	constexpr auto& withAppOptionsOverride(CAppOptions* pAppOptions)
 	{
 		m_pAppOptions_Override = pAppOptions;
 		return *this;

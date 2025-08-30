@@ -20,12 +20,12 @@ struct CSetAclOptions
 	// this is actually intended, and guard against accidental mistakes.
 	bool m_bAllowNull = false;
 
-	inline decltype(auto) withShowAsDefaulted(bool bValue)
+	constexpr auto& withShowAsDefaulted(bool bValue) noexcept
 	{
 		m_bShowAsDefaulted = bValue;
 		return *this;
 	}
-	inline decltype(auto) withAllowNull(bool bValue)
+	constexpr auto& withAllowNull(bool bValue) noexcept
 	{
 		m_bAllowNull = bValue;
 		return *this;
@@ -43,22 +43,22 @@ protected:
 	SResult InitSecurityDescriptor();
 
 public:
-	inline decltype(auto) withDacl(PACL pAcl, const CSetAclOptions& oSetAclOptions = {})
+	inline auto& withDacl(PACL pAcl, const CSetAclOptions& oSetAclOptions = {})
 	{
 		SetDacl(pAcl, oSetAclOptions);
 		return *this;
 	}
-	inline decltype(auto) withDacl_Cleared()
+	inline auto& withDacl_Cleared()
 	{
 		SetDacl_Cleared();
 		return *this;
 	}
-	inline decltype(auto) withSacl(PACL pAcl, const CSetAclOptions& oSetAclOptions = {})
+	inline auto& withSacl(PACL pAcl, const CSetAclOptions& oSetAclOptions = {})
 	{
 		SetSacl(pAcl, oSetAclOptions);
 		return *this;
 	}
-	inline decltype(auto) withSacl_Cleared()
+	inline auto& withSacl_Cleared()
 	{
 		SetSacl_Cleared();
 		return *this;
@@ -71,7 +71,7 @@ public:
 	SResult SetSacl_Cleared();
 
 public:
-	SECURITY_DESCRIPTOR* GetWin32Ptr()
+	constexpr SECURITY_DESCRIPTOR* GetWin32Ptr()
 	{
 		return &m_stSecurityDescriptor;
 	}

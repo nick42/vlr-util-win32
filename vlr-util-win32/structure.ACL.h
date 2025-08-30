@@ -23,13 +23,13 @@ struct CAccessorFor_ACL
 	CAccessorFor_ACL(const CAccessorFor_ACL&) = delete;
 };
 
-inline decltype(auto) MakeStructureAccessor(ACL* pFindData)
+inline auto& MakeStructureAccessor(ACL* pFindData)
 {
 	static_assert(sizeof(CAccessorFor_ACL) == sizeof(ACL));
 	return *reinterpret_cast<CAccessorFor_ACL*>(pFindData);
 }
 
-inline decltype(auto) MakeStructureAccessor(const ACL* pFindData)
+inline const auto& MakeStructureAccessor(const ACL* pFindData)
 {
 	static_assert(sizeof(CAccessorFor_ACL) == sizeof(ACL));
 	return *reinterpret_cast<const CAccessorFor_ACL*>(pFindData);

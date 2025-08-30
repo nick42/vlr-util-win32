@@ -80,7 +80,7 @@ public:
 	//	return SResult::Success;
 	//}
 
-	inline decltype(auto) withOnStringRead_TruncateToFirstNull(bool bOnStringRead_TruncateToFirstNull)
+	constexpr auto& withOnStringRead_TruncateToFirstNull(bool bOnStringRead_TruncateToFirstNull) noexcept
 	{
 		m_bOnStringRead_TruncateToFirstNull = bOnStringRead_TruncateToFirstNull;
 		return *this;
@@ -106,7 +106,7 @@ public:
 		bool m_bEnsureSafeDelete = false;
 		std::vector<tstring> m_arrSafeDeletePaths;
 
-		decltype(auto) withSafeDeletePath(tstring_view svzPath)
+		inline auto& withSafeDeletePath(tstring_view svzPath)
 		{
 			m_arrSafeDeletePaths.emplace_back(svzPath);
 			return *this;
@@ -624,22 +624,22 @@ public:
 		DWORD m_dwType{};
 		cpp::span<const BYTE> m_spanData;
 
-		decltype(auto) withIndex(DWORD dwIndex)
+		constexpr auto& withIndex(DWORD dwIndex) noexcept
 		{
 			m_dwIndex = dwIndex;
 			return *this;
 		}
-		decltype(auto) withName(vlr::tstring_view svName)
+		constexpr auto& withName(vlr::tstring_view svName) noexcept
 		{
 			m_svName = svName;
 			return *this;
 		}
-		decltype(auto) withType(DWORD dwType)
+		constexpr auto& withType(DWORD dwType) noexcept
 		{
 			m_dwType = dwType;
 			return *this;
 		}
-		decltype(auto) withData(cpp::span<const BYTE> spanData)
+		constexpr auto& withData(cpp::span<const BYTE> spanData) noexcept
 		{
 			m_spanData = spanData;
 			return *this;
@@ -692,22 +692,22 @@ public:
 		vlr::tstring_view m_svClass;
 		FILETIME m_ftLastWriteTime{};
 
-		decltype(auto) withIndex(DWORD dwIndex)
+		constexpr auto& withIndex(DWORD dwIndex) noexcept
 		{
 			m_dwIndex = dwIndex;
 			return *this;
 		}
-		decltype(auto) withName(vlr::tstring_view svName)
+		constexpr auto& withName(vlr::tstring_view svName) noexcept
 		{
 			m_svName = svName;
 			return *this;
 		}
-		decltype(auto) withClass(vlr::tstring_view svClass)
+		constexpr auto& withClass(vlr::tstring_view svClass) noexcept
 		{
 			m_svClass = svClass;
 			return *this;
 		}
-		decltype(auto) withLastWriteTime(const FILETIME& ftLastWriteTime)
+		constexpr auto& withLastWriteTime(const FILETIME& ftLastWriteTime) noexcept
 		{
 			m_ftLastWriteTime = ftLastWriteTime;
 			return *this;

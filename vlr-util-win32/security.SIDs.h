@@ -27,18 +27,18 @@ public:
 	SPCSidNameLookupResult m_spSidNameLookupResult;
 
 public:
-	inline decltype(auto) withPSID(PSID pSid)
+	inline auto& withPSID(PSID pSid) noexcept
 	{
 		m_pSid = pSid;
 		m_osStringSid = {};
 		return *this;
 	}
-	inline decltype(auto) withStringSid(const vlr::tstring& sStringSid)
+	inline auto& withStringSid(const vlr::tstring& sStringSid)
 	{
 		m_osStringSid = sStringSid;
 		return *this;
 	}
-	inline decltype(auto) withSidNameLookupResult(const SPCSidNameLookupResult& spSidNameLookupResult)
+	inline auto& withSidNameLookupResult(const SPCSidNameLookupResult& spSidNameLookupResult)
 	{
 		m_spSidNameLookupResult = spSidNameLookupResult;
 		return *this;

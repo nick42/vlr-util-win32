@@ -17,63 +17,63 @@ public:
 	void* m_pAuthList = nullptr;
 	DWORD m_dwCapabilities = EOAC_DEFAULT;
 
-	inline decltype(auto) withAuthenticationLevel(DWORD dwAuthnLevel)
+	constexpr auto& withAuthenticationLevel(DWORD dwAuthnLevel) noexcept
 	{
 		m_dwAuthnLevel = dwAuthnLevel;
 		return *this;
 	}
-	inline decltype(auto) withAuthenticationLevel_None()
+	constexpr auto& withAuthenticationLevel_None() noexcept
 	{
 		m_dwAuthnLevel = RPC_C_AUTHN_LEVEL_NONE;
 		return *this;
 	}
-	inline decltype(auto) withAuthenticationLevel_Connect()
+	constexpr auto& withAuthenticationLevel_Connect() noexcept
 	{
 		m_dwAuthnLevel = RPC_C_AUTHN_LEVEL_CONNECT;
 		return *this;
 	}
-	inline decltype(auto) withAuthenticationLevel_Call()
+	constexpr auto& withAuthenticationLevel_Call() noexcept
 	{
 		m_dwAuthnLevel = RPC_C_AUTHN_LEVEL_CALL;
 		return *this;
 	}
-	inline decltype(auto) withAuthenticationLevel_Packet()
+	constexpr auto& withAuthenticationLevel_Packet() noexcept
 	{
 		m_dwAuthnLevel = RPC_C_AUTHN_LEVEL_PKT;
 		return *this;
 	}
-	inline decltype(auto) withAuthenticationLevel_Packet_WithIntegrity()
+	constexpr auto& withAuthenticationLevel_Packet_WithIntegrity() noexcept
 	{
 		m_dwAuthnLevel = RPC_C_AUTHN_LEVEL_PKT_INTEGRITY;
 		return *this;
 	}
-	inline decltype(auto) withAuthenticationLevel_Packet_WithPrivacy()
+	constexpr auto& withAuthenticationLevel_Packet_WithPrivacy() noexcept
 	{
 		m_dwAuthnLevel = RPC_C_AUTHN_LEVEL_PKT_PRIVACY;
 		return *this;
 	}
 
-	inline decltype(auto) withImpersonationLevel(DWORD dwImpLevel)
+	constexpr auto& withImpersonationLevel(DWORD dwImpLevel) noexcept
 	{
 		m_dwImpLevel = dwImpLevel;
 		return *this;
 	}
-	inline decltype(auto) withImpersonationLevel_Anonymous()
+	constexpr auto& withImpersonationLevel_Anonymous() noexcept
 	{
 		m_dwImpLevel = RPC_C_IMP_LEVEL_ANONYMOUS;
 		return *this;
 	}
-	inline decltype(auto) withImpersonationLevel_Identify()
+	constexpr auto& withImpersonationLevel_Identify() noexcept
 	{
 		m_dwImpLevel = RPC_C_IMP_LEVEL_IDENTIFY;
 		return *this;
 	}
-	inline decltype(auto) withImpersonationLevel_Impersonate()
+	constexpr auto& withImpersonationLevel_Impersonate() noexcept
 	{
 		m_dwImpLevel = RPC_C_IMP_LEVEL_IMPERSONATE;
 		return *this;
 	}
-	inline decltype(auto) withImpersonationLevel_Delegate()
+	constexpr auto& withImpersonationLevel_Delegate() noexcept
 	{
 		m_dwImpLevel = RPC_C_IMP_LEVEL_DELEGATE;
 		return *this;

@@ -33,18 +33,18 @@ protected:
 	static HRESULT OnDestroy_CloseFindVolume( RefCountedDataBlock* pRefCountedDataBlock );
 
 public:
-	inline decltype(auto) withBeginIteration()
+	inline auto& withBeginIteration()
 	{
 		OnIterationBegin();
 		return *this;
 	}
-	inline const auto& GetLastError() const
+	constexpr const auto& GetLastError() const noexcept
 	{
 		return m_odwLastError;
 	}
 
 public:
-	auto& dereference() const
+	inline auto& dereference() const
 	{
 		if (!m_osCurrentResult.has_value())
 		{
@@ -52,7 +52,7 @@ public:
 		}
 		return m_osCurrentResult.value();
 	}
-	void increment()
+	inline void increment()
 	{
 		if (!m_spRefCountedDataBlock || !m_spRefCountedDataBlock->m_ohFindVolume.has_value())
 		{
@@ -60,7 +60,7 @@ public:
 		}
 		OnAdaptorMethod_increment();
 	}
-	auto equal( const iterator_volumes& iterOther ) const
+	inline auto equal( const iterator_volumes& iterOther ) const
 	{
 		bool bInvalidIter_this = (!m_spRefCountedDataBlock || !m_spRefCountedDataBlock->m_ohFindVolume.has_value());
 		bool bInvalidIter_other = (!iterOther.m_spRefCountedDataBlock || !iterOther.m_spRefCountedDataBlock->m_ohFindVolume.has_value());

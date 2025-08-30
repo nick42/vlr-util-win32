@@ -32,21 +32,21 @@ protected:
 	bool m_bRawValueSet_SecurityDescriptor = false;
 
 public:
-	inline decltype(auto) withSecurityDescriptor(LPVOID pvSecurityDescriptor)
+	constexpr auto& withSecurityDescriptor(LPVOID pvSecurityDescriptor) noexcept
 	{
 		m_stSecurityAttributes.lpSecurityDescriptor = pvSecurityDescriptor;
 		// Note: We set this flag IFF the caller set a non-NULL pointer
 		m_bRawValueSet_SecurityDescriptor = (m_stSecurityAttributes.lpSecurityDescriptor != nullptr);
 		return *this;
 	}
-	inline decltype(auto) withInheritHandle(bool bValue)
+	constexpr auto& withInheritHandle(bool bValue) noexcept
 	{
 		m_stSecurityAttributes.bInheritHandle = bValue;
 		return *this;
 	}
 
 public:
-	LPSECURITY_ATTRIBUTES GetWin32Ptr()
+	constexpr LPSECURITY_ATTRIBUTES GetWin32Ptr()
 	{
 		return &m_stSecurityAttributes;
 	}

@@ -24,17 +24,17 @@ public:
 	util::logical_tzstring_view m_svzRunAsAccount_Password;
 
 public:
-	decltype(auto) withServiceName( vlr::tzstring_view svzServiceName )
+	inline auto& withServiceName(vlr::tzstring_view svzServiceName) noexcept
 	{
 		m_svzServiceName = svzServiceName;
 		return *this;
 	}
-	decltype(auto) withServiceName_Display( vlr::tzstring_view svzServiceName_Display )
+	inline auto& withServiceName_Display(vlr::tzstring_view svzServiceName_Display) noexcept
 	{
 		m_svzServiceName_Display = svzServiceName_Display;
 		return *this;
 	}
-	decltype(auto) withFilePath_ServiceBinary( vlr::tstring sFilePath_ServiceBinary )
+	inline auto& withFilePath_ServiceBinary(vlr::tstring sFilePath_ServiceBinary)
 	{
 		m_sFilePath_ServiceBinary = sFilePath_ServiceBinary;
 		return *this;

@@ -27,13 +27,13 @@ struct CAccessorFor_ACE_HEADER
 	CAccessorFor_ACE_HEADER(const CAccessorFor_ACE_HEADER&) = delete;
 };
 
-inline decltype(auto) MakeStructureAccessor(ACE_HEADER* pFindData)
+inline auto& MakeStructureAccessor(ACE_HEADER* pFindData)
 {
 	static_assert(sizeof(CAccessorFor_ACE_HEADER) == sizeof(ACE_HEADER));
 	return *reinterpret_cast<CAccessorFor_ACE_HEADER*>(pFindData);
 }
 
-inline decltype(auto) MakeStructureAccessor(const ACE_HEADER* pFindData)
+inline const auto& MakeStructureAccessor(const ACE_HEADER* pFindData)
 {
 	static_assert(sizeof(CAccessorFor_ACE_HEADER) == sizeof(ACE_HEADER));
 	return *reinterpret_cast<const CAccessorFor_ACE_HEADER*>(pFindData);
@@ -63,17 +63,17 @@ public:
 
 public:
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACE_HEADER>>::type* = nullptr >
-	static auto& AccessMember_AceType(TStructure* pAceHeader)
+	static constexpr auto& AccessMember_AceType(TStructure* pAceHeader)
 	{
 		return pAceHeader->AceType;
 	}
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACE_HEADER>>::type* = nullptr >
-	static auto& AccessMember_AceFlags(TStructure* pAceHeader)
+	static constexpr auto& AccessMember_AceFlags(TStructure* pAceHeader)
 	{
 		return pAceHeader->AceFlags;
 	}
 	template< typename TStructure, typename std::enable_if<std::is_same_v<std::remove_cv_t<TStructure>, ACE_HEADER>>::type* = nullptr >
-	static auto& AccessMember_AceSize(TStructure* pAceHeader)
+	static constexpr auto& AccessMember_AceSize(TStructure* pAceHeader)
 	{
 		return pAceHeader->AceSize;
 	}
@@ -87,27 +87,27 @@ public:
 	{
 		return reinterpret_cast<const ACE_HEADER*>(m_oEntryData.data());
 	}
-	inline auto& AceType()
+	constexpr auto& AceType()
 	{
 		return AccessMember_AceType(BufferPtrAs_ACE_HEADER());
 	}
-	inline auto& AceType() const
+	constexpr auto& AceType() const
 	{
 		return AccessMember_AceType(BufferPtrAs_ACE_HEADER());
 	}
-	inline auto& AceFlags()
+	constexpr auto& AceFlags()
 	{
 		return AccessMember_AceFlags(BufferPtrAs_ACE_HEADER());
 	}
-	inline auto& AceFlags() const
+	constexpr auto& AceFlags() const
 	{
 		return AccessMember_AceFlags(BufferPtrAs_ACE_HEADER());
 	}
-	inline auto& AceSize()
+	constexpr auto& AceSize()
 	{
 		return AccessMember_AceSize(BufferPtrAs_ACE_HEADER());
 	}
-	inline auto& AceSize() const
+	constexpr auto& AceSize() const
 	{
 		return AccessMember_AceSize(BufferPtrAs_ACE_HEADER());
 	}

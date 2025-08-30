@@ -42,22 +42,22 @@ public:
 	REGSAM m_ulDesiredAccess = KEY_ALL_ACCESS;
 
 public:
-	decltype(auto) WithAccess_All()
+	constexpr auto& WithAccess_All() noexcept
 	{
 		m_ulDesiredAccess = KEY_ALL_ACCESS;
 		return *this;
 	}
-	decltype(auto) WithAccess_Read()
+	constexpr auto& WithAccess_Read() noexcept
 	{
 		m_ulDesiredAccess = KEY_READ;
 		return *this;
 	}
-	decltype(auto) WithAccess_Write()
+	constexpr auto& WithAccess_Write() noexcept
 	{
 		m_ulDesiredAccess = KEY_WRITE;
 		return *this;
 	}
-	decltype(auto) WithAccess_ReadWrite()
+	constexpr auto& WithAccess_ReadWrite() noexcept
 	{
 		m_ulDesiredAccess = KEY_READ | KEY_WRITE;
 		return *this;
@@ -113,12 +113,13 @@ protected:
 		HKEY m_hKey = {};
 		bool m_bCloseKey = false;
 
-		KeyAndCleanupDisposition(
+		constexpr KeyAndCleanupDisposition(
 			HKEY hKey,
-			bool bCloseKey )
+			bool bCloseKey)
 			: m_hKey{ hKey }
 			, m_bCloseKey{ bCloseKey }
-		{}
+		{
+		}
 	};
 
 protected:
