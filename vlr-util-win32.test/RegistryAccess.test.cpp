@@ -1,9 +1,9 @@
 #include "pch.h"
 
 #include <vector>
-#include <fmt/format.h>
 
 #include "vlr-util/cpp_namespace.h"
+#include "vlr-util/include.fmt.h"
 #include "vlr-util/StringCompare.h"
 #include "vlr-util/util.data_adaptor.MultiSZ.h"
 #include "vlr-util/util.convert.StringConversion.h"
