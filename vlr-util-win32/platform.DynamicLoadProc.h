@@ -30,6 +30,11 @@ protected:
 
 	std::map<vlr::tstring, SPCDynamicLoadedFunctionBase, vlr::StringCompare::asCaseInsensitive> m_mapFunctionIdentifierToLoadedInstance;
 
+	// Note: Use this member to specify an override for module resolution (eg: to add enhanced security).
+	// The current default simply calls LoadLibary.
+	using FResolveModuleLoad = std::function<SResult(const CDynamicLoadInfo_Library& oLoadInfo, HMODULE& hLibrary_Result)>;
+	FResolveModuleLoad m_fResolveModuleLoad;
+
 	SResult ResolveDynamicLoadForLibrary(
 		CDynamicLoadedLibrary& oDynamicLoadLibrary);
 	SResult ResolveDynamicLoadForLibrary_PreLoaded(
@@ -78,10 +83,12 @@ public:
 	//	const CDynamicLoadInfo_Function& oLoadInfo,
 	//	const SPCDynamicLoadedFunctionBase& spDynamicLoadFunction);
 
-	// Note: Use this member to specify an override for module resolution (eg: to add enhanced security).
-	// The current default simply calls LoadLibary.
-	using FResolveModuleLoad = std::function<SResult(const CDynamicLoadInfo_Library& oLoadInfo, HMODULE hLibrary)>;
-	FResolveModuleLoad m_fResultModuleLoad;
+	inline SResult SetResolveModuleLoadFunction(FResolveModuleLoad fResolveModuleLoad)
+	{
+		auto slDataAccess = std::scoped_lock{ m_mutexDataAccess };
+		m_fResolveModuleLoad = fResolveModuleLoad;
+		return SResult::Success;
+	}
 
 };
 

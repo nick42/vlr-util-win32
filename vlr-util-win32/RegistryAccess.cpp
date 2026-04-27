@@ -49,7 +49,7 @@ SResult CRegistryAccess::EnsureKeyExists(
 		0,
 		NULL,
 		0,
-		KEY_ALL_ACCESS | getWow64RedirectionKeyAccessMask(),
+		KEY_CREATE_SUB_KEY | KEY_READ | getWow64RedirectionKeyAccessMask(),
 		NULL,
 		&hKey,
 		&dwDisposition);
@@ -94,9 +94,11 @@ SResult CRegistryAccess::DeleteKey(
 		}
 	}
 
-	lResult = ::RegDeleteKey(
+	lResult = ::RegDeleteKeyEx(
 		getBaseKey(),
-		svzKeyName);
+		svzKeyName,
+		getWow64RedirectionKeyAccessMask(),
+		0);
 	if (lResult != ERROR_SUCCESS)
 	{
 		return __HRESULT_FROM_WIN32(lResult);
@@ -942,6 +944,12 @@ SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	cpp::span<const BYTE> spanData,
 	std::string& saValue) const
 {
+	if (spanData.size() < sizeof(char))
+	{
+		saValue.clear();
+		return SResult::Success;
+	}
+
 	size_t nCountOfCharsInBuffer = spanData.size() / sizeof(char);
 	const char* pStringData = reinterpret_cast<const char*>(spanData.data());
 	bool bStringIsNullTerminated = (pStringData[nCountOfCharsInBuffer - 1] == _T('\0'));
@@ -960,6 +968,12 @@ SResult CRegistryAccess::convertRegDataToValueDirect_String_NativeType(
 	cpp::span<const BYTE> spanData,
 	std::wstring& swValue) const
 {
+	if (spanData.size() < sizeof(wchar_t))
+	{
+		swValue.clear();
+		return SResult::Success;
+	}
+
 	size_t nCountOfCharsInBuffer = spanData.size() / sizeof(wchar_t);
 	const wchar_t* pStringData = reinterpret_cast<const wchar_t*>(spanData.data());
 	bool bStringIsNullTerminated = (pStringData[nCountOfCharsInBuffer - 1] == _T('\0'));
@@ -1044,7 +1058,7 @@ SResult CRegistryAccess::convertValueToRegDataDirect_String_NativeType(
 	arrData.resize(nByteCountData + sizeof(wchar_t));
 	memcpy_s(arrData.data(), arrData.size(), svValue.data(), nByteCountData);
 	// Need to manually terminate string
-	reinterpret_cast<char*>(arrData.data())[nByteCountData] = L'\0';
+	reinterpret_cast<wchar_t*>(arrData.data())[nByteCountData / sizeof(wchar_t)] = L'\0';
 
 	return SResult::Success;
 }
@@ -1154,7 +1168,8 @@ SResult CRegistryAccess::convertRegDataToValue_MultiSz(
 
 	if (bDirectConversion)
 	{
-		sr = util::data_adaptor::HelperFor_MultiSZ<TCHAR>{}.ToStructuredData(reinterpret_cast<const TCHAR*>(spanData.data()), arrValueCollection);
+		auto spanDataAsTChar = cpp::span<const TCHAR>{ reinterpret_cast<const TCHAR*>(spanData.data()), spanData.size() / sizeof(TCHAR) };
+		sr = util::data_adaptor::HelperFor_MultiSZ<TCHAR>{}.ToStructuredData(spanDataAsTChar, arrValueCollection);
 		VLR_ASSERT_SR_SUCCEEDED_OR_RETURN_SRESULT(sr);
 	}
 

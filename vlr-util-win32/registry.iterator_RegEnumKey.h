@@ -122,7 +122,7 @@ HRESULT iterator_RegEnumKey::OnAdaptorMethod_increment()
 		auto spCurrentResult = cpp::make_shared<RegEnumKeyResult>();
 		VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( spCurrentResult );
 
-		spCurrentResult->m_dwIndex = m_odwNextIndex.has_value();
+		spCurrentResult->m_dwIndex = m_odwNextIndex.value();
 
 		DWORD dwValueNameLength = 256;
 		spCurrentResult->m_wsName.resize( dwValueNameLength );

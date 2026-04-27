@@ -28,14 +28,19 @@ SResult CDynamicLoadProc::ResolveDynamicLoadForLibrary(
 	}
 
 	// TODO? Add more options around loading
-	if (m_fResultModuleLoad)
+	// Note: Lock for data access while checking/calling the callback, since it may be set by method call also.
 	{
-		HMODULE hLibrary{};
-		sr = m_fResultModuleLoad(oDynamicLoadLibrary.m_oLoadInfo, hLibrary);
-		oDynamicLoadLibrary.m_srLoadResult = sr;
-		oDynamicLoadLibrary.m_hLibrary = hLibrary;
+		auto slDataAccess = std::scoped_lock{ m_mutexDataAccess };
 
-		return SResult::Success;
+		if (m_fResolveModuleLoad)
+		{
+			HMODULE hLibrary{};
+			sr = m_fResolveModuleLoad(oDynamicLoadLibrary.m_oLoadInfo, hLibrary);
+			oDynamicLoadLibrary.m_srLoadResult = sr;
+			oDynamicLoadLibrary.m_hLibrary = hLibrary;
+
+			return SResult::Success;
+		}
 	}
 
 	sr = ResolveDynamicLoadForLibrary_PreLoaded(oDynamicLoadLibrary);

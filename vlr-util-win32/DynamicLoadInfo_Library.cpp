@@ -39,13 +39,13 @@ DWORD CDynamicLoadInfo_Library::GetEffectiveFlags_LoadLibraryEx() const
 		return m_optExplicitFlags_LoadLibraryEx.value();
 	}
 
-	DWORD dwFlags = 0;
+	DWORD dwFlags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
 
 	// Note: If you have an explicit path, you can specify that LoadLibraryEx substitute the module's path for the 
 	// binary's path in the search list. We will do this by default.
 	if (m_bLibraryNameIsAbsolutePathQualified && m_bOnAbsolutePathQualified_SetFlag_AlternativeSearchPath)
 	{
-		dwFlags |= LOAD_WITH_ALTERED_SEARCH_PATH;
+		dwFlags = LOAD_WITH_ALTERED_SEARCH_PATH;
 	}
 
 	return dwFlags;

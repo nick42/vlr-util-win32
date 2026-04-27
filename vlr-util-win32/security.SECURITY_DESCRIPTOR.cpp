@@ -19,7 +19,7 @@ SResult CSecurityDescriptor::InitSecurityDescriptor()
 
 SResult CSecurityDescriptor::SetDacl(PACL pAcl, const CSetAclOptions& oSetAclOptions /*= {}*/)
 {
-	if ((!pAcl) && (oSetAclOptions.m_bAllowNull))
+	if ((!pAcl) && (!oSetAclOptions.m_bAllowNull))
 	{
 		return SResult::Failure;
 	}
@@ -40,7 +40,7 @@ SResult CSecurityDescriptor::SetDacl_Cleared()
 
 SResult CSecurityDescriptor::SetSacl(PACL pAcl, const CSetAclOptions& oSetAclOptions /*= {}*/)
 {
-	if ((!pAcl) && (oSetAclOptions.m_bAllowNull))
+	if ((!pAcl) && (!oSetAclOptions.m_bAllowNull))
 	{
 		return SResult::Failure;
 	}

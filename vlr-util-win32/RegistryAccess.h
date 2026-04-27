@@ -735,6 +735,7 @@ public:
 	CRegistryAccess(HKEY hBaseKey)
 		: m_hBaseKey{ hBaseKey }
 	{}
+	virtual ~CRegistryAccess() = default;
 };
 
 // Note: Logically, TStringView is a std::string_view or std::wstring_view, or derived, class
