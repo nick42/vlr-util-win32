@@ -127,7 +127,7 @@ public:
 
 		return S_OK;
 	}
-	HRESULT SetValue_SZ( vlr::wzstring_view svzValue )
+	HRESULT SetValue_SZ( vlr::wzstring_view_param svzValue )
 	{
 		m_dwType = REG_SZ;
 		auto nValueLengthBytes = (svzValue.size() + 1) * sizeof( wchar_t );

@@ -165,7 +165,7 @@ SResult CDynamicLoadProc::SaveLoadResultToMap(
 	return SResult::Success;
 }
 
-const CDynamicLoadedLibrary& CDynamicLoadProc::GetDynamicLoadLibrary(const vlr::tzstring_view svzLibraryName)
+const CDynamicLoadedLibrary& CDynamicLoadProc::GetDynamicLoadLibrary(const vlr::tzstring_view_param svzLibraryName)
 {
 	return GetDynamicLoadLibrary(CDynamicLoadInfo_Library{ svzLibraryName });
 }

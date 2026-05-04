@@ -9,7 +9,7 @@ namespace vlr {
 
 namespace win32 {
 
-SResult CDynamicLoadInfo_Library::SetLibraryName(vlr::tzstring_view svzLibraryName)
+SResult CDynamicLoadInfo_Library::SetLibraryName(vlr::tzstring_view_param svzLibraryName)
 {
 	m_sLibraryName = svzLibraryName.toStdString();
 	auto oLibraryPath = std::filesystem::path{ m_sLibraryName };

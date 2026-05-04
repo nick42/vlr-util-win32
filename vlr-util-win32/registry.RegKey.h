@@ -214,7 +214,7 @@ protected:
 		const Options_OpenKey& oOptions,
 		CRegKey& oRegKey_Result );
 public:
-	template< typename TKeyName, typename std::enable_if_t<std::is_convertible_v<TKeyName, vlr::zstring_view>>* = nullptr >
+	template< typename TKeyName, typename std::enable_if_t<std::is_convertible_v<TKeyName, vlr::zstring_view_param>>* = nullptr >
 	HRESULT OpenKey(
 		const TKeyName& sKeyName,
 		CRegKey& oRegKey_Result,
@@ -224,7 +224,7 @@ public:
 		{
 			auto lResult = ::RegOpenKeyExA(
 				hKey,
-				vlr::zstring_view{ sKeyName },
+				vlr::zstring_view_param{ sKeyName },
 				oOptions.m_ulOptions,
 				oOptions.m_ulDesiredAccess,
 				&hkResult );
@@ -236,7 +236,7 @@ public:
 
 		return OpenKeyAW( fOpenKey, oOptions, oRegKey_Result );
 	}
-	template< typename TKeyName, typename std::enable_if_t<std::is_convertible_v<TKeyName, vlr::wzstring_view>>* = nullptr >
+	template< typename TKeyName, typename std::enable_if_t<std::is_convertible_v<TKeyName, vlr::wzstring_view_param>>* = nullptr >
 	HRESULT OpenKey(
 		const TKeyName& sKeyName,
 		CRegKey& oRegKey_Result,
@@ -246,7 +246,7 @@ public:
 		{
 			auto lResult = ::RegOpenKeyExW(
 				hKey,
-				vlr::wzstring_view{ sKeyName },
+				vlr::wzstring_view_param{ sKeyName },
 				oOptions.m_ulOptions,
 				oOptions.m_ulDesiredAccess,
 				&hkResult );
@@ -271,9 +271,9 @@ protected:
 		const Options_GetValue& oOptions,
 		Result_GetValue& oResult );
 public:
-	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::zstring_view>>* = nullptr >
+	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::zstring_view_param>>* = nullptr >
 	HRESULT GetValue(
-		vlr::zstring_view svzSubkeyName,
+		vlr::zstring_view_param svzSubkeyName,
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
 		const Options_GetValue& oOptions = {} )
@@ -290,7 +290,7 @@ public:
 			auto lResult = ::RegGetValueA(
 				hKey,
 				svzSubkeyName,
-				vlr::zstring_view{ sValueName },
+				vlr::zstring_view_param{ sValueName },
 				oOptions.GetForCall_Flags(),
 				pdwType,
 				pBuffer,
@@ -309,21 +309,21 @@ public:
 
 		return GetValueAW( fGetValue, oOptions, oResult );
 	}
-	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::zstring_view>>* = nullptr >
+	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::zstring_view_param>>* = nullptr >
 	HRESULT GetValue(
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
 		const Options_GetValue& oOptions = {} )
 	{
 		return GetValue(
-			vlr::zstring_view{},
+			vlr::zstring_view_param{},
 			sValueName,
 			oResult,
 			oOptions );
 	}
-	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::wzstring_view>>* = nullptr >
+	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::wzstring_view_param>>* = nullptr >
 	HRESULT GetValue(
-		vlr::wzstring_view svzSubkeyName,
+		vlr::wzstring_view_param svzSubkeyName,
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
 		const Options_GetValue& oOptions = {} )
@@ -359,14 +359,14 @@ public:
 
 		return GetValueAW( fGetValue, oOptions, oResult );
 	}
-	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::wzstring_view>>* = nullptr >
+	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::wzstring_view_param>>* = nullptr >
 	HRESULT GetValue(
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
 		const Options_GetValue& oOptions = {} )
 	{
 		return GetValue(
-			vlr::wzstring_view{},
+			vlr::wzstring_view_param{},
 			sValueName,
 			oResult,
 			oOptions );

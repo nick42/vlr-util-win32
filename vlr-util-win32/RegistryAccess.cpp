@@ -12,7 +12,7 @@ namespace vlr {
 
 namespace win32 {
 
-SResult CRegistryAccess::CheckKeyExists(tzstring_view svzKeyName) const
+SResult CRegistryAccess::CheckKeyExists(tzstring_view_param svzKeyName) const
 {
 	SResult sr;
 
@@ -29,7 +29,7 @@ SResult CRegistryAccess::CheckKeyExists(tzstring_view svzKeyName) const
 }
 
 SResult CRegistryAccess::EnsureKeyExists(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	const Options_EnsureKeyExists& /*options*/ /*= {}*/) const
 {
 	SResult sr;
@@ -71,7 +71,7 @@ SResult CRegistryAccess::EnsureKeyExists(
 }
 
 SResult CRegistryAccess::DeleteKey(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	const Options_DeleteKeysOrValues& options /*= {}*/) const
 {
 	SResult sr;
@@ -108,8 +108,8 @@ SResult CRegistryAccess::DeleteKey(
 }
 
 SResult CRegistryAccess::ReadValueInfo(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	DWORD& dwType_Result,
 	DWORD& dwSize_Result) const
 {
@@ -144,8 +144,8 @@ SResult CRegistryAccess::ReadValueInfo(
 }
 
 SResult CRegistryAccess::ReadValueBase(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	DWORD& dwType_Result,
 	std::vector<BYTE>& arrData) const
 {
@@ -204,8 +204,8 @@ SResult CRegistryAccess::ReadValueBase(
 }
 
 SResult CRegistryAccess::WriteValueBase(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const DWORD& dwType,
 	cpp::span<const BYTE> spanData) const
 {
@@ -244,8 +244,8 @@ SResult CRegistryAccess::WriteValueBase(
 }
 
 SResult CRegistryAccess::ReadValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::string& saValue) const
 {
 	SResult sr;
@@ -269,8 +269,8 @@ SResult CRegistryAccess::ReadValue_String(
 }
 
 SResult CRegistryAccess::ReadValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::string& saValue,
 	const std::string& saDefaultResultOnNoValue) const
 {
@@ -291,8 +291,8 @@ SResult CRegistryAccess::ReadValue_String(
 }
 
 SResult CRegistryAccess::WriteValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const std::string& saValue) const
 {
 	SResult sr;
@@ -316,8 +316,8 @@ SResult CRegistryAccess::WriteValue_String(
 }
 
 SResult CRegistryAccess::WriteValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const std::string_view& svValue) const
 {
 	SResult sr;
@@ -341,8 +341,8 @@ SResult CRegistryAccess::WriteValue_String(
 }
 
 SResult CRegistryAccess::ReadValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::wstring& swValue) const
 {
 	SResult sr;
@@ -366,8 +366,8 @@ SResult CRegistryAccess::ReadValue_String(
 }
 
 SResult CRegistryAccess::ReadValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::wstring& swValue,
 	const std::wstring& swDefaultResultOnNoValue) const
 {
@@ -388,8 +388,8 @@ SResult CRegistryAccess::ReadValue_String(
 }
 
 SResult CRegistryAccess::WriteValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const std::wstring& swValue) const
 {
 	SResult sr;
@@ -413,8 +413,8 @@ SResult CRegistryAccess::WriteValue_String(
 }
 
 SResult CRegistryAccess::WriteValue_String(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const std::wstring_view& svValue) const
 {
 	SResult sr;
@@ -438,8 +438,8 @@ SResult CRegistryAccess::WriteValue_String(
 }
 
 SResult CRegistryAccess::ReadValue_DWORD(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	DWORD& dwValue) const
 {
 	SResult sr;
@@ -463,8 +463,8 @@ SResult CRegistryAccess::ReadValue_DWORD(
 }
 
 SResult CRegistryAccess::ReadValue_DWORD(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	DWORD& dwValue,
 	const DWORD& dwDefaultResultOnNoValue) const
 {
@@ -485,8 +485,8 @@ SResult CRegistryAccess::ReadValue_DWORD(
 }
 
 SResult CRegistryAccess::WriteValue_DWORD(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const DWORD& dwValue) const
 {
 	SResult sr;
@@ -510,8 +510,8 @@ SResult CRegistryAccess::WriteValue_DWORD(
 }
 
 SResult CRegistryAccess::ReadValue_QWORD(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	QWORD& qwValue) const
 {
 	SResult sr;
@@ -535,8 +535,8 @@ SResult CRegistryAccess::ReadValue_QWORD(
 }
 
 SResult CRegistryAccess::ReadValue_QWORD(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	QWORD& qwValue,
 	const QWORD& qwDefaultResultOnNoValue) const
 {
@@ -557,8 +557,8 @@ SResult CRegistryAccess::ReadValue_QWORD(
 }
 
 SResult CRegistryAccess::WriteValue_QWORD(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const QWORD& qwValue) const
 {
 	SResult sr;
@@ -582,8 +582,8 @@ SResult CRegistryAccess::WriteValue_QWORD(
 }
 
 SResult CRegistryAccess::ReadValue_MultiSz(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::vector<vlr::tstring>& arrValueCollection) const
 {
 	SResult sr;
@@ -607,8 +607,8 @@ SResult CRegistryAccess::ReadValue_MultiSz(
 }
 
 SResult CRegistryAccess::ReadValue_MultiSz(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::vector<vlr::tstring>& arrValueCollection,
 	const std::vector<vlr::tstring>& arrDefaultResultOnNoValue) const
 {
@@ -629,8 +629,8 @@ SResult CRegistryAccess::ReadValue_MultiSz(
 }
 
 SResult CRegistryAccess::WriteValue_MultiSz(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const std::vector<vlr::tstring>& arrValueCollection) const
 {
 	SResult sr;
@@ -657,8 +657,8 @@ SResult CRegistryAccess::WriteValue_MultiSz(
 // Not doing this initially for consistency; update if speed for this type becomes desired.
 
 SResult CRegistryAccess::ReadValue_Binary(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::vector<BYTE>& arrBinaryData) const
 {
 	SResult sr;
@@ -682,8 +682,8 @@ SResult CRegistryAccess::ReadValue_Binary(
 }
 
 SResult CRegistryAccess::ReadValue_Binary(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	std::vector<BYTE>& arrBinaryData,
 	const std::vector<BYTE>& arrDefaultResultOnNoValue) const
 {
@@ -704,8 +704,8 @@ SResult CRegistryAccess::ReadValue_Binary(
 }
 
 SResult CRegistryAccess::WriteValue_Binary(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	cpp::span<const BYTE> spanData) const
 {
 	SResult sr;
@@ -729,8 +729,8 @@ SResult CRegistryAccess::WriteValue_Binary(
 }
 
 SResult CRegistryAccess::DeleteValue(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	const Options_DeleteKeysOrValues& options /*= {}*/)
 {
 	SResult sr;
@@ -1242,7 +1242,7 @@ SResult CRegistryAccess::convertValueToRegData_Binary(
 }
 
 SResult CRegistryAccess::EnumAllValues(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	const OnEnumValueData& fOnEnumValueData) const
 {
 	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(fOnEnumValueData);
@@ -1377,7 +1377,7 @@ SResult CRegistryAccess::populateValueMapEntryFromEnumValueData(
 }
 
 SResult CRegistryAccess::RealAllValuesIntoMap(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue) const
 {
 	SResult sr;
@@ -1398,8 +1398,8 @@ SResult CRegistryAccess::RealAllValuesIntoMap(
 }
 
 SResult CRegistryAccess::ReadValueObfuscated(
-	tzstring_view svzKeyName,
-	tzstring_view svzValueName,
+	tzstring_view_param svzKeyName,
+	tzstring_view_param svzValueName,
 	ValueMapEntry& oValueMapEntry)
 {
 	SResult sr;
@@ -1443,7 +1443,7 @@ SResult CRegistryAccess::ReadValueObfuscated(
 }
 
 SResult CRegistryAccess::ReadValuesObfuscated(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	const std::vector<cpp::tstring>& arrValueNames,
 	std::vector<ValueMapEntry>& arrValueMapEntryCollection)
 {
@@ -1485,7 +1485,7 @@ SResult CRegistryAccess::ReadValuesObfuscated(
 }
 
 SResult CRegistryAccess::EnumAllSubkeys(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	const OnEnumSubkeyData& fOnEnumSubkeyData) const
 {
 	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(fOnEnumSubkeyData);
@@ -1570,7 +1570,7 @@ SResult CRegistryAccess::EnumAllSubkeys(
 }
 
 SResult CRegistryAccess::ReadAllSubkeysIntoVector(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	std::vector<cpp::tstring>& arrSubkeyNames)
 {
 	SResult sr;
@@ -1589,7 +1589,7 @@ SResult CRegistryAccess::ReadAllSubkeysIntoVector(
 }
 
 SResult CRegistryAccess::openKey(
-	tzstring_view svzKeyName,
+	tzstring_view_param svzKeyName,
 	DWORD dwAccessMask,
 	HKEY& hKey_Result) const
 {

@@ -24,12 +24,12 @@ public:
 	util::logical_tzstring_view m_svzRunAsAccount_Password;
 
 public:
-	inline auto& withServiceName(vlr::tzstring_view svzServiceName) noexcept
+	inline auto& withServiceName(vlr::tzstring_view_param svzServiceName) noexcept
 	{
 		m_svzServiceName = svzServiceName;
 		return *this;
 	}
-	inline auto& withServiceName_Display(vlr::tzstring_view svzServiceName_Display) noexcept
+	inline auto& withServiceName_Display(vlr::tzstring_view_param svzServiceName_Display) noexcept
 	{
 		m_svzServiceName_Display = svzServiceName_Display;
 		return *this;

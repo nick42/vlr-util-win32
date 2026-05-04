@@ -45,7 +45,7 @@ vlr::tstring CGUID::ToString() const
 	return util::Convert::ToStdString(svzFormatData);
 }
 
-SResult CGUID::ParseString(vlr::wzstring_view svzFormatValue)
+SResult CGUID::ParseString(vlr::wzstring_view_param svzFormatValue)
 {
 	HRESULT hr;
 
@@ -55,7 +55,7 @@ SResult CGUID::ParseString(vlr::wzstring_view svzFormatValue)
 	return S_OK;
 }
 
-SResult CGUID::ParseString(vlr::zstring_view svzFormatValue)
+SResult CGUID::ParseString(vlr::zstring_view_param svzFormatValue)
 {
 	auto swFormatValue = util::Convert::ToStdStringW(svzFormatValue);
 	return ParseString(swFormatValue);

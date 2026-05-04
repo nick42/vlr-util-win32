@@ -66,7 +66,7 @@ protected:
 		const SPCDynamicLoadedFunctionBase& spDynamicLoadedFunction);
 
 public:
-	const CDynamicLoadedLibrary& GetDynamicLoadLibrary(const vlr::tzstring_view svzLibraryName);
+	const CDynamicLoadedLibrary& GetDynamicLoadLibrary(const vlr::tzstring_view_param svzLibraryName);
 	const CDynamicLoadedLibrary& GetDynamicLoadLibrary(const CDynamicLoadInfo_Library& oLoadInfo);
 
 	// Note: If spDynamicLoadFunction_Typed is not null, this method will populate this instance on success, and store in the map.

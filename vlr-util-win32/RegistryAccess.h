@@ -86,8 +86,8 @@ public:
 		return *this;
 	}
 
-	SResult CheckKeyExists(tzstring_view svzKeyName) const;
-	inline bool DoesKeyExist(tzstring_view svzKeyName) const
+	SResult CheckKeyExists(tzstring_view_param svzKeyName) const;
+	inline bool DoesKeyExist(tzstring_view_param svzKeyName) const
 	{
 		auto sr = CheckKeyExists(svzKeyName);
 		return (sr == SResult::Success);
@@ -98,7 +98,7 @@ public:
 		// TODO: Add desired permissions, etc.
 	};
 	SResult EnsureKeyExists(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		const Options_EnsureKeyExists& options = {}) const;
 
 	struct Options_DeleteKeysOrValues
@@ -113,121 +113,121 @@ public:
 		}
 	};
 	SResult DeleteKey(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		const Options_DeleteKeysOrValues& options = {}) const;
 
 	SResult ReadValueInfo(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		DWORD& dwType_Result,
 		DWORD& dwSize_Result) const;
 
 	SResult ReadValueBase(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		DWORD& dwType_Result, 
 		std::vector<BYTE>& arrData) const;
 	SResult WriteValueBase(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const DWORD& dwType,
 		cpp::span<const BYTE> spanData) const;
 
 	SResult ReadValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::string& saValue) const;
 	SResult ReadValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::string& saValue,
 		const std::string& saDefaultResultOnNoValue) const;
 	SResult WriteValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::string& saValue) const;
 	SResult WriteValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::string_view& svValue) const;
 
 	SResult ReadValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::wstring& swValue) const;
 	SResult ReadValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::wstring& swValue,
 		const std::wstring& swDefaultResultOnNoValue) const;
 	SResult WriteValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::wstring& swValue) const;
 	SResult WriteValue_String(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::wstring_view& svValue) const;
 
 	SResult ReadValue_DWORD(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		DWORD& dwValue) const;
 	SResult ReadValue_DWORD(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		DWORD& dwValue,
 		const DWORD& dwDefaultResultOnNoValue) const;
 	SResult WriteValue_DWORD(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const DWORD& dwValue) const;
 
 	SResult ReadValue_QWORD(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		QWORD& qwValue) const;
 	SResult ReadValue_QWORD(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		QWORD& dwValue,
 		const QWORD& qwDefaultResultOnNoValue) const;
 	SResult WriteValue_QWORD(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const QWORD& qwValue) const;
 
 	SResult ReadValue_MultiSz(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<vlr::tstring>& arrValueCollection) const;
 	SResult ReadValue_MultiSz(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<vlr::tstring>& arrValueCollection,
 		const std::vector<vlr::tstring>& arrDefaultResultOnNoValue) const;
 	SResult WriteValue_MultiSz(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::vector<vlr::tstring>& arrValueCollection) const;
 
 	SResult ReadValue_Binary(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<BYTE>& arrData) const;
 	SResult ReadValue_Binary(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<BYTE>& arrData,
 		const std::vector<BYTE>& arrDefaultResultOnNoValue) const;
 	SResult WriteValue_Binary(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		cpp::span<const BYTE> spanData) const;
 
 	SResult DeleteValue(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const Options_DeleteKeysOrValues& options = {});
 
 	// Note: This is the "high-level" interface.
@@ -235,16 +235,16 @@ public:
 
 	template< typename TValue >
 	SResult ReadValue(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		TValue& tValue) const
 	{
 		static_assert("Unhanded type");
 	}
 	template< typename TValue >
 	SResult ReadValue(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		TValue& tValue,
 		const TValue& tDefaultResultOnNoValue) const
 	{
@@ -252,8 +252,8 @@ public:
 	}
 	template< typename TValue >
 	SResult WriteValue(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const TValue& tValue) const
 	{
 		static_assert("Unhanded type");
@@ -261,8 +261,8 @@ public:
 
 	template<>
 	inline SResult ReadValue<std::string>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::string& tValue) const
 	{
 		return ReadValue_String(
@@ -272,8 +272,8 @@ public:
 	}
 	template<>
 	inline SResult ReadValue<std::string>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::string& tValue,
 		const std::string& tDefaultResultOnNoValue) const
 	{
@@ -285,8 +285,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<std::string>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::string& tValue) const
 	{
 		return WriteValue_String(
@@ -296,8 +296,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<vlr::zstring_view>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const vlr::zstring_view& tValue) const
 	{
 		return WriteValue_String(
@@ -307,8 +307,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<std::string_view>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::string_view& tValue) const
 	{
 		return WriteValue_String(
@@ -319,8 +319,8 @@ public:
 
 	template<>
 	inline SResult ReadValue<std::wstring>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::wstring& tValue) const
 	{
 		return ReadValue_String(
@@ -330,8 +330,8 @@ public:
 	}
 	template<>
 	inline SResult ReadValue<std::wstring>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::wstring& tValue,
 		const std::wstring& tDefaultResultOnNoValue) const
 	{
@@ -343,8 +343,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<std::wstring>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::wstring& tValue) const
 	{
 		return WriteValue_String(
@@ -354,8 +354,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<vlr::wzstring_view>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const vlr::wzstring_view& tValue) const
 	{
 		return WriteValue_String(
@@ -365,8 +365,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<std::wstring_view>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::wstring_view& tValue) const
 	{
 		return WriteValue_String(
@@ -377,8 +377,8 @@ public:
 
 	template<>
 	inline SResult ReadValue<DWORD>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		DWORD& tValue) const
 	{
 		return ReadValue_DWORD(
@@ -388,8 +388,8 @@ public:
 	}
 	template<>
 	inline SResult ReadValue<DWORD>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		DWORD& tValue,
 		const DWORD& tDefaultResultOnNoValue) const
 	{
@@ -401,8 +401,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<DWORD>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const DWORD& tValue) const
 	{
 		return WriteValue_DWORD(
@@ -413,8 +413,8 @@ public:
 
 	template<>
 	inline SResult ReadValue<QWORD>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		QWORD& tValue) const
 	{
 		return ReadValue_QWORD(
@@ -424,8 +424,8 @@ public:
 	}
 	template<>
 	inline SResult ReadValue<QWORD>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		QWORD& tValue,
 		const QWORD& tDefaultResultOnNoValue) const
 	{
@@ -437,8 +437,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<QWORD>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const QWORD& tValue) const
 	{
 		return WriteValue_QWORD(
@@ -449,8 +449,8 @@ public:
 
 	template<>
 	inline SResult ReadValue<std::vector<vlr::tstring>>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<vlr::tstring>& tValue) const
 	{
 		return ReadValue_MultiSz(
@@ -460,8 +460,8 @@ public:
 	}
 	template<>
 	inline SResult ReadValue<std::vector<vlr::tstring>>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<vlr::tstring>& tValue,
 		const std::vector<vlr::tstring>& tDefaultResultOnNoValue) const
 	{
@@ -473,8 +473,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<std::vector<vlr::tstring>>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::vector<vlr::tstring>& tValue) const
 	{
 		return WriteValue_MultiSz(
@@ -485,8 +485,8 @@ public:
 
 	template<>
 	inline SResult ReadValue<std::vector<BYTE>>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<BYTE>& tValue) const
 	{
 		return ReadValue_Binary(
@@ -496,8 +496,8 @@ public:
 	}
 	template<>
 	inline SResult ReadValue<std::vector<BYTE>>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		std::vector<BYTE>& tValue,
 		const std::vector<BYTE>& tDefaultResultOnNoValue) const
 	{
@@ -509,8 +509,8 @@ public:
 	}
 	template<>
 	inline SResult WriteValue<std::vector<BYTE>>(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		const std::vector<BYTE>& tValue) const
 	{
 		return WriteValue_Binary(
@@ -648,7 +648,7 @@ public:
 	using OnEnumValueData = std::function<SResult(const EnumValueData& oEnumValueData)>;
 
 	SResult EnumAllValues(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		const OnEnumValueData& fOnEnumValueData) const;
 
 	// Note: This does data copies and allocations, so prefer enum for search/speed
@@ -669,7 +669,7 @@ public:
 		ValueMapEntry& oValueMapEntry) const;
 
 	SResult RealAllValuesIntoMap(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		std::unordered_map<vlr::tstring, ValueMapEntry>& mapNameToValue) const;
 
 	// This is a method which can be used to read a value without exposing the name of the value which is being read.
@@ -677,11 +677,11 @@ public:
 	// read all values, and filter for the value(s) we are interested in.
 
 	SResult ReadValueObfuscated(
-		tzstring_view svzKeyName,
-		tzstring_view svzValueName,
+		tzstring_view_param svzKeyName,
+		tzstring_view_param svzValueName,
 		ValueMapEntry& oValueMapEntry);
 	SResult ReadValuesObfuscated(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		const std::vector<cpp::tstring>& arrValueNames,
 		std::vector<ValueMapEntry>& arrValueMapEntryCollection);
 
@@ -716,16 +716,16 @@ public:
 	using OnEnumSubkeyData = std::function<SResult(const EnumSubkeyData& oEnumSubkeyData)>;
 
 	SResult EnumAllSubkeys(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		const OnEnumSubkeyData& fOnEnumSubkeyData) const;
 
 	SResult ReadAllSubkeysIntoVector(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		std::vector<cpp::tstring>& arrSubkeyNames);
 
 protected:
 	SResult openKey(
-		tzstring_view svzKeyName,
+		tzstring_view_param svzKeyName,
 		DWORD dwAccessMask,
 		HKEY& hKey_Result) const;
 	DWORD getWow64RedirectionKeyAccessMask() const;

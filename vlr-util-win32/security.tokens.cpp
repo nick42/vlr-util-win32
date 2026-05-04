@@ -14,7 +14,7 @@ namespace tokens {
 
 HRESULT SetPrivilegeOnToken(
 	HANDLE hToken,
-    vlr::tzstring_view svzPrivilegeName,
+    vlr::tzstring_view_param svzPrivilegeName,
     bool bEnable )
 {
     BOOL bResult{};
@@ -55,7 +55,7 @@ HRESULT SetPrivilegeOnToken(
 
 HRESULT SetPrivilegeOnProcess(
     HANDLE hProcess,
-    vlr::tzstring_view svzPrivilegeName,
+    vlr::tzstring_view_param svzPrivilegeName,
     bool bEnable )
 {
     BOOL bResult{};

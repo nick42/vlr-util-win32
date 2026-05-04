@@ -28,7 +28,7 @@ protected:
 	bool m_bOnAbsolutePathQualified_SetFlag_AlternativeSearchPath = true;
 
 public:
-	inline auto& withLibraryName(vlr::tzstring_view svzLibraryName)
+	inline auto& withLibraryName(vlr::tzstring_view_param svzLibraryName)
 	{
 		SetLibraryName(svzLibraryName);
 		return *this;
@@ -75,7 +75,7 @@ public:
 		return m_bExpectLibraryAlreadyLoaded;
 	}
 
-	SResult SetLibraryName(vlr::tzstring_view svzLibraryName);
+	SResult SetLibraryName(vlr::tzstring_view_param svzLibraryName);
 
 	// If explicit flags are set, this is returned.
 	// Else, the function will return the most applicable default flags, based on settings.
@@ -83,7 +83,7 @@ public:
 
 public:
 	CDynamicLoadInfo_Library() = default;
-	CDynamicLoadInfo_Library(vlr::tzstring_view svzLibraryName)
+	CDynamicLoadInfo_Library(vlr::tzstring_view_param svzLibraryName)
 	{
 		SetLibraryName(svzLibraryName);
 	}

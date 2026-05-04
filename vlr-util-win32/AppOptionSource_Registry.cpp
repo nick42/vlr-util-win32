@@ -7,7 +7,7 @@ namespace win32 {
 
 SResult CAppOptionSource_Registry::ReadAllValuesFromPathAsOptions(
 	const CRegistryAccess& oReg,
-	vlr::tzstring_view svzPath)
+	vlr::tzstring_view_param svzPath)
 {
 	SResult sr;
 

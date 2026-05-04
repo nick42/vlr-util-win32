@@ -20,9 +20,9 @@ public:
 
 	vlr::tstring ToString() const;
 
-	SResult ParseString(vlr::wzstring_view svzFormatValue);
+	SResult ParseString(vlr::wzstring_view_param svzFormatValue);
 	// Note: Win32 method uses LPOLESTR, so char version involves string type conversion
-	SResult ParseString(vlr::zstring_view svzFormatValue);
+	SResult ParseString(vlr::zstring_view_param svzFormatValue);
 
 public:
 	inline static auto NewGUID()

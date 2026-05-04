@@ -39,7 +39,7 @@ public:
 		const CServiceConfig& oServiceConfig );
 
 	SResult SCM_OpenService(
-		vlr::tzstring_view svzServiceName,
+		vlr::tzstring_view_param svzServiceName,
 		DWORD dwDesiredAccess,
 		SC_HANDLE& hService_Result );
 

@@ -39,7 +39,7 @@ public:
 public:
 	SResult ReadAllValuesFromPathAsOptions(
 		const CRegistryAccess& oReg,
-		vlr::tzstring_view svzPath);
+		vlr::tzstring_view_param svzPath);
 
 };
 
