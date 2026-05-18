@@ -10,8 +10,8 @@ namespace win32 {
 class CServiceConfig
 {
 public:
-	util::logical_tzstring_view m_svzServiceName;
-	util::logical_tzstring_view m_svzServiceName_Display;
+	vlr::tstring m_sServiceName;
+	vlr::tstring m_sServiceName_Display;
 	DWORD m_dwDesiredAccess = SERVICE_ALL_ACCESS;
 	DWORD m_dwServiceType = SERVICE_WIN32_OWN_PROCESS;
 	DWORD m_dwStartType = SERVICE_DEMAND_START;
@@ -26,12 +26,12 @@ public:
 public:
 	inline auto& withServiceName(vlr::tzstring_view_param svzServiceName) noexcept
 	{
-		m_svzServiceName = svzServiceName;
+		m_sServiceName = svzServiceName.toStdString();
 		return *this;
 	}
 	inline auto& withServiceName_Display(vlr::tzstring_view_param svzServiceName_Display) noexcept
 	{
-		m_svzServiceName_Display = svzServiceName_Display;
+		m_sServiceName_Display = svzServiceName_Display.toStdString();
 		return *this;
 	}
 	inline auto& withFilePath_ServiceBinary(vlr::tstring sFilePath_ServiceBinary)

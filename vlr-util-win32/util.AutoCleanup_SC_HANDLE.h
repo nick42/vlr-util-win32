@@ -26,7 +26,10 @@ public:
 	// Should not copy; would break cleanup
 	CAutoCleanup_SC_HANDLE(const CAutoCleanup_SC_HANDLE&) = delete;
 	// Move is okey though
-	CAutoCleanup_SC_HANDLE(CAutoCleanup_SC_HANDLE&&) = default;
+	CAutoCleanup_SC_HANDLE(CAutoCleanup_SC_HANDLE&& other) noexcept
+		: m_hSCM{ std::exchange(other.m_hSCM, nullptr) }
+	{
+	}
 	virtual ~CAutoCleanup_SC_HANDLE()
 	{
 		OnDestroy_DoCleanup();

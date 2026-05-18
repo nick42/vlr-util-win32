@@ -25,6 +25,8 @@ HRESULT CAutoCleanup_SC_HANDLE::DoCleanup()
 			SResult::For_win32_LastError().ToString() );
 	}
 
+	m_hSCM = nullptr;
+
 	return S_OK;
 }
 

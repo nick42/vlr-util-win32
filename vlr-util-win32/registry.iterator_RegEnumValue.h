@@ -74,7 +74,7 @@ public:
 		}
 		OnAdaptorMethod_increment();
 	}
-	auto equal( const iterator_RegEnumValue& iterOther ) const
+	auto equal(const iterator_RegEnumValue& iterOther) const
 	{
 		bool bInvalidIter_this = (!HaveValidIndexForIteration());
 		bool bInvalidIter_other = (!iterOther.HaveValidIndexForIteration());
@@ -95,12 +95,13 @@ public:
 
 public:
 	constexpr iterator_RegEnumValue(
-		HKEY hParentKey )
+		HKEY hParentKey)
 		: m_hParentKey{ hParentKey }
-	{}
+	{
+	}
 	iterator_RegEnumValue(
 		HKEY hParentKey,
-		DWORD dwIndex )
+		DWORD dwIndex)
 		: m_hParentKey{ hParentKey }
 		, m_odwNextIndex{ dwIndex }
 	{
@@ -111,21 +112,24 @@ public:
 
 HRESULT iterator_RegEnumValue::OnAdaptorMethod_increment()
 {
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_hParentKey );
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_odwNextIndex.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(m_hParentKey);
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(m_odwNextIndex.has_value());
+
+	DWORD dwValueNameLength = 1024;
+	DWORD dwValueLength = 2048;
+
+	auto spCurrentResult = cpp::make_shared<RegEnumValueResult>();
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(spCurrentResult);
+
+	spCurrentResult->m_dwIndex = m_odwNextIndex.value();
+
+	spCurrentResult->m_wsName.resize(dwValueNameLength);
+	spCurrentResult->m_oData.resize(dwValueLength);
 
 	do
 	{
-		auto spCurrentResult = cpp::make_shared<RegEnumValueResult>();
-		VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( spCurrentResult );
-
-		spCurrentResult->m_dwIndex = m_odwNextIndex.value();
-
-		DWORD dwValueNameLength = 256;
-		spCurrentResult->m_wsName.resize( dwValueNameLength );
-
-		DWORD dwValueLength = 2048;
-		spCurrentResult->m_oData.resize( dwValueLength );
+		DWORD dwValueNameLength = static_cast<DWORD>(spCurrentResult->m_wsName.size());
+		DWORD dwValueLength = static_cast<DWORD>(spCurrentResult->m_oData.size());
 
 		auto lStatus = ::RegEnumValueW(
 			m_hParentKey,
@@ -135,39 +139,47 @@ HRESULT iterator_RegEnumValue::OnAdaptorMethod_increment()
 			NULL,
 			&spCurrentResult->m_dwType,
 			spCurrentResult->m_oData.data(),
-			&dwValueLength );
+			&dwValueLength);
 		if (lStatus == ERROR_SUCCESS)
 		{
-			spCurrentResult->m_wsName.resize( dwValueNameLength );
-			spCurrentResult->m_oData.resize( dwValueLength );
+			spCurrentResult->m_wsName.resize(dwValueNameLength);
+			spCurrentResult->m_oData.resize(dwValueLength);
 			m_spCurrentResult = spCurrentResult;
 			m_odwNextIndex = ++m_odwNextIndex.value();
 
 			return S_OK;
 		}
-		else if (lStatus == ERROR_NO_MORE_ITEMS)
+		if (lStatus == ERROR_NO_MORE_ITEMS)
 		{
 			m_odwNextIndex = {};
 			m_spCurrentResult = {};
-			m_odwLastError = HRESULT_FROM_WIN32( ERROR_NO_MORE_ITEMS );
+			m_odwLastError = HRESULT_FROM_WIN32(ERROR_NO_MORE_ITEMS);
 
 			return S_FALSE;
 		}
-		else if (lStatus == ERROR_MORE_DATA)
+		if (lStatus == ERROR_MORE_DATA)
 		{
-			spCurrentResult->m_wsName.resize( dwValueNameLength );
-			spCurrentResult->m_oData.resize( dwValueLength );
+			// Hard capping buffer sizes to 64k chars/bytes, as this is the max size of a registry value; 
+			// if this is still not enough, then something is very wrong and we should just fail instead of looping indefinitely
+			if ((dwValueNameLength >= 65536) || (dwValueLength >= 65536))
+			{
+				m_odwLastError = HRESULT_FROM_WIN32(ERROR_MORE_DATA);
+				return m_odwLastError.value();
+			}
+
+			// dwValueLength now holds required data bytes; name size is NOT updated
+			spCurrentResult->m_wsName.resize(spCurrentResult->m_wsName.size() * 2);
+			spCurrentResult->m_oData.resize(dwValueLength);
 
 			continue;
 		}
-		else
-		{
-			m_odwLastError = HRESULT_FROM_WIN32( lStatus );
-			return m_odwLastError.value();
-		}
+
+		// No other handled cases; return error
+		m_odwLastError = HRESULT_FROM_WIN32(lStatus);
+		return m_odwLastError.value();
 	} while (true);
 
-	VLR_HANDLE_ASSERTION_FAILURE__AND_RETURN_EXPRESSION( E_UNEXPECTED );
+	VLR_HANDLE_ASSERTION_FAILURE__AND_RETURN_EXPRESSION(E_UNEXPECTED);
 }
 
 } // namespace registry

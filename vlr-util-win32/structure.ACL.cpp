@@ -95,6 +95,7 @@ HRESULT CAccessControlList::Initialize(const ACL* pACL)
 {
 	static constexpr auto _tFailureValue = E_FAIL;
 
+	VLR_ASSERT_NONZERO_OR_RETURN_FAILURE_VALUE(pACL);
 	auto&& oACL = MakeStructureAccessor(pACL);
 
 	m_oAccessControlEntryList.reserve(oACL.AceCount);

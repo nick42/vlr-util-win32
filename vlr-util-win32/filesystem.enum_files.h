@@ -26,9 +26,10 @@ protected:
 	{
 		std::optional<HANDLE> m_ohFindHandle;
 
-		RefCountedDataBlock( HANDLE hFindHandle )
+		RefCountedDataBlock(HANDLE hFindHandle)
 			: m_ohFindHandle{ hFindHandle }
-		{}
+		{
+		}
 	};
 	std::shared_ptr<RefCountedDataBlock> m_spRefCountedDataBlock;
 	std::shared_ptr<BYTE[]> m_spResultDataBuffer;
@@ -36,7 +37,7 @@ protected:
 
 protected:
 	HRESULT OnAdaptorMethod_increment();
-	static HRESULT OnDestroy_FindClose( RefCountedDataBlock* pRefCountedDataBlock );
+	static HRESULT OnDestroy_FindClose(RefCountedDataBlock* pRefCountedDataBlock);
 
 public:
 	inline const auto& GetLastError() const
@@ -61,7 +62,7 @@ public:
 		}
 		OnAdaptorMethod_increment();
 	}
-	auto equal( const iterator_FindNextFile& iterOther ) const
+	auto equal(const iterator_FindNextFile& iterOther) const
 	{
 		bool bInvalidIter_this = (!m_spRefCountedDataBlock || !m_spRefCountedDataBlock->m_ohFindHandle.has_value());
 		bool bInvalidIter_other = (!iterOther.m_spRefCountedDataBlock || !iterOther.m_spRefCountedDataBlock->m_ohFindHandle.has_value());
@@ -107,8 +108,8 @@ public:
 
 HRESULT iterator_FindNextFile::OnAdaptorMethod_increment()
 {
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock );
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_spRefCountedDataBlock->m_ohFindHandle.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(m_spRefCountedDataBlock);
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(m_spRefCountedDataBlock->m_ohFindHandle.has_value());
 
 	// Copy buffer and clear internal to do operation; will copy back on success
 	auto spResultDataBuffer = m_spResultDataBuffer;
@@ -116,7 +117,7 @@ HRESULT iterator_FindNextFile::OnAdaptorMethod_increment()
 
 	BOOL bSuccess = ::FindNextFile(
 		m_spRefCountedDataBlock->m_ohFindHandle.value(),
-		reinterpret_cast<WIN32_FIND_DATA*>(spResultDataBuffer.get()) );
+		reinterpret_cast<WIN32_FIND_DATA*>(spResultDataBuffer.get()));
 	if (bSuccess)
 	{
 		m_spResultDataBuffer = spResultDataBuffer;
@@ -135,7 +136,7 @@ HRESULT iterator_FindNextFile::OnAdaptorMethod_increment()
 	return S_OK;
 }
 
-HRESULT iterator_FindNextFile::OnDestroy_FindClose( RefCountedDataBlock* pRefCountedDataBlock )
+HRESULT iterator_FindNextFile::OnDestroy_FindClose(RefCountedDataBlock* pRefCountedDataBlock)
 {
 	if (!pRefCountedDataBlock)
 	{
@@ -146,13 +147,13 @@ HRESULT iterator_FindNextFile::OnDestroy_FindClose( RefCountedDataBlock* pRefCou
 		return S_FALSE;
 	}
 
-	auto oOnDestroy_ClearHandleVar = MakeActionOnDestruction( [&] { pRefCountedDataBlock->m_ohFindHandle = {}; } );
+	auto oOnDestroy_DeleteBlock = MakeActionOnDestruction([&] { delete pRefCountedDataBlock; });
 
 	BOOL bSuccess;
 
 	bSuccess = ::FindClose(
-		pRefCountedDataBlock->m_ohFindHandle.value() );
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( bSuccess );
+		pRefCountedDataBlock->m_ohFindHandle.value());
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(bSuccess);
 
 	return S_OK;
 }
@@ -165,9 +166,9 @@ public:
 	DWORD m_dwAdditionalFlags = 0;
 
 protected:
-	HRESULT OnBegin( iterator_FindNextFile& iter ) const
+	HRESULT OnBegin(iterator_FindNextFile& iter) const
 	{
-		auto spResultDataBuffer = std::shared_ptr<BYTE[]>{ new BYTE[sizeof( WIN32_FIND_DATA )] };
+		auto spResultDataBuffer = std::shared_ptr<BYTE[]>{ new BYTE[sizeof(WIN32_FIND_DATA)] };
 
 		auto hFindHandle = ::FindFirstFileEx(
 			vlr::tzstring_view{ m_sSearchString },
@@ -175,15 +176,15 @@ protected:
 			spResultDataBuffer.get(),
 			m_dwSearchOps,
 			nullptr,
-			m_dwAdditionalFlags );
+			m_dwAdditionalFlags);
 		if (hFindHandle == INVALID_HANDLE_VALUE)
 		{
 			iter.m_odwLastError = ::GetLastError();
 			return S_FALSE;
 		}
 
-		auto spRefCountedDataBlock = std::shared_ptr<iterator_FindNextFile::RefCountedDataBlock>{ new iterator_FindNextFile::RefCountedDataBlock( hFindHandle ), &iterator_FindNextFile::OnDestroy_FindClose };
-		VLR_ASSERT_ALLOCATED_OR_RETURN_STANDARD_ERROR( spRefCountedDataBlock );
+		auto spRefCountedDataBlock = std::shared_ptr<iterator_FindNextFile::RefCountedDataBlock>{ new iterator_FindNextFile::RefCountedDataBlock(hFindHandle), &iterator_FindNextFile::OnDestroy_FindClose };
+		VLR_ASSERT_ALLOCATED_OR_RETURN_STANDARD_ERROR(spRefCountedDataBlock);
 		iter.m_spRefCountedDataBlock = spRefCountedDataBlock;
 		iter.m_spResultDataBuffer = spResultDataBuffer;
 
@@ -194,7 +195,7 @@ public:
 	inline auto begin() const
 	{
 		auto iter = iterator_FindNextFile{};
-		OnBegin( iter );
+		OnBegin(iter);
 		return iter;
 	}
 	inline auto end() const

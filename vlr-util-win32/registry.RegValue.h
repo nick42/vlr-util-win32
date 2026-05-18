@@ -22,7 +22,7 @@ public:
 public:
 	inline auto GetValue_DWORD() const -> std::optional<DWORD>
 	{
-		if (m_oData.size() != sizeof( DWORD ))
+		if (m_oData.size() != sizeof(DWORD))
 		{
 			return {};
 		}
@@ -40,7 +40,7 @@ public:
 	}
 	inline auto GetValue_QWORD() const -> std::optional<ULONGLONG>
 	{
-		if (m_oData.size() != sizeof( ULONGLONG ))
+		if (m_oData.size() != sizeof(ULONGLONG))
 		{
 			return {};
 		}
@@ -78,11 +78,13 @@ public:
 		}
 
 		auto pcwszValue = reinterpret_cast<LPCWSTR>(m_oData.data());
-		auto nValueLengthChars = m_oData.size() / sizeof( wchar_t );
-		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( nValueLengthChars, >= , 1 );
-		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( pcwszValue[nValueLengthChars - 1], == , L'\0' );
+		auto nValueLengthChars = m_oData.size() / sizeof(wchar_t);
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE(nValueLengthChars, >= , 1);
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE(pcwszValue[nValueLengthChars - 1], == , L'\0');
 
-		return vlr::wzstring_view{ pcwszValue, nValueLengthChars, vlr::wzstring_view::StringIsNullTerminated{} };
+		// nValueLengthChars includes the null terminator, but wzstring_view expects the length to not include the 
+		// null terminator, so subtract 1 from the length, and indicate that the string is null-terminated via the tag type.
+		return vlr::wzstring_view{ pcwszValue, nValueLengthChars - 1, vlr::wzstring_view::StringIsNullTerminated{} };
 	}
 	inline auto GetValue_MultiSZ() const -> std::optional<std::vector<vlr::wzstring_view>>
 	{
@@ -104,36 +106,37 @@ public:
 		}
 
 		auto pcwszValue = reinterpret_cast<LPCWSTR>(m_oData.data());
-		auto nValueLengthChars = m_oData.size() / sizeof( wchar_t );
-		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( nValueLengthChars, >= , 1 );
-		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE( pcwszValue[nValueLengthChars - 1], == , L'\0' );
+		auto nValueLengthChars = m_oData.size() / sizeof(wchar_t);
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE(nValueLengthChars, >= , 1);
+		VLR_ASSERT_COMPARE_OR_RETURN_FAILURE_VALUE(pcwszValue[nValueLengthChars - 1], == , L'\0');
+		auto spanValue = cpp::span<const wchar_t>{ pcwszValue, nValueLengthChars };
 
 		HRESULT hr;
 
 		std::vector<vlr::wzstring_view> oValueCollection;
-		hr = util::data_adaptor::HelperFor_MultiSZ<wchar_t>{}.ToStructuredData( pcwszValue, oValueCollection );
-		VLR_ASSERT_HR_SUCCEEDED_OR_RETURN_FAILURE_VALUE( hr );
+		hr = util::data_adaptor::HelperFor_MultiSZ<wchar_t>{}.ToStructuredData(spanValue, oValueCollection);
+		VLR_ASSERT_HR_SUCCEEDED_OR_RETURN_FAILURE_VALUE(hr);
 
 		return oValueCollection;
 	}
 
 public:
-	HRESULT SetValue_DWORD( DWORD dwValue )
+	HRESULT SetValue_DWORD(DWORD dwValue)
 	{
 		m_dwType = REG_DWORD;
 		m_oData = {};
-		m_oData.resize( sizeof( DWORD ) );
-		memcpy_s( m_oData.data(), m_oData.size(), &dwValue, sizeof( DWORD ) );
+		m_oData.resize(sizeof(DWORD));
+		memcpy_s(m_oData.data(), m_oData.size(), &dwValue, sizeof(DWORD));
 
 		return S_OK;
 	}
-	HRESULT SetValue_SZ( vlr::wzstring_view_param svzValue )
+	HRESULT SetValue_SZ(vlr::wzstring_view_param svzValue)
 	{
 		m_dwType = REG_SZ;
-		auto nValueLengthBytes = (svzValue.size() + 1) * sizeof( wchar_t );
+		auto nValueLengthBytes = (svzValue.size() + 1) * sizeof(wchar_t);
 		m_oData = {};
-		m_oData.resize( nValueLengthBytes );
-		memcpy_s( m_oData.data(), m_oData.size(), svzValue.data(), nValueLengthBytes );
+		m_oData.resize(nValueLengthBytes);
+		memcpy_s(m_oData.data(), m_oData.size(), svzValue.data(), nValueLengthBytes);
 
 		return S_OK;
 	}

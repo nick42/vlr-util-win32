@@ -12,7 +12,7 @@ namespace win32 {
 
 namespace registry {
 
-constexpr auto IsBaseKey( HKEY hKey )
+constexpr auto IsBaseKey(HKEY hKey)
 {
 	// Note: Must use C-style casts here, because C++ is still lacking in some areas...
 
@@ -127,20 +127,20 @@ protected:
 	cpp::shared_ptr<KeyAndCleanupDisposition> m_spKey;
 
 protected:
-	static LSTATUS CloseKey( KeyAndCleanupDisposition* pKey )
+	static LSTATUS CloseKey(KeyAndCleanupDisposition* pKey)
 	{
 		if (pKey && pKey->m_bCloseKey)
 		{
-			return ::RegCloseKey( pKey->m_hKey );
+			return ::RegCloseKey(pKey->m_hKey);
 		}
 		else
 		{
 			return 0;
 		}
 	}
-	void SetInternalHKEY( HKEY hKey, bool bCloseKey = true )
+	void SetInternalHKEY(HKEY hKey, bool bCloseKey = true)
 	{
-		if (vlr::win32::registry::IsBaseKey( hKey ))
+		if (vlr::win32::registry::IsBaseKey(hKey))
 		{
 			m_ohBaseKey = hKey;
 			m_spKey = {};
@@ -148,7 +148,13 @@ protected:
 		else if (hKey != nullptr)
 		{
 			m_ohBaseKey = {};
-			m_spKey = cpp::shared_ptr<KeyAndCleanupDisposition>{ new KeyAndCleanupDisposition( hKey, bCloseKey ), []( auto* pKey ) { CRegKey::CloseKey( pKey ); } };
+			m_spKey = cpp::shared_ptr<KeyAndCleanupDisposition>{ new KeyAndCleanupDisposition(hKey, bCloseKey),
+				[](auto* pKey)
+				{
+					CRegKey::CloseKey(pKey);
+					delete pKey;
+				}
+			};
 		}
 		else
 		{
@@ -162,9 +168,9 @@ public:
 		m_ohBaseKey = {};
 		m_spKey = {};
 	}
-	void Attach( HKEY hKey )
+	void Attach(HKEY hKey)
 	{
-		SetInternalHKEY( hKey, true );
+		SetInternalHKEY(hKey, true);
 	}
 	std::optional<HKEY> Detatch()
 	{
@@ -208,55 +214,55 @@ public:
 	}
 
 protected:
-	using FOpenKeyAW = cpp::function<HRESULT( HKEY hKey, const Options_OpenKey& oOptions, HKEY& hkResult )>;
+	using FOpenKeyAW = cpp::function<HRESULT(HKEY hKey, const Options_OpenKey& oOptions, HKEY& hkResult)>;
 	HRESULT OpenKeyAW(
 		const FOpenKeyAW& fOpenKey,
 		const Options_OpenKey& oOptions,
-		CRegKey& oRegKey_Result );
+		CRegKey& oRegKey_Result);
 public:
 	template< typename TKeyName, typename std::enable_if_t<std::is_convertible_v<TKeyName, vlr::zstring_view_param>>* = nullptr >
 	HRESULT OpenKey(
 		const TKeyName& sKeyName,
 		CRegKey& oRegKey_Result,
-		const Options_OpenKey& oOptions = {} )
+		const Options_OpenKey& oOptions = {})
 	{
-		auto fOpenKey = [&]( HKEY hKey, const Options_OpenKey& oOptions, HKEY& hkResult )
+		auto fOpenKey = [&](HKEY hKey, const Options_OpenKey& oOptions, HKEY& hkResult)
 		{
 			auto lResult = ::RegOpenKeyExA(
 				hKey,
 				vlr::zstring_view_param{ sKeyName },
 				oOptions.m_ulOptions,
 				oOptions.m_ulDesiredAccess,
-				&hkResult );
-			VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION( lResult, == , 0, HRESULT_FROM_WIN32( lResult ) );
-			VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( hkResult );
+				&hkResult);
+			VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION(lResult, == , 0, HRESULT_FROM_WIN32(lResult));
+			VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hkResult);
 
 			return S_OK;
 		};
 
-		return OpenKeyAW( fOpenKey, oOptions, oRegKey_Result );
+		return OpenKeyAW(fOpenKey, oOptions, oRegKey_Result);
 	}
 	template< typename TKeyName, typename std::enable_if_t<std::is_convertible_v<TKeyName, vlr::wzstring_view_param>>* = nullptr >
 	HRESULT OpenKey(
 		const TKeyName& sKeyName,
 		CRegKey& oRegKey_Result,
-		const Options_OpenKey& oOptions = {} )
+		const Options_OpenKey& oOptions = {})
 	{
-		auto fOpenKey = [&]( HKEY hKey, const Options_OpenKey& oOptions, HKEY& hkResult )
+		auto fOpenKey = [&](HKEY hKey, const Options_OpenKey& oOptions, HKEY& hkResult)
 		{
 			auto lResult = ::RegOpenKeyExW(
 				hKey,
 				vlr::wzstring_view_param{ sKeyName },
 				oOptions.m_ulOptions,
 				oOptions.m_ulDesiredAccess,
-				&hkResult );
-			VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION( lResult, == , 0, HRESULT_FROM_WIN32( lResult ) );
-			VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( hkResult );
+				&hkResult);
+			VLR_ASSERT_COMPARE_OR_RETURN_EXPRESSION(lResult, == , 0, HRESULT_FROM_WIN32(lResult));
+			VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(hkResult);
 
 			return S_OK;
 		};
 
-		return OpenKeyAW( fOpenKey, oOptions, oRegKey_Result );
+		return OpenKeyAW(fOpenKey, oOptions, oRegKey_Result);
 	}
 
 protected:
@@ -265,27 +271,27 @@ protected:
 		const Options_GetValue& oOptions,
 		DWORD* pdwType,
 		VOID* pBuffer,
-		DWORD* pdwBufferLength )>;
+		DWORD* pdwBufferLength)>;
 	HRESULT GetValueAW(
 		const FGetValueAW& fGetValue,
 		const Options_GetValue& oOptions,
-		Result_GetValue& oResult );
+		Result_GetValue& oResult);
 public:
 	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::zstring_view_param>>* = nullptr >
 	HRESULT GetValue(
 		vlr::zstring_view_param svzSubkeyName,
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
-		const Options_GetValue& oOptions = {} )
+		const Options_GetValue& oOptions = {})
 	{
-		oResult.m_oValue.m_wsName = util::Convert::ToStdStringW( sValueName );
+		oResult.m_oValue.m_wsName = util::Convert::ToStdStringW(sValueName);
 
 		auto fGetValue = [&](
 			HKEY hKey,
 			const Options_GetValue& oOptions,
 			DWORD* pdwType,
 			VOID* pBuffer,
-			DWORD* pdwBufferLength )
+			DWORD* pdwBufferLength)
 		{
 			auto lResult = ::RegGetValueA(
 				hKey,
@@ -294,48 +300,48 @@ public:
 				oOptions.GetForCall_Flags(),
 				pdwType,
 				pBuffer,
-				pdwBufferLength );
+				pdwBufferLength);
 			switch (lResult)
 			{
 			case ERROR_SUCCESS:
 				return S_OK;
 			case ERROR_MORE_DATA:
-				return HRESULT_FROM_WIN32( ERROR_MORE_DATA );
+				return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
 			default:
-				return HRESULT_FROM_WIN32( lResult );
+				return HRESULT_FROM_WIN32(lResult);
 			}
 		};
 
-		return GetValueAW( fGetValue, oOptions, oResult );
+		return GetValueAW(fGetValue, oOptions, oResult);
 	}
 	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::zstring_view_param>>* = nullptr >
 	HRESULT GetValue(
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
-		const Options_GetValue& oOptions = {} )
+		const Options_GetValue& oOptions = {})
 	{
 		return GetValue(
 			vlr::zstring_view_param{},
 			sValueName,
 			oResult,
-			oOptions );
+			oOptions);
 	}
 	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::wzstring_view_param>>* = nullptr >
 	HRESULT GetValue(
 		vlr::wzstring_view_param svzSubkeyName,
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
-		const Options_GetValue& oOptions = {} )
+		const Options_GetValue& oOptions = {})
 	{
-		oResult.m_oValue.m_wsName = util::Convert::ToStdStringW( sValueName );
+		oResult.m_oValue.m_wsName = util::Convert::ToStdStringW(sValueName);
 
 		auto fGetValue = [&](
 			HKEY hKey,
 			const Options_GetValue& oOptions,
 			DWORD* pdwType,
 			VOID* pBuffer,
-			DWORD* pdwBufferLength )
+			DWORD* pdwBufferLength)
 		{
 			auto lResult = ::RegGetValueW(
 				hKey,
@@ -344,39 +350,39 @@ public:
 				oOptions.GetForCall_Flags(),
 				pdwType,
 				pBuffer,
-				pdwBufferLength );
+				pdwBufferLength);
 			switch (lResult)
 			{
 			case ERROR_SUCCESS:
 				return S_OK;
 			case ERROR_MORE_DATA:
-				return HRESULT_FROM_WIN32( ERROR_MORE_DATA );
+				return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
 			default:
-				return HRESULT_FROM_WIN32( lResult );
+				return HRESULT_FROM_WIN32(lResult);
 			}
 		};
 
-		return GetValueAW( fGetValue, oOptions, oResult );
+		return GetValueAW(fGetValue, oOptions, oResult);
 	}
 	template< typename TValueName, typename std::enable_if_t<std::is_convertible_v<TValueName, vlr::wzstring_view_param>>* = nullptr >
 	HRESULT GetValue(
 		const TValueName& sValueName,
 		Result_GetValue& oResult,
-		const Options_GetValue& oOptions = {} )
+		const Options_GetValue& oOptions = {})
 	{
 		return GetValue(
 			vlr::wzstring_view_param{},
 			sValueName,
 			oResult,
-			oOptions );
+			oOptions);
 	}
 
 public:
 	constexpr CRegKey() = default;
-	CRegKey( HKEY hKey )
+	CRegKey(HKEY hKey)
 	{
-		SetInternalHKEY( hKey );
+		SetInternalHKEY(hKey);
 	}
 	//CRegKey( const CRegKey& ) = default;
 	//CRegKey( CRegKey&& ) = default;
@@ -387,21 +393,21 @@ public:
 HRESULT CRegKey::OpenKeyAW(
 	const FOpenKeyAW& fOpenKey,
 	const Options_OpenKey& oOptions,
-	CRegKey& oRegKey_Result )
+	CRegKey& oRegKey_Result)
 {
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( fOpenKey );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(fOpenKey);
 
 	HRESULT hr;
 
 	auto ohKey = GetHKEY();
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( ohKey.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(ohKey.has_value());
 
 	HKEY hkResult = {};
 	hr = fOpenKey(
 		ohKey.value(),
 		oOptions,
-		hkResult );
-	VLR_ON_HR_NON_S_OK__RETURN_HRESULT( hr );
+		hkResult);
+	VLR_ON_HR_NON_S_OK__RETURN_HRESULT(hr);
 
 	oRegKey_Result = CRegKey{ hkResult };
 
@@ -411,14 +417,14 @@ HRESULT CRegKey::OpenKeyAW(
 HRESULT CRegKey::GetValueAW(
 	const FGetValueAW& fGetValue,
 	const Options_GetValue& oOptions,
-	Result_GetValue& oResult )
+	Result_GetValue& oResult)
 {
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( fGetValue );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(fGetValue);
 
 	HRESULT hr;
 
 	auto ohKey = GetHKEY();
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( ohKey.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(ohKey.has_value());
 
 	auto& oRegValue = oResult.m_oValue;
 
@@ -427,7 +433,7 @@ HRESULT CRegKey::GetValueAW(
 
 	if (oOptions.m_nInitialBufferSize > 0)
 	{
-		oRegValue.m_oData.resize( oOptions.m_nInitialBufferSize );
+		oRegValue.m_oData.resize(oOptions.m_nInitialBufferSize);
 		pBuffer = oRegValue.m_oData.data();
 		dwBufferLength = oRegValue.m_oData.size();
 	}
@@ -439,18 +445,19 @@ HRESULT CRegKey::GetValueAW(
 			oOptions,
 			&oRegValue.m_dwType,
 			pBuffer,
-			&dwBufferLength );
+			&dwBufferLength);
 		if (hr == S_OK)
 		{
-			VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED( dwBufferLength, <= , oRegValue.m_oData.size() );
-			oRegValue.m_oData.resize( dwBufferLength );
+			VLR_ASSERT_COMPARE_OR_RETURN_EUNEXPECTED(dwBufferLength, <= , oRegValue.m_oData.size());
+			oRegValue.m_oData.resize(dwBufferLength);
 			return S_OK;
 		}
-		if (hr == HRESULT_FROM_WIN32( ERROR_MORE_DATA ))
+		if (hr == HRESULT_FROM_WIN32(ERROR_MORE_DATA))
 		{
 			if (dwBufferLength > oRegValue.m_oData.size())
 			{
-				oRegValue.m_oData.resize( dwBufferLength );
+				oRegValue.m_oData.resize(dwBufferLength);
+				pBuffer = oRegValue.m_oData.data();
 				continue;
 			}
 			// Other case: dynamic data, where we do not know the size
@@ -464,7 +471,7 @@ HRESULT CRegKey::GetValueAW(
 	} while (true);
 
 	// Should not reach here
-	VLR_HANDLE_ASSERTION_FAILURE__AND_RETURN_EXPRESSION( E_UNEXPECTED );
+	VLR_HANDLE_ASSERTION_FAILURE__AND_RETURN_EXPRESSION(E_UNEXPECTED);
 }
 
 } // namespace registry

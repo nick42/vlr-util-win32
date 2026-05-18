@@ -150,7 +150,7 @@ HRESULT iterator_volumes::OnDestroy_CloseFindVolume( RefCountedDataBlock* pRefCo
 		return S_FALSE;
 	}
 
-	auto oOnDestroy_ClearHandleVar = MakeActionOnDestruction( [&] { pRefCountedDataBlock->m_ohFindVolume = {}; } );
+	auto oOnDestroy_DeleteBlock = MakeActionOnDestruction([&] { delete pRefCountedDataBlock; });
 
 	BOOL bSuccess;
 

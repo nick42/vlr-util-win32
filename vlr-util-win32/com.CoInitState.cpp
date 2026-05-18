@@ -15,6 +15,13 @@ SResult CCoInitState::IfApplicable_Uninitialize()
 	{
 		return SResult::Success_NoWorkDone;
 	}
+	if (m_dwInitThreadID != ::GetCurrentThreadId())
+	{
+		// This is an error case, and will leave COM initialized on the prior thread, but we should not attempt 
+		// to uninitialize COM on the wrong thread, as this will cause an error.
+		VLR_ASSERTIONS_HANDLE_CHECK_FAILURE(_T("Attempting to uninitialize COM on a different thread than it was initialized on"));
+		return SResult::Failure;
+	}
 
 	::CoUninitialize();
 

@@ -77,7 +77,7 @@ public:
 		}
 		OnAdaptorMethod_increment();
 	}
-	auto equal( const iterator_RegEnumKey& iterOther ) const
+	auto equal(const iterator_RegEnumKey& iterOther) const
 	{
 		bool bInvalidIter_this = (!HaveValidIndexForIteration());
 		bool bInvalidIter_other = (!iterOther.HaveValidIndexForIteration());
@@ -98,12 +98,13 @@ public:
 
 public:
 	constexpr iterator_RegEnumKey(
-		HKEY hParentKey )
+		HKEY hParentKey)
 		: m_hParentKey{ hParentKey }
-	{}
+	{
+	}
 	iterator_RegEnumKey(
 		HKEY hParentKey,
-		DWORD dwIndex )
+		DWORD dwIndex)
 		: m_hParentKey{ hParentKey }
 		, m_odwNextIndex{ dwIndex }
 	{
@@ -114,22 +115,22 @@ public:
 
 HRESULT iterator_RegEnumKey::OnAdaptorMethod_increment()
 {
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_hParentKey );
-	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( m_odwNextIndex.has_value() );
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(m_hParentKey);
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(m_odwNextIndex.has_value());
+
+	DWORD dwValueNameLength = 256;
+	DWORD dwClassNameLength = 256;
+
+	auto spCurrentResult = cpp::make_shared<RegEnumKeyResult>();
+	VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED(spCurrentResult);
+
+	spCurrentResult->m_dwIndex = m_odwNextIndex.value();
+
+	spCurrentResult->m_wsName.resize(dwValueNameLength);
+	spCurrentResult->m_wsClass.resize(dwClassNameLength);
 
 	do
 	{
-		auto spCurrentResult = cpp::make_shared<RegEnumKeyResult>();
-		VLR_ASSERT_NONZERO_OR_RETURN_EUNEXPECTED( spCurrentResult );
-
-		spCurrentResult->m_dwIndex = m_odwNextIndex.value();
-
-		DWORD dwValueNameLength = 256;
-		spCurrentResult->m_wsName.resize( dwValueNameLength );
-
-		DWORD dwClassNameLength = 256;
-		spCurrentResult->m_wsClass.resize( dwClassNameLength );
-
 		auto lStatus = ::RegEnumKeyExW(
 			m_hParentKey,
 			m_odwNextIndex.value(),
@@ -138,39 +139,34 @@ HRESULT iterator_RegEnumKey::OnAdaptorMethod_increment()
 			NULL,
 			spCurrentResult->m_wsClass.data(),
 			&dwClassNameLength,
-			&spCurrentResult->m_oLastWriteTime );
+			&spCurrentResult->m_oLastWriteTime);
 		if (lStatus == ERROR_SUCCESS)
 		{
-			spCurrentResult->m_wsName.resize( dwValueNameLength );
-			spCurrentResult->m_wsClass.resize( dwClassNameLength );
+			spCurrentResult->m_wsName.resize(dwValueNameLength);
+			spCurrentResult->m_wsClass.resize(dwClassNameLength);
 			m_spCurrentResult = spCurrentResult;
 			m_odwNextIndex = ++m_odwNextIndex.value();
 
 			return S_OK;
 		}
-		else if (lStatus == ERROR_NO_MORE_ITEMS)
+		if (lStatus == ERROR_NO_MORE_ITEMS)
 		{
 			m_odwNextIndex = {};
 			spCurrentResult = {};
-			m_odwLastError = HRESULT_FROM_WIN32( ERROR_NO_MORE_ITEMS );
+			m_odwLastError = HRESULT_FROM_WIN32(ERROR_NO_MORE_ITEMS);
 
 			return S_FALSE;
 		}
-		else if (lStatus == ERROR_MORE_DATA)
-		{
-			spCurrentResult->m_wsName.resize( dwValueNameLength );
-			spCurrentResult->m_wsClass.resize( dwClassNameLength );
+		// Note: May also be ERROR_MORE_DATA, if the name/class is too long for the buffer; but we set the 
+		// buffer to 256, which is the max length for these values, so this should not occur normally. Handle 
+		// as an error if it does occur, since it indicates an unexpected condition (e.g. registry corruption).
 
-			continue;
-		}
-		else
-		{
-			m_odwLastError = HRESULT_FROM_WIN32( lStatus );
-			return m_odwLastError.value();
-		}
+		// No other handled cases; return error
+		m_odwLastError = HRESULT_FROM_WIN32(lStatus);
+		return m_odwLastError.value();
 	} while (true);
 
-	VLR_HANDLE_ASSERTION_FAILURE__AND_RETURN_EXPRESSION( E_UNEXPECTED );
+	VLR_HANDLE_ASSERTION_FAILURE__AND_RETURN_EXPRESSION(E_UNEXPECTED);
 }
 
 } // namespace registry

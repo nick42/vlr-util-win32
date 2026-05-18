@@ -18,7 +18,7 @@ HRESULT GetVolumePathNamesForVolumeName(const vlr::tstring& sVolumeName, std::ve
 	{
 		return HRESULT_FROM_WIN32(GetLastError());
 	}
-	auto spanVolumePathNames = cpp::span<const TCHAR>(pszBuffer, dwReturnLength / sizeof(TCHAR));
+	auto spanVolumePathNames = cpp::span<const TCHAR>(pszBuffer, dwReturnLength);
 
 	vlr::util::data_adaptor::HelperFor_MultiSZ{}.ToStructuredData(spanVolumePathNames, vecPathNames_Result);
 

@@ -6,7 +6,8 @@ namespace vlr {
 
 enum class AceType : unsigned int
 {
-	Unknown, // = ACCESS_MIN_MS_ACE_TYPE
+	// Note: Cannot have an Unknown value here, because ACE types are defined as DWORDs in Windows, 
+	// and 0 is a valid ACE type (ACCESS_ALLOWED_ACE_TYPE)
 	AccessAllowed = ACCESS_ALLOWED_ACE_TYPE,
 	AccessDenies = ACCESS_DENIED_ACE_TYPE,
 	SystemAudit = SYSTEM_AUDIT_ACE_TYPE,
