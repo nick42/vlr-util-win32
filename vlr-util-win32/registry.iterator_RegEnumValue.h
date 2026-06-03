@@ -1,8 +1,7 @@
 #pragma once
 
 #include <optional>
-
-#include <boost/iterator/iterator_facade.hpp>
+#include <iterator>
 
 #include <vlr-util/util.includes.h>
 #include <vlr-util/ActionOnDestruction.h>
@@ -24,10 +23,15 @@ struct RegEnumValueResult
 class enum_RegValues;
 
 class iterator_RegEnumValue
-	: public boost::iterator_facade<iterator_RegEnumValue, const RegEnumValueResult&, boost::forward_traversal_tag, const RegEnumValueResult&>
 {
-	friend boost::iterator_core_access;
 	friend enum_RegValues;
+
+public:
+	using difference_type = std::ptrdiff_t;
+	using value_type = RegEnumValueResult;
+	using pointer = const RegEnumValueResult*;
+	using reference = const RegEnumValueResult&;
+	using iterator_category = std::forward_iterator_tag;
 
 protected:
 	HKEY m_hParentKey = {};
@@ -58,7 +62,7 @@ public:
 	}
 
 public:
-	decltype(auto) dereference() const
+	reference operator*() const
 	{
 		if (!HaveValidItem())
 		{
@@ -66,18 +70,37 @@ public:
 		}
 		return *m_spCurrentResult;
 	}
-	void increment()
+
+	pointer operator->() const
+	{
+		if (!HaveValidItem())
+		{
+			throw std::exception{ "Invalid iterator state" };
+		}
+		return m_spCurrentResult.get();
+	}
+
+	iterator_RegEnumValue& operator++()
 	{
 		if (!HaveValidIndexForIteration())
 		{
 			throw std::exception{ "Invalid iterator state" };
 		}
 		OnAdaptorMethod_increment();
+		return *this;
 	}
-	auto equal(const iterator_RegEnumValue& iterOther) const
+
+	iterator_RegEnumValue operator++(int)
+	{
+		iterator_RegEnumValue temp = *this;
+		++(*this);
+		return temp;
+	}
+
+	bool operator==(const iterator_RegEnumValue& other) const
 	{
 		bool bInvalidIter_this = (!HaveValidIndexForIteration());
-		bool bInvalidIter_other = (!iterOther.HaveValidIndexForIteration());
+		bool bInvalidIter_other = (!other.HaveValidIndexForIteration());
 
 		// If either is invalid, then they are equal IFF both are invalid
 		if (bInvalidIter_this || bInvalidIter_other)
@@ -86,11 +109,15 @@ public:
 		}
 
 		// Both valid; any appliable checks for validity
-
 		return true
-			&& (m_hParentKey == iterOther.m_hParentKey)
-			&& (m_odwNextIndex.value() == iterOther.m_odwNextIndex.value())
+			&& (m_hParentKey == other.m_hParentKey)
+			&& (m_odwNextIndex.value() == other.m_odwNextIndex.value())
 			;
+	}
+
+	bool operator!=(const iterator_RegEnumValue& other) const
+	{
+		return !(*this == other);
 	}
 
 public:
@@ -108,6 +135,16 @@ public:
 		increment();
 	}
 	~iterator_RegEnumValue() = default;
+
+private:
+	void increment()
+	{
+		if (!HaveValidIndexForIteration())
+		{
+			throw std::exception{ "Invalid iterator state" };
+		}
+		OnAdaptorMethod_increment();
+	}
 };
 
 HRESULT iterator_RegEnumValue::OnAdaptorMethod_increment()

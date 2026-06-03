@@ -1,8 +1,7 @@
 #pragma once
 
 #include <optional>
-
-#include <boost/iterator/iterator_facade.hpp>
+#include <iterator>
 
 #include <vlr-util/util.includes.h>
 #include <vlr-util/ActionOnDestruction.h>
@@ -14,9 +13,13 @@ namespace win32 {
 namespace filesystem {
 
 class iterator_volumes
-	: public boost::iterator_facade<iterator_volumes, vlr::tstring, boost::forward_traversal_tag, const vlr::tstring&>
 {
-	friend boost::iterator_core_access;
+public:
+	using difference_type = std::ptrdiff_t;
+	using value_type = vlr::tstring;
+	using pointer = const vlr::tstring*;
+	using reference = const vlr::tstring&;
+	using iterator_category = std::forward_iterator_tag;
 
 protected:
 	struct RefCountedDataBlock
@@ -44,7 +47,7 @@ public:
 	}
 
 public:
-	inline auto& dereference() const
+	reference operator*() const
 	{
 		if (!m_osCurrentResult.has_value())
 		{
@@ -52,18 +55,37 @@ public:
 		}
 		return m_osCurrentResult.value();
 	}
-	inline void increment()
+
+	pointer operator->() const
+	{
+		if (!m_osCurrentResult.has_value())
+		{
+			throw std::exception{ "Invalid iterator state" };
+		}
+		return &m_osCurrentResult.value();
+	}
+
+	iterator_volumes& operator++()
 	{
 		if (!m_spRefCountedDataBlock || !m_spRefCountedDataBlock->m_ohFindVolume.has_value())
 		{
 			throw std::exception{ "Invalid iterator state" };
 		}
 		OnAdaptorMethod_increment();
+		return *this;
 	}
-	inline auto equal( const iterator_volumes& iterOther ) const
+
+	iterator_volumes operator++(int)
+	{
+		iterator_volumes temp = *this;
+		++(*this);
+		return temp;
+	}
+
+	bool operator==(const iterator_volumes& other) const
 	{
 		bool bInvalidIter_this = (!m_spRefCountedDataBlock || !m_spRefCountedDataBlock->m_ohFindVolume.has_value());
-		bool bInvalidIter_other = (!iterOther.m_spRefCountedDataBlock || !iterOther.m_spRefCountedDataBlock->m_ohFindVolume.has_value());
+		bool bInvalidIter_other = (!other.m_spRefCountedDataBlock || !other.m_spRefCountedDataBlock->m_ohFindVolume.has_value());
 
 		// If either is invalid, then they are equal IFF both are invalid
 		if (bInvalidIter_this || bInvalidIter_other)
@@ -73,8 +95,13 @@ public:
 
 		// Both valid; any appliable checks for validity
 		return true
-			&& (m_spRefCountedDataBlock->m_ohFindVolume.value() == iterOther.m_spRefCountedDataBlock->m_ohFindVolume.value())
+			&& (m_spRefCountedDataBlock->m_ohFindVolume.value() == other.m_spRefCountedDataBlock->m_ohFindVolume.value())
 			;
+	}
+
+	bool operator!=(const iterator_volumes& other) const
+	{
+		return !(*this == other);
 	}
 
 public:

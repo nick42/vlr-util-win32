@@ -2,8 +2,6 @@
 
 #include <optional>
 
-#include <boost/iterator/iterator_facade.hpp>
-
 #include <vlr-util/util.includes.h>
 
 #include <vlr-util-win32/registry.iterator_RegEnumKey.h>
